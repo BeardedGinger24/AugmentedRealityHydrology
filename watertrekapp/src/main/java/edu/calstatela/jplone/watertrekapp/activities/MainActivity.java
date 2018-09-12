@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(landmark != null){
-            DetailsActivity.launchDetailsActivity(this, "well", landmark.title + "\n" + landmark.description);
+            DetailsActivity.launchDetailsActivity(this, "mountain", landmark.title + "\n" + landmark.description);
         }
 
     }
