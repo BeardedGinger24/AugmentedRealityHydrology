@@ -70,7 +70,7 @@ public class BillboardMaker {
         return billboard;
     }
 
-    public static Billboard make(Context context, int iconResourceId){
+    public static Billboard make3(Context context, int iconResourceId){
         Billboard billboard = new Billboard();
         Bitmap bitmap = TextureHelper.bitmapFromResource(context, iconResourceId);
         billboard.setBitmap(bitmap);

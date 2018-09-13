@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private void addMountains(){
         for(int i = 0; i < mountainList.size(); i++){
             Landmark l = mountainList.get(i);
-            arview.addBillboard(R.drawable.mtn_res_ico_clr);
+            arview.addBillboard(mountainPrefix+i, R.drawable.mtn_res_ico_clr, l.title, l.description, l.latitude, l.longitude, l.altitude);
         }
     }
 

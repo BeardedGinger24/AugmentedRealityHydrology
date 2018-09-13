@@ -23,8 +23,8 @@ public class BillboardView_depthTest extends SensorARView{
         mContext = context;
     }
 
-    public void addBillboard(int iconResource){
-        BillboardInfo info = new BillboardInfo(iconResource);
+    public void addBillboard(int id, int iconResource, String title, String text, float lat, float lon, float alt){
+        BillboardInfo info = new BillboardInfo(id, iconResource, title, text, lat, lon, alt);
         synchronized(mAddList) {
             mAddList.add(info);
         }
@@ -202,7 +202,7 @@ public class BillboardView_depthTest extends SensorARView{
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private void newEntity(BillboardInfo info){
-        Billboard bb = BillboardMaker.make(mContext, info.iconResource, info.title, info.text);
+        Billboard bb = BillboardMaker.make3(mContext, info.iconResource);
         ScaleObject sbb = new ScaleObject(bb, 2, 1, 1);
         Entity e = new Entity();
         e.setDrawable(sbb);
