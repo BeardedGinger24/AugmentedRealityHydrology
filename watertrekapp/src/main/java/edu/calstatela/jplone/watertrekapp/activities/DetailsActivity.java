@@ -19,12 +19,30 @@ public class DetailsActivity extends AppCompatActivity {
         String type = getIntent().getStringExtra("type");
 
         ImageView imgData = findViewById(R.id.img_data);
-        if(type.equals("well"))
-            imgData.setImageResource(R.drawable.well_color);
-        else if(type.equals("reservoir"))
-            imgData.setImageResource(R.drawable.reservoir_res_ico_clr);
-        else if(type.equals("soil"))
-            imgData.setImageResource(R.drawable.grass_res_ico_clr);
+//        if(type.equals("well"))
+//            imgData.setImageResource(R.drawable.well_color);
+//        else if(type.equals("reservoir"))
+//            imgData.setImageResource(R.drawable.reservoir_res_ico_clr);
+//        else if(type.equals("soil"))
+//            imgData.setImageResource(R.drawable.grass_res_ico_clr);
+
+        switch(type){
+            case "well":
+                imgData.setImageResource(R.drawable.well_res_ico_clr);
+                break;
+            case "mountain":
+                imgData.setImageResource(R.drawable.mtn_res_ico_clr);
+                break;
+            case "reservoir":
+                imgData.setImageResource(R.drawable.reservoir_res_ico_clr);
+                break;
+            case "river":
+                imgData.setImageResource(R.drawable.river_res_ico_clr);
+                break;
+            case "soil":
+                imgData.setImageResource(R.drawable.grass_res_ico_clr);
+                break;
+        }
 
         TextView txtData = findViewById(R.id.txt_data);
         txtData.setText(getIntent().getStringExtra("data"));
