@@ -30,12 +30,15 @@ public class Billboard implements Drawable {
 
     private static float[] tempDrawMatrix = new float[16];
 
+    private static String shape = "";
+
     public Billboard(){
     }
 
     public static void init(){
         sGLProgramId = ShaderHelper.buildShaderProgram(vertexShaderSource, fragmentShaderSource);
-        fillBuffers();
+        //fillBuffersRect();
+        fillBufferCircle();
     }
 
     public void setTexture(int glTextureId){
@@ -83,11 +86,20 @@ public class Billboard implements Drawable {
         GLES20.glUniformMatrix4fv(matrixUniform, 1, false, matrix, 0);
 
 
-        int vertexCount = rectangleVertexFloats.length / FLOATS_PER_VERTEX;
+        int vertexCount=0;
+        if(shape=="rectangle"){
+            vertexCount = rectangleVertexFloats.length / FLOATS_PER_VERTEX;
+        }else if(shape=="circle"){
+            vertexCount = circleVertexFloats.length / FLOATS_PER_VERTEX;
+        }
         GLES20.glVertexAttribPointer(positionAttribute, FLOATS_PER_VERTEX, GLES20.GL_FLOAT, false, FLOATS_PER_VERTEX * BYTES_PER_FLOAT, sVertexBuffer);
         GLES20.glVertexAttribPointer(colorAttribute, FLOATS_PER_COLOR, GLES20.GL_FLOAT, false, FLOATS_PER_COLOR * BYTES_PER_FLOAT, sColorBuffer);
         GLES20.glVertexAttribPointer(texCoordAttribute, FLOATS_PER_TEX_COORD, GLES20.GL_FLOAT, false, FLOATS_PER_TEX_COORD * BYTES_PER_FLOAT, sTexCoordBuffer);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+        if(shape=="rectangle"){
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+        }else if(shape=="circle"){
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, vertexCount);
+        }
 
 
         GLES20.glDisableVertexAttribArray(positionAttribute);
@@ -108,10 +120,17 @@ public class Billboard implements Drawable {
     //          Drawing Helpers
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    private static void fillBuffers(){
+    private static void fillBuffersRect(){
+        shape="rectangle";
         sVertexBuffer = BufferHelper.arrayToBuffer(rectangleVertexFloats);
         sColorBuffer = BufferHelper.arrayToBuffer(rectangleColorFloats);
         sTexCoordBuffer = BufferHelper.arrayToBuffer(rectangleTexCoordFloats);
+    }
+    private static void fillBufferCircle(){
+        shape="circle";
+        sVertexBuffer = BufferHelper.arrayToBuffer(circleVertexFloats);
+        sColorBuffer = BufferHelper.arrayToBuffer(circleColorFloats);
+        sTexCoordBuffer = BufferHelper.arrayToBuffer(circleTexCoordFloats);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,6 +138,51 @@ public class Billboard implements Drawable {
     //          Static Mesh Data
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    //Circle Mesh Data
+    private static final float[] circleVertexFloats=makeCircle();
+    private static float[] makeCircle(){
+        int segments = 20;
+        float[] vertices = new float[segments * 3+6];
+
+        float angle = (float)(2*Math.PI/segments);
+        vertices[0]=0;
+        vertices[1]=0;
+
+        for(int i = 0; i < segments; i++){
+            vertices[3+(i*3)]=(float)Math.sin(angle * i)*0.5f;
+            vertices[3+(i*3+1)]=(float)Math.cos(angle*i)*0.5f;
+        }
+        vertices[3*segments+3]=0;
+        vertices[3*segments+4]=0.5f;
+
+        return vertices;
+    }
+    private static final float[] circleColorFloats = {
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f, 1.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f, 1.0f,
+
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f, 1.0f,
+            0.2f, 0.5f, 0.0f, 1.0f
+    };
+
+    private static final float[] circleTexCoordFloats = circleTexture();
+    private static float[] circleTexture(){
+        int segments = 20;
+        float[] texture = new float[segments * 3+6];
+        float angle = (float)(2*Math.PI/segments);
+
+        texture[0]=0.5f;
+        texture[1]=0.5f;
+        for(int i = 0; i < segments; i++){
+            texture[3+(i*3)]=(float)Math.sin(angle * i)*0.5f+0.5f;
+            texture[3+(i*3+1)]=(float)Math.cos(angle * i)*0.5f+0.5f;
+        }
+
+        return texture;
+    }
+    //Rectangle Mesh Data
     private static final float[] rectangleVertexFloats = {
             -0.5f,  -0.5f,  0.0f,
             0.5f,   -0.5f,  0.0f,
