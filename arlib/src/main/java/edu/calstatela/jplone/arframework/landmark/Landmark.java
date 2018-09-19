@@ -3,15 +3,13 @@ package edu.calstatela.jplone.arframework.landmark;
 import android.location.Location;
 
 public class Landmark {
-    public String type;
     public String title;
     public String description;
     public float latitude;
     public float longitude;
     public float altitude;
 
-    public Landmark(String type, String title, String description, float latitude, float longitude, float altitude){
-        this.type = type;
+    public Landmark(String title, String description, float latitude, float longitude, float altitude){
         this.title = title;
         this.description = description;
         this.latitude = latitude;
@@ -38,8 +36,6 @@ public class Landmark {
     public boolean compare(Landmark landmark) {
         boolean equal = true;
 
-        if(!this.type.equals(landmark.type))
-            equal = false;
         if(!this.title.equals(landmark.title))
             equal = false;
         if(!this.description.equals(landmark.description))
