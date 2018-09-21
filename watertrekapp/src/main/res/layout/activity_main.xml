@@ -289,17 +289,35 @@
 
         <!-- you can have many more widgets here like buttons or labels -->
 
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
         <Button
-            android:id="@+id/watertrek_credentials_button"
+            android:id="@+id/logout_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="10dp"
             android:layout_marginTop="500dp"
-            android:text="Watertrek Credentials"
-            android:onClick="launchWatertrekCredentials"
-            android:textColor="@color/white"/>
+            android:text="Logout"
+            android:onClick="logout"
+            android:textColor="@color/green"/>
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="500dp"
+            android:text="Login"
+            android:onClick="login"
+            android:textColor="@color/green"/>
+        </LinearLayout>
 
     </RelativeLayout>
 
