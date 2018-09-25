@@ -18,7 +18,7 @@ public class LandmarkTable extends ArrayList<Landmark> {
 
         return newTable;
     }
-//
+
 //    public void loadCalstateLA(){
 //        add(new Landmark("Hydrogen Station", "CalstateLA Facility", 34.066304f, -118.165378f, 100.0f));
 //        add(new Landmark("Senior Design B10", "CalstateLA Facility", 34.066223f, -118.166367f, 100.0f));

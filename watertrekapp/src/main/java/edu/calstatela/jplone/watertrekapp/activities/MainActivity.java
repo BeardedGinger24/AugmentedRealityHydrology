@@ -6,9 +6,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +40,23 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private boolean tWell = false;
     private boolean tRiver = false;
     private boolean tSoil = false;
+
+    private Switch toggleSoil;
+    private Switch toggleRiver;
+    private Switch toggleMountain;
+    private Switch toggleWell;
+    private Switch toggleReservoir;
+
     private int radius = 20;
+
+    Button login_button;
+    Button logout_button;
 
     private ArrayList<Well> wellList = new ArrayList<>();
     private LandmarkTable mountainList = new LandmarkTable();
     int mountainPrefix = 2000000000;
 
-
+    private boolean isLoggedIn = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Activity Lifecycle
@@ -56,13 +68,26 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        WatertrekCredentials credentials = new WatertrekCredentials(this);
-        NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+        if(!isLoggedIn){
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
+        }else {
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+        }
 
         drawerContentsLayout = (RelativeLayout)findViewById(R.id.whatYouWantInLeftDrawer);
         mainDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         radiusSeekBar = findViewById(R.id.seekBar);
         radiusSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        login_button = (Button)findViewById(R.id.login_button);
+        logout_button = (Button)findViewById(R.id.logout_button);
+        toggleMountain = (Switch)findViewById(R.id.switch8);
+        toggleReservoir = (Switch)findViewById(R.id.switch11);
+        toggleWell = (Switch)findViewById(R.id.switch9);
+        toggleRiver = (Switch)findViewById(R.id.switch10);
+        toggleSoil = (Switch)findViewById(R.id.switch12);
 
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
@@ -72,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainLayout.addView(arview);
 
         mountainList.loadMountains();
+
     }
 
     @Override
@@ -97,8 +123,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
     public void toggleMountain(View v) {
-        tMountain = !tMountain;
-
+        if(isLoggedIn) {
+            tMountain = !tMountain;
+        }else{
+            tMountain = false;
+        }
         if(tMountain)
             addMountains();
         else
@@ -106,12 +135,19 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
     public void toggleReservoir(View v) {
-        tReservoir = !tReservoir;
+        if(isLoggedIn) {
+            tReservoir = !tReservoir;
+        }else{
+            tReservoir = false;
+        }
     }
 
     public void toggleWell(View v) {
-        tWell = !tWell;
-
+        if(isLoggedIn) {
+            tWell = !tWell;
+        }else{
+            tWell = false;
+        }
         if(tWell)
             addWells();
         else
@@ -119,24 +155,62 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
     public void toggleRiver(View v) {
-        tRiver = !tRiver;
+        if(isLoggedIn) {
+            tRiver = !tRiver;
+        }else{
+            tRiver = false;
+        }
     }
 
     public void toggleSoil(View v) {
-        tSoil = !tSoil;
+        if(isLoggedIn) {
+            tSoil = !tSoil;
+        }else{
+            tSoil = false;
+        }
     }
 
+    public void logout(View v){
+        isLoggedIn = false;
+        login_button.setVisibility(v.VISIBLE);
+        logout_button.setVisibility(v.GONE);
 
+        toggleReservoir(v);
+        toggleMountain(v);
+        toggleWell(v);
+        toggleSoil(v);
+        toggleRiver(v);
+
+        toggleRiver.setChecked(false);
+        toggleSoil.setChecked(false);
+        toggleWell.setChecked(false);
+        toggleMountain.setChecked(false);
+        toggleReservoir.setChecked(false);
+
+        toggleSwitches();
+    }
+    public void login (View v){
+        WatertrekCredentials credentials = new WatertrekCredentials(this);
+        CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
+//        login_button.setVisibility(v.GONE);
+//        logout_button.setVisibility(v.VISIBLE);
+//        isLoggedIn = true;
+//        toggleSwitches();
+
+    }
+
+    public void toggleSwitches(){
+        toggleReservoir.setClickable(isLoggedIn);
+        toggleRiver.setClickable(isLoggedIn);
+        toggleWell.setClickable(isLoggedIn);
+        toggleMountain.setClickable(isLoggedIn);
+        toggleSoil.setClickable(isLoggedIn);
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Credentials Methods
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    public void launchWatertrekCredentials(View v){
-        WatertrekCredentials credentials = new WatertrekCredentials(this);
-        CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == CREDENTIALS_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
@@ -146,6 +220,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             credentials.setUsername(newUsername);
             credentials.setPassword(newPassword);
             NetworkTask.updateWatertrekCredentials(newUsername, newPassword);
+
+            login_button.setVisibility(View.GONE);
+            logout_button.setVisibility(View.VISIBLE);
+            isLoggedIn = true;
+            toggleSwitches();
         }
     }
 

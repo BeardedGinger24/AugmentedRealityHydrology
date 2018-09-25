@@ -225,7 +225,7 @@ public class BillboardView_sorting extends SensorARView{
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private void newEntity(BillboardInfo info){
-        Billboard bb = BillboardMaker.make3(mContext, info.iconResource);
+        Billboard bb = BillboardMaker.make(mContext, info.iconResource);
         ScaleObject sbb = new ScaleObject(bb, 2, 1, 1);
         Entity e = new Entity();
         e.setDrawable(sbb);
