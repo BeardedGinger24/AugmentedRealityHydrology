@@ -23,6 +23,6 @@ public class Permissions {
 
     public static void requestPermission(Activity activity, String permissionType){
         int requestCode = DEFAULT_REQUEST_CODE;
-        ActivityCompat.requestPermissions(activity, new String[] {permissionType}, requestCode);
+        ActivityCompat.requestPermissions(activity, new String[]{permissionType}, requestCode);
     }
 }

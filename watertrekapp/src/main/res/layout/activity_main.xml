@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:layout_marginLeft="10dp"
-            android:text="Settings"
+            android:text="@string/settings"
             android:textColor="@color/white"
             android:textSize="30sp" />
 
@@ -80,7 +80,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="100dp"
             android:layout_marginLeft="10dp"
-            android:text="Show resources"
+            android:text="@string/showResources"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -149,7 +149,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="420dp"
             android:layout_marginLeft="10dp"
-            android:text="Range (km)"
+            android:text="@string/range"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -161,7 +161,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="140dp"
-            android:text="Mountains      "
+            android:text="@string/mountains"
             android:onClick="toggleMountain"
             android:textColor="@color/white"/>
 
@@ -174,7 +174,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="195dp"
-            android:text="Reservoirs      "
+            android:text="@string/reservoirs"
             android:onClick="toggleReservoir"
             android:textColor="@color/white"/>
 
@@ -186,7 +186,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="250dp"
-            android:text="Wells                "
+            android:text="@string/wells"
             android:onClick="toggleWell"
             android:checked="false"
             android:textColor="@color/white"/>
@@ -199,7 +199,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="305dp"
-            android:text="Rivers               "
+            android:text="@string/rivers"
             android:onClick="toggleRiver"
             android:textColor="@color/white"/>
 
@@ -211,7 +211,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="360dp"
-            android:text="Soil Moisture  "
+            android:text="@string/soilMoisture"
             android:onClick="toggleSoil"
             android:textColor="@color/white"/>
 

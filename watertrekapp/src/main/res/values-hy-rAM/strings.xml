@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Watertrek App</string>
+    <string name="showResources">Ցույց տալ ռեսուրսները</string>
+    <string name="settings">Կարգավորումներ</string>
+    <string name="range">Հեռավորությունը (km)</string>
+    <string name="mountains">Լեռները</string>
+    <string name="wells">Ջրերի ջրհորներ</string>
+    <string name="credentials">WaterTrek Հավատարմագրերը</string>
+    <string name="soilMoisture">Հողի խոնավություն</string>
+    <string name="rivers">Գետեր</string>
+    <string name="reservoirs">Ջուրաին Պահեստներ</string>
+</resources>
