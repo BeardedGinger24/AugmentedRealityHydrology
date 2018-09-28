@@ -37,8 +37,8 @@ public class Billboard implements Drawable {
 
     public static void init(){
         sGLProgramId = ShaderHelper.buildShaderProgram(vertexShaderSource, fragmentShaderSource);
-        //fillBuffersRect();
-        fillBufferCircle();
+        fillBuffersRect();//Modified by fugi
+        //fillBufferCircle();//Added by fugi
     }
 
     public void setTexture(int glTextureId){

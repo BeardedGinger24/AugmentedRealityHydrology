@@ -3,8 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AugmentedRealityHydrology.iml" filepath="$PROJECT_DIR$/AugmentedRealityHydrology.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AugmentedRealityHydrology.iml" filepath="$PROJECT_DIR$/AugmentedRealityHydrology.iml" />
+      <module fileurl="file://$PROJECT_DIR$/arlib/arlib.iml" filepath="$PROJECT_DIR$/arlib/arlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/arlib/arlib.iml" filepath="$PROJECT_DIR$/arlib/arlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/watertrekapp/watertrekapp.iml" filepath="$PROJECT_DIR$/watertrekapp/watertrekapp.iml" />
       <module fileurl="file://$PROJECT_DIR$/watertrekapp/watertrekapp.iml" filepath="$PROJECT_DIR$/watertrekapp/watertrekapp.iml" />
     </modules>
   </component>

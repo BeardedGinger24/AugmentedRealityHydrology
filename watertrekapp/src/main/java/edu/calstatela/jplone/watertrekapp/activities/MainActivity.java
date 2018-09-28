@@ -18,7 +18,9 @@ import java.util.List;
 import edu.calstatela.jplone.arframework.landmark.Landmark;
 import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
 import edu.calstatela.jplone.arframework.util.Orientation;
+import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
+import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     Button logout_button;
 
     private ArrayList<Well> wellList = new ArrayList<>();
+    private ArrayList<Reservoir> reservoirList = new ArrayList<>(); ///////////////////////////////////////added by Leo***
     private LandmarkTable mountainList = new LandmarkTable();
     int mountainPrefix = 2000000000;
 
@@ -140,6 +143,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }else{
             tReservoir = false;
         }
+        if(tReservoir)
+            addReservoirs();
+        else
+            removeReservoirs();
     }
 
     public void toggleWell(View v) {
@@ -284,8 +291,53 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     };
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //     Reservoir  Data Methods added by Leo *********************
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    private void addReservoirs(){
+        ReservoirService.getAllStorageValues(reservoirNetworkCallback);
+    }
+    private void removeReservoirs(){
+        for(Reservoir reservoir : reservoirList){
+            //Removes Reservoir  based on there unique ID or SiteNO
+            int id = Integer.parseInt(reservoir.getSiteNo());
+            arview.removeBillboard(id);
+        }
+        reservoirList.clear();
+    }
+
+    NetworkTask.NetworkCallback reservoirNetworkCallback = new NetworkTask.NetworkCallback() {
+
+        @Override
+        public void onResult(int type, String result) {
+            // variable loc gets current location based on gps longitude and lattitude
+            float[] loc = arview.getLocation();     // added by  leo
+            // Return reservior nearest to range once passed in currently hard coded
+            List<Reservoir> rreservoirList = ReservoirService.parseAllReservoirs(result , loc[0] , loc[1]); // change method
+            // for every reservoir obj  that is near me add it to reservoirList and add to Billboard in order to display it
+            for(Reservoir reservoirr : rreservoirList){
+
+                reservoirList.add(reservoirr);
+                arview.addBillboard(
+                        Integer.parseInt(reservoirr.getSiteNo()),
+                        R.drawable.reservoir_bb_icon,
+                        "Reservoir #" + reservoirr.getSiteNo(),
+                        "(" + reservoirr.getLat() + ", " + reservoirr.getLon() + ")",
+                        Float.parseFloat(reservoirr.getLat()), Float.parseFloat(reservoirr.getLon()), 0
+                );
 
 
+            }
+        }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////
+    ///
+    ///                             SEEKBAR/SLIDER FOR RANGE
+    ///
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
@@ -324,7 +376,19 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             DetailsActivity.launchDetailsActivity(this, "well", well.toString());
             return;
         }
-
+        //added  by leo
+        Reservoir  rL = null;
+        for(Reservoir r : reservoirList){
+            int rId = Integer.parseInt(r.getSiteNo());
+            if(rId == id) {
+                rL = r;
+                break;
+            }
+        }
+        if(rL != null) {
+            DetailsActivity.launchDetailsActivity(this, "reservior", rL.toString());
+            return;
+        }
 
         Landmark landmark = null;
         for(int i = 0; i < mountainList.size(); i++){
