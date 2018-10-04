@@ -6,7 +6,11 @@ buildscript {
         google()
     }
     dependencies {
+<<<<<<< HEAD
         classpath 'com.android.tools.build:gradle:3.1.2'
+=======
+        classpath 'com.android.tools.build:gradle:3.1.3'
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
 
         // NOTE: Do not place your application dependencies here; they belong

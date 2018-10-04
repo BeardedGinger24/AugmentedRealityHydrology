@@ -5,10 +5,22 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+<<<<<<< HEAD
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+=======
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.Switch;
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +28,13 @@ import java.util.List;
 import edu.calstatela.jplone.arframework.landmark.Landmark;
 import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
 import edu.calstatela.jplone.arframework.util.Orientation;
+<<<<<<< HEAD
 import edu.calstatela.jplone.watertrekapp.Data.Well;
+=======
+import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
+import edu.calstatela.jplone.watertrekapp.Data.Well;
+import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -38,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private boolean tWell = false;
     private boolean tRiver = false;
     private boolean tSoil = false;
+<<<<<<< HEAD
     private int radius = 20;
 
     private ArrayList<Well> wellList = new ArrayList<>();
@@ -45,6 +64,26 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     int mountainPrefix = 2000000000;
 
 
+=======
+
+    private Switch toggleSoil;
+    private Switch toggleRiver;
+    private Switch toggleMountain;
+    private Switch toggleWell;
+    private Switch toggleReservoir;
+
+    private int radius = 20;
+
+    Button login_button;
+    Button logout_button;
+
+    private ArrayList<Well> wellList = new ArrayList<>();
+    private ArrayList<Reservoir> reservoirList = new ArrayList<>(); ///////////////////////////////////////added by Leo***
+    private LandmarkTable mountainList = new LandmarkTable();
+    int mountainPrefix = 2000000000;
+
+    private boolean isLoggedIn = false;
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Activity Lifecycle
@@ -56,14 +95,35 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+<<<<<<< HEAD
         WatertrekCredentials credentials = new WatertrekCredentials(this);
         NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+=======
+        if(!isLoggedIn){
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
+        }else {
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+        }
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 
         drawerContentsLayout = (RelativeLayout)findViewById(R.id.whatYouWantInLeftDrawer);
         mainDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         radiusSeekBar = findViewById(R.id.seekBar);
         radiusSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
 
+<<<<<<< HEAD
+=======
+        login_button = (Button)findViewById(R.id.login_button);
+        logout_button = (Button)findViewById(R.id.logout_button);
+        toggleMountain = (Switch)findViewById(R.id.switch8);
+        toggleReservoir = (Switch)findViewById(R.id.switch11);
+        toggleWell = (Switch)findViewById(R.id.switch9);
+        toggleRiver = (Switch)findViewById(R.id.switch10);
+        toggleSoil = (Switch)findViewById(R.id.switch12);
+
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
@@ -72,6 +132,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainLayout.addView(arview);
 
         mountainList.loadMountains();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
     }
 
     @Override
@@ -97,8 +161,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
     public void toggleMountain(View v) {
+<<<<<<< HEAD
         tMountain = !tMountain;
 
+=======
+        if(isLoggedIn) {
+            tMountain = !tMountain;
+        }else{
+            tMountain = false;
+        }
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
         if(tMountain)
             addMountains();
         else
@@ -106,12 +178,32 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
     public void toggleReservoir(View v) {
+<<<<<<< HEAD
         tReservoir = !tReservoir;
     }
 
     public void toggleWell(View v) {
         tWell = !tWell;
 
+=======
+        if(isLoggedIn) {
+            tReservoir = !tReservoir;
+        }else{
+            tReservoir = false;
+        }
+        if(tReservoir)
+            addReservoirs();
+        else
+            removeReservoirs();
+    }
+
+    public void toggleWell(View v) {
+        if(isLoggedIn) {
+            tWell = !tWell;
+        }else{
+            tWell = false;
+        }
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
         if(tWell)
             addWells();
         else
@@ -119,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
     public void toggleRiver(View v) {
+<<<<<<< HEAD
         tRiver = !tRiver;
     }
 
@@ -127,16 +220,72 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
 
+=======
+        if(isLoggedIn) {
+            tRiver = !tRiver;
+        }else{
+            tRiver = false;
+        }
+    }
+
+    public void toggleSoil(View v) {
+        if(isLoggedIn) {
+            tSoil = !tSoil;
+        }else{
+            tSoil = false;
+        }
+    }
+
+    public void logout(View v){
+        isLoggedIn = false;
+        login_button.setVisibility(v.VISIBLE);
+        logout_button.setVisibility(v.GONE);
+
+        toggleReservoir(v);
+        toggleMountain(v);
+        toggleWell(v);
+        toggleSoil(v);
+        toggleRiver(v);
+
+        toggleRiver.setChecked(false);
+        toggleSoil.setChecked(false);
+        toggleWell.setChecked(false);
+        toggleMountain.setChecked(false);
+        toggleReservoir.setChecked(false);
+
+        toggleSwitches();
+    }
+    public void login (View v){
+        WatertrekCredentials credentials = new WatertrekCredentials(this);
+        CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
+//        login_button.setVisibility(v.GONE);
+//        logout_button.setVisibility(v.VISIBLE);
+//        isLoggedIn = true;
+//        toggleSwitches();
+
+    }
+
+    public void toggleSwitches(){
+        toggleReservoir.setClickable(isLoggedIn);
+        toggleRiver.setClickable(isLoggedIn);
+        toggleWell.setClickable(isLoggedIn);
+        toggleMountain.setClickable(isLoggedIn);
+        toggleSoil.setClickable(isLoggedIn);
+    }
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Credentials Methods
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
     public void launchWatertrekCredentials(View v){
         WatertrekCredentials credentials = new WatertrekCredentials(this);
         CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
     }
 
+=======
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == CREDENTIALS_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
@@ -146,6 +295,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             credentials.setUsername(newUsername);
             credentials.setPassword(newPassword);
             NetworkTask.updateWatertrekCredentials(newUsername, newPassword);
+<<<<<<< HEAD
+=======
+
+            login_button.setVisibility(View.GONE);
+            logout_button.setVisibility(View.VISIBLE);
+            isLoggedIn = true;
+            toggleSwitches();
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
         }
     }
 
@@ -205,8 +362,58 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     };
 
+<<<<<<< HEAD
 
 
+=======
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //     Reservoir  Data Methods added by Leo *********************
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    private void addReservoirs(){
+        ReservoirService.getAllStorageValues(reservoirNetworkCallback);
+    }
+    private void removeReservoirs(){
+        for(Reservoir reservoir : reservoirList){
+            //Removes Reservoir  based on there unique ID or SiteNO
+            int id = Integer.parseInt(reservoir.getSiteNo());
+            arview.removeBillboard(id);
+        }
+        reservoirList.clear();
+    }
+
+    NetworkTask.NetworkCallback reservoirNetworkCallback = new NetworkTask.NetworkCallback() {
+
+        @Override
+        public void onResult(int type, String result) {
+            // variable loc gets current location based on gps longitude and lattitude
+            float[] loc = arview.getLocation();     // added by  leo
+            // Return reservior nearest to range once passed in currently hard coded
+            List<Reservoir> rreservoirList = ReservoirService.parseAllReservoirs(result , loc[0] , loc[1]); // change method
+            // for every reservoir obj  that is near me add it to reservoirList and add to Billboard in order to display it
+            for(Reservoir reservoirr : rreservoirList){
+
+                reservoirList.add(reservoirr);
+                arview.addBillboard(
+                        Integer.parseInt(reservoirr.getSiteNo()),
+                        R.drawable.reservoir_bb_icon,
+                        "Reservoir #" + reservoirr.getSiteNo(),
+                        "(" + reservoirr.getLat() + ", " + reservoirr.getLon() + ")",
+                        Float.parseFloat(reservoirr.getLat()), Float.parseFloat(reservoirr.getLon()), 0
+                );
+
+
+            }
+        }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////
+    ///
+    ///                             SEEKBAR/SLIDER FOR RANGE
+    ///
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
@@ -245,7 +452,23 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             DetailsActivity.launchDetailsActivity(this, "well", well.toString());
             return;
         }
+<<<<<<< HEAD
 
+=======
+        //added  by leo
+        Reservoir  rL = null;
+        for(Reservoir r : reservoirList){
+            int rId = Integer.parseInt(r.getSiteNo());
+            if(rId == id) {
+                rL = r;
+                break;
+            }
+        }
+        if(rL != null) {
+            DetailsActivity.launchDetailsActivity(this, "reservoir", rL.toString());
+            return;
+        }
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 
         Landmark landmark = null;
         for(int i = 0; i < mountainList.size(); i++){

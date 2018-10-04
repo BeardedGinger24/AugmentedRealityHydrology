@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/map"
+        android:orderInCategory="1"
+        android:title="Map"
+        />
+    <item
+        android:id="@+id/history"
+        android:orderInCategory="2"
+        android:title="History"
+        />
+
+    <item
+        android:id="@+id/somethingelse"
+        android:orderInCategory="3"
+        android:title="Something Else?" />
+</menu>

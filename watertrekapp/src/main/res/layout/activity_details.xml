@@ -2,7 +2,11 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+<<<<<<< HEAD
     android:layout_height="match_parent"
+=======
+    android:layout_height="wrap_content"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
     android:orientation="vertical">
 
     <ImageView

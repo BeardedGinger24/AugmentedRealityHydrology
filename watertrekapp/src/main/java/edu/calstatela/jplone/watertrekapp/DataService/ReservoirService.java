@@ -1,6 +1,11 @@
 package edu.calstatela.jplone.watertrekapp.DataService;
 
 
+<<<<<<< HEAD
+=======
+import android.util.Log;
+
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +26,26 @@ public class ReservoirService {
     }
 
     //Invoke
+<<<<<<< HEAD
     public static void getAllStorageValues(NetworkTask.NetworkCallback callback, String site_no){
         String url ="https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no/"+ site_no+"/storage";
         //Log.d("URL", ""+url);
         NetworkTask nt = new NetworkTask(callback, Reservoir.ADDTL_ID);
+=======
+    public static void getAllStorageValues(NetworkTask.NetworkCallback callback){
+// example of source no 09096100
+        // use our longitude and latitude 3rd and 4th column  to filter site NO  and description 1st and 2nd column
+        // String url ="https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no/"+ site_no+"/storage";
+        String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no";        //Log.d("URL", ""+url);
+       // NetworkTask nt = new NetworkTask(callback, Reservoir.ADDTL_ID);
+        NetworkTask nt = new NetworkTask(callback, Reservoir.TYPE_ID);
+
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
         //Log.d("getSTRG", "In REST CALL");
         nt.execute(url);
     }
 
+<<<<<<< HEAD
     //Add created Reservoir objects to list and return.
     public static List parseAllReservoirs(String line){
         List<Reservoir> reservoirList = new ArrayList();
@@ -39,6 +56,64 @@ public class ReservoirService {
     }
 
     //Create Reservoir object. Read in one line and pass to constructor.
+=======
+    //////////////////////////HAVERSINE FORMULA//////////////added by leo from stackoverflow XD *************
+    public static double getDistanceFromLatLonInKm(double userLat,double userLon, double dataLat, double dataLon) {
+        int  R = 6371; // Radius of the earth in km
+        double  dLat = deg2rad(dataLat - userLat);  // deg2rad below
+        double  dLon = deg2rad(dataLon - userLon);
+        double  a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(deg2rad(userLat)) * Math.cos(deg2rad(dataLat)) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2)
+                ;
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = R * c; // Distance in km
+        return d;
+    }
+
+    public static double  deg2rad(double deg) {
+        return deg * (Math.PI/180);
+    }
+//////////////////////////////////////////////////////////////////////
+
+    //Add created Reservoir objects to list and return.
+    //hardcoded value to show reserviors of closest 100  km Reservior
+    //  becasue none within 25km where i live just pass range as a parameter to fix
+    public static List parseAllReservoirs(String line, float longitu, float lat ){
+        double mycurrLat = (double) lat;
+        double mycurrlong = (double) longitu;
+        // , float longitu, float lat
+//        double currlong =  (double) longitu;
+//        double currlat = (double) lat;
+        List<Reservoir> reservoirList = new ArrayList<Reservoir>();
+        // splits retrieved data by Enter key every Reservoir object starts in a new Line
+        String[] lines = line.split("\n");
+
+        for(int i=1; i<lines.length; i++) {
+            reservoirList.add(parseReservoir(lines[i]));
+            Log.d("Reser", "is adding ");
+        }
+        //reservoir Near filters all the data  to  distance  near km chosen
+        List<Reservoir> reservoirNear = new ArrayList<Reservoir>();
+        for(Reservoir rnm : reservoirList){
+            double laty =  Double.parseDouble(rnm.getLat());
+            double longy =  Double.parseDouble(rnm.getLon());
+            // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
+            // if less than or equal to range (100) add reserNear to List and return it back
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= 100)
+            {
+                reservoirNear.add(rnm);
+            }
+
+        }
+        return reservoirNear;
+
+    }
+
+    //Create Reservoir object. Read in one line and pass to constructor.
+    // parses every line of reservoir obj by Tab to seperate values and returns it back to parseAllReservoir
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
     public static Reservoir parseReservoir(String line){
         String[] rowEntry = line.split("\t");
         Reservoir reservoir = new Reservoir(rowEntry);

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+<?xml version="1.0" encoding="utf-8"?>
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.calstatela.jplone.watertrekapp">
 
@@ -11,6 +15,7 @@
         android:roundIcon="@mipmap/app_ico_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+<<<<<<< HEAD
 
 
         <activity android:name=".activities.SplashActivity" android:screenOrientation="portrait">
@@ -33,4 +38,30 @@
         <activity android:name=".activities.DetailsActivity" android:screenOrientation="portrait"/>
 
     </application>
+=======
+        <activity
+            android:name=".activities.SplashActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.CredentialsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.DetailsActivity"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.HistoryActivity"
+            android:parentActivityName=".activities.MainActivity"/>
+    </application>
+
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 </manifest>

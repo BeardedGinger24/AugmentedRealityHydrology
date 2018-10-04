@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Watertrek App</string>
+<<<<<<< HEAD
+=======
+    <string name="showResources">Show Resources</string>
+    <string name="settings">Settings</string>
+    <string name="range">Range (km)</string>
+    <string name="mountains">Mountains</string>
+    <string name="wells">Wells</string>
+    <string name="credentials">WaterTrek Credentials</string>
+    <string name="soilMoisture">Soil Moisture</string>
+    <string name="rivers">Rivers</string>
+    <string name="reservoirs">Reservoirs</string>
+    <string name="username">Username:</string>
+    <string name="password">Password:</string>
+    <string name="submit_button">Submit</string>
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 </resources>

@@ -5,4 +5,8 @@
     <color name="colorPrimaryDarkTrans">#510691b8</color>
     <color name="colorAccent">#05c3f9</color>
     <color name="white">#ffffff</color>
+<<<<<<< HEAD
+=======
+    <color name="green">#ff00ff00</color>
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 </resources>

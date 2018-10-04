@@ -37,6 +37,10 @@ public class Landmark {
 
     public boolean compare(Landmark landmark) {
         boolean equal = true;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
         if(!this.type.equals(landmark.type))
             equal = false;
         if(!this.title.equals(landmark.title))

@@ -71,7 +71,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:layout_marginLeft="10dp"
+<<<<<<< HEAD
             android:text="Settings"
+=======
+            android:text="@string/settings"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:textColor="@color/white"
             android:textSize="30sp" />
 
@@ -80,7 +84,11 @@
             android:layout_height="match_parent"
             android:layout_marginTop="100dp"
             android:layout_marginLeft="10dp"
+<<<<<<< HEAD
             android:text="Show resources"
+=======
+            android:text="@string/showResources"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -149,7 +157,11 @@
             android:layout_height="match_parent"
             android:layout_marginTop="420dp"
             android:layout_marginLeft="10dp"
+<<<<<<< HEAD
             android:text="Range (km)"
+=======
+            android:text="@string/range"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -161,7 +173,11 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="140dp"
+<<<<<<< HEAD
             android:text="Mountains      "
+=======
+            android:text="@string/mountains"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:onClick="toggleMountain"
             android:textColor="@color/white"/>
 
@@ -174,7 +190,11 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="195dp"
+<<<<<<< HEAD
             android:text="Reservoirs      "
+=======
+            android:text="@string/reservoirs"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:onClick="toggleReservoir"
             android:textColor="@color/white"/>
 
@@ -186,7 +206,11 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="250dp"
+<<<<<<< HEAD
             android:text="Wells                "
+=======
+            android:text="@string/wells"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:onClick="toggleWell"
             android:checked="false"
             android:textColor="@color/white"/>
@@ -199,7 +223,11 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="305dp"
+<<<<<<< HEAD
             android:text="Rivers               "
+=======
+            android:text="@string/rivers"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:onClick="toggleRiver"
             android:textColor="@color/white"/>
 
@@ -211,7 +239,11 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="80dp"
             android:layout_marginTop="360dp"
+<<<<<<< HEAD
             android:text="Soil Moisture  "
+=======
+            android:text="@string/soilMoisture"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:onClick="toggleSoil"
             android:textColor="@color/white"/>
 
@@ -289,17 +321,46 @@
 
         <!-- you can have many more widgets here like buttons or labels -->
 
+<<<<<<< HEAD
         <Button
             android:id="@+id/watertrek_credentials_button"
+=======
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/logout_button"
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="10dp"
             android:layout_marginTop="500dp"
+<<<<<<< HEAD
             android:text="Watertrek Credentials"
             android:onClick="launchWatertrekCredentials"
             android:textColor="@color/white"/>
+=======
+            android:text="Logout"
+            android:onClick="logout"
+            android:textColor="@color/green"/>
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="500dp"
+            android:text="Login"
+            android:onClick="login"
+            android:textColor="@color/green"/>
+        </LinearLayout>
+>>>>>>> 9402117896e1c8079f2e7c9d022485382c7d2224
 
     </RelativeLayout>
 
