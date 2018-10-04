@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,7 +23,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         ImageView imgData = findViewById(R.id.img_data);
 
-        switch(type){
+        switch (type) {
             case "well":
                 imgData.setImageResource(R.drawable.well_res_ico_clr);
                 break;
@@ -41,11 +44,45 @@ public class DetailsActivity extends AppCompatActivity {
         TextView txtData = findViewById(R.id.txt_data);
         txtData.setText(getIntent().getStringExtra("data"));
     }
+    //-----Added bu fugi that will display different data from watertrek-----
+    //Menu item with items (Map,History, etc...)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_details, menu);
+        return true;
+    }
 
-    public static void launchDetailsActivity(Activity currentActivity, String type, String data){
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.map) {
+            Intent intent = new Intent(this, DetailsActivity.class);
+            startActivity(intent);
+        } else if (item.getItemId() == R.id.history) {
+            Intent intent = new Intent(this, HistoryActivity.class);
+            startActivity(intent);
+        } else if (item.getItemId() == R.id.somethingelse) {
+            //change Activityclass to future activity
+            Intent intent = new Intent(this, DetailsActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public static void launchDetailsActivity(Activity currentActivity, String type, String data) {
         Intent intent = new Intent(currentActivity, DetailsActivity.class);
         intent.putExtra("type", type);
         intent.putExtra("data", data);
         currentActivity.startActivity(intent);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }
