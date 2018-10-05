@@ -376,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(well != null) {
-            DetailsActivity.launchDetailsActivity(this, "well", well.toString());
+            WellActivity.launchDetailsActivity(this,well);
             return;
         }
         //added  by leo
@@ -389,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(rL != null) {
-            DetailsActivity.launchDetailsActivity(this, "reservoir", rL.toString());
+           ReservoirActivity.launchDetailsActivity(this, rL);
             return;
         }
 
@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(landmark != null){
-            DetailsActivity.launchDetailsActivity(this, "mountain", landmark.title + "\n" + landmark.description);
+            MountainActivity.launchDetailsActivity(this, landmark);
         }
 
     }
