@@ -281,15 +281,20 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         @Override
         public void onResult(int type, String result) {
             List<Well> lWellList = WellService.parseWells(result);
-            for(Well well : lWellList){
-                wellList.add(well);
-                arview.addBillboard(
-                        Integer.parseInt(well.getMasterSiteId()),
-                        R.drawable.well_bb_icon,
-                        "Well #" + well.getMasterSiteId(),
-                        "(" + well.getLat() + ", " + well.getLon() + ")",
-                        Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()), 0
-                );
+            for (Well well : lWellList) {
+                try {
+                    int id = Integer.parseInt(well.getMasterSiteId());
+                    wellList.add(well);
+                    arview.addBillboard(
+                            id,
+                            R.drawable.well_bb_icon,
+                            "Well #" + well.getMasterSiteId(),
+                            "(" + well.getLat() + ", " + well.getLon() + ")",
+                            Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()), 0
+                    );
+                }catch(NumberFormatException e){
+
+                }
             }
         }
     };
@@ -370,10 +375,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         Well well = null;
         for(Well w : wellList){
             int wId = Integer.parseInt(w.getMasterSiteId());
-            if(wId == id) {
+            if (wId == id) {
                 well = w;
                 break;
             }
+
         }
         if(well != null) {
             WellActivity.launchDetailsActivity(this,well);
