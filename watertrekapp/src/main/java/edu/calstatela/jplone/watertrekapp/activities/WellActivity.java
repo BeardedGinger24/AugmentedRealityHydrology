@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -103,7 +106,7 @@ public class WellActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(@Nullable Bundle bundle) {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.vMap);
 
         mapFragment.getMapAsync(this);
     }
@@ -122,11 +125,11 @@ public class WellActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         initMap();
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
         centerMap();
     }
-    //Centers the map on the device
+    //Centers the map on the lat,lon
     private void centerMap() {
         if (mDefaultLocation != null) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation,15));
@@ -155,6 +158,9 @@ public class WellActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 15));
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(mDefaultLocation.latitude,mDefaultLocation.longitude))
+                .title("Well"));
 
     }
 
