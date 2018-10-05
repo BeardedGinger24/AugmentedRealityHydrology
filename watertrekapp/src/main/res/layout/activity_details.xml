@@ -10,7 +10,7 @@
         <!--android:layout_height="wrap_content"-->
         <!--android:id="@+id/img_data" />-->
     <fragment
-        android:id="@+id/map"
+        android:id="@+id/vMap"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="488dp"
