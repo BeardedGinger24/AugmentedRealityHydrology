@@ -22,6 +22,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.calstatela.jplone.arframework.landmark.Landmark;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -36,7 +37,7 @@ public class MountainActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
+        setContentView(R.layout.mountain_activity);
 
         float lat = Float.parseFloat(getIntent().getStringExtra("lat"));
         float lon = Float.parseFloat(getIntent().getStringExtra("lon"));
@@ -73,7 +74,7 @@ public class MountainActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     public static void launchDetailsActivity(Activity currentActivity, Landmark e) {
-        Intent intent = new Intent(currentActivity, ReservoirActivity.class);
+        Intent intent = new Intent(currentActivity, MountainActivity.class);
         intent.putExtra("data", e.toString());
         intent.putExtra("lat",e.latitude);
         intent.putExtra("lon",e.longitude);
@@ -156,6 +157,10 @@ public class MountainActivity extends AppCompatActivity implements OnMapReadyCal
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 15));
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(mDefaultLocation.latitude,mDefaultLocation.longitude))
+                .title("Mountain"));
+
 
     }
 

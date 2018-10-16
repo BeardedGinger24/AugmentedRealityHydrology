@@ -22,6 +22,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -36,7 +37,7 @@ public class ReservoirActivity extends AppCompatActivity implements OnMapReadyCa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
+        setContentView(R.layout.reservoir_activity);
 
         float lat = Float.parseFloat(getIntent().getStringExtra("lat"));
         float lon = Float.parseFloat(getIntent().getStringExtra("lon"));
@@ -130,7 +131,7 @@ public class ReservoirActivity extends AppCompatActivity implements OnMapReadyCa
     //Centers the map on the device
     private void centerMap() {
         if (mDefaultLocation != null) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation,15));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation,25));
         }
     }
     @Override
@@ -156,6 +157,10 @@ public class ReservoirActivity extends AppCompatActivity implements OnMapReadyCa
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 15));
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(mDefaultLocation.latitude,mDefaultLocation.longitude))
+                .title("Reservoir"));
+
 
     }
 

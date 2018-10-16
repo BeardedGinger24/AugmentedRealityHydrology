@@ -3,6 +3,7 @@ package edu.calstatela.jplone.arframework.graphics3d.helper;
 import edu.calstatela.jplone.arframework.util.VectorMath;
 
 public class MeshHelper {
+
     public static float[] pyramid(){
         return new float[]{
                 -0.5f, 0, -0.5f,

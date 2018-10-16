@@ -38,7 +38,7 @@ public class WellActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
+        setContentView(R.layout.well_activity);
 
         float lat = Float.parseFloat(getIntent().getStringExtra("lat"));
         float lon = Float.parseFloat(getIntent().getStringExtra("lon"));
@@ -106,7 +106,7 @@ public class WellActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(@Nullable Bundle bundle) {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.vMap);
+                .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
     }
@@ -156,7 +156,7 @@ public class WellActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mMap == null) {
             return;
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 25));
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(mDefaultLocation.latitude,mDefaultLocation.longitude))
