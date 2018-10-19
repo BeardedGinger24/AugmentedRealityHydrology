@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     int mountainPrefix = 2000000000;
 
     private boolean isLoggedIn = false;
+
+    private Button demo_btn;
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Activity Lifecycle
