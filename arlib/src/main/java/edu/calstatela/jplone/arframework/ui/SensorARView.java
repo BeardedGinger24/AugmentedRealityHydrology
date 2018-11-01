@@ -1,6 +1,7 @@
 package edu.calstatela.jplone.arframework.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
@@ -22,19 +23,26 @@ import edu.calstatela.jplone.arframework.util.Permissions;
 import edu.calstatela.jplone.arframework.util.VectorMath;
 
 
+
 public class SensorARView extends ARView {
     private static final String TAG = "waka-SensorARView";
 
     private ARSensor orientationSensor;
     private ARGps locationSensor;
+    private ARSensor rpySensor;
     private float[] currentOrientation;
     private float[] currentLocation;
+    private float[] currentrpy = null;
+    public String GX;
+    public String GY;
+    public String GZ;
 
     public SensorARView(Context context){
         super(context);
 
         setOnTouchListener(touchListener);
-
+        rpySensor = new ARSensor(context,ARSensor.ORIENTATION);
+        rpySensor.addListener(rpyListener);
         orientationSensor = new ARSensor(context, ARSensor.ROTATION_VECTOR);
         orientationSensor.addListener(orientationListener);
         locationSensor = new ARGps(context);
@@ -55,6 +63,10 @@ public class SensorARView extends ARView {
         return currentLocation;
     }
 
+    public float[] getrpy(){
+        return currentrpy;
+    }
+
 
 
 
@@ -68,12 +80,14 @@ public class SensorARView extends ARView {
         super.onPause();
         orientationSensor.stop();
         locationSensor.stop();
+        rpySensor.stop();
     }
 
     public void onResume(){
         super.onResume();
         orientationSensor.start();
         locationSensor.start();
+        rpySensor.start();
     }
 
     public boolean onTouch(View v, MotionEvent event){
@@ -118,6 +132,10 @@ public class SensorARView extends ARView {
             currentLocation[2] = (float)location.getAltitude();
 
             Log.d(TAG, "Location: " + VectorMath.vecToString(currentLocation));
+            Log.d(TAG, "Location: " +Float.toString(currentLocation[0]));
+            Log.d(TAG, "Location " + Float.toString(currentLocation[1]));
+            Log.d(TAG, "Location " + Float.toString(currentLocation[2]));
+
         }
     };
 
@@ -131,8 +149,52 @@ public class SensorARView extends ARView {
             currentOrientation[0] = event.values[0];
             currentOrientation[1] = event.values[1];
             currentOrientation[2] = event.values[2];
+            String TG = Float.toString(event.values[0]);
+             GX = Double.toString(event.values[0]* (180/Math.PI));
+            GY =Double.toString(event.values[1]* (180/Math.PI));
+             GZ = Double.toString(event.values[2]* (180/Math.PI));
+//            getGX(Gx);
+//            getGY(Gy);
+//            getGZ(Gz);
+
+        Log.d("sensory-GX: " , GX);
+        Log.d("sensory-GY: " , GY);
+        Log.d("sensory-GZ: " , GZ);
+            // this one is used
+//            Log.d("sensory","Rotation- Gx on the x-axis: " + Float.toString(currentOrientation[0]));
+//            Log.d("sensory","Rotation-Gy on the y-axis: " + Float.toString(currentOrientation[1]));
+//            Log.d("sensory", "Rotation-Gz on the z-axis: " +Float.toString(currentOrientation[2]));
+
+
+
 
         }
     };
+
+
+    private ARSensor.Listener rpyListener = new ARSensor.Listener(){
+        @Override
+        public void onSensorEvent(SensorEvent event){
+            if(currentrpy == null){
+                currentrpy = new float[3];
+            }
+
+            currentrpy[0] = event.values[0];
+            currentrpy[1] = event.values[1];
+            currentrpy[2] = event.values[2];
+           String  GZ2 = Float.toString(event.values[0]);
+            String GX2 = Float.toString(event.values[1]);
+           String GY2 = Float.toString(event.values[2]);
+
+
+            Log.d("ROLL: " , GZ2);
+            Log.d("PITCH: " , GX2);
+            Log.d("YAW " , GY2);
+
+
+        }
+    };
+
+
 
 }

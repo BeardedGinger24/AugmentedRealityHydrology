@@ -16,7 +16,9 @@ import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.VectorMath;
 
+
 public class BillboardView_sorting extends SensorARView{
+
 
     public BillboardView_sorting(Context context){
         super(context);
@@ -53,7 +55,10 @@ public class BillboardView_sorting extends SensorARView{
                 this.deviceOrientation = deviceOrientation;
                 break;
         }
-        Log.d(TAG, "deviceOrientation: " + deviceOrientation);
+        Log.d(TAG, "sensory: " + Integer.toString(deviceOrientation));
+//        Log.d("sensory-GX: " , GX);
+//        Log.d("sensory-GY: " , GY);
+//        Log.d("sensory-GZ: " , GZ);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

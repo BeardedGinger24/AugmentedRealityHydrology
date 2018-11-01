@@ -3,6 +3,7 @@ package edu.calstatela.jplone.arframework.ui;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -13,9 +14,12 @@ import edu.calstatela.jplone.arframework.util.GeoMath;
 public class SensorARActivity extends ARActivity {
 
     private ARSensor orientationSensor;
+    private ARSensor rpySensor;
     private ARGps locationSensor;
     private float[] currentOrientation = null;
     private float[] currentLocation = null;
+    private float[] currentrpy = null;
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -29,8 +33,12 @@ public class SensorARActivity extends ARActivity {
 
         orientationSensor = new ARSensor(this, ARSensor.ROTATION_VECTOR);
         orientationSensor.addListener(orientationListener);
+        rpySensor = new ARSensor(this,ARSensor.ORIENTATION);
+        rpySensor.addListener(rpyListener);
+
         locationSensor = new ARGps(this);
         locationSensor.addListener(locationListener);
+
 
         getARView().setOnTouchListener(touchListener);
     }
@@ -103,6 +111,21 @@ public class SensorARActivity extends ARActivity {
             currentOrientation[0] = event.values[0];
             currentOrientation[1] = event.values[1];
             currentOrientation[2] = event.values[2];
+
+        }
+    };
+
+    private ARSensor.Listener rpyListener = new ARSensor.Listener(){
+        @Override
+        public void onSensorEvent(SensorEvent event){
+            if(currentrpy == null){
+                currentrpy = new float[3];
+            }
+
+            currentrpy[0] = event.values[0];
+            currentrpy[1] = event.values[1];
+            currentrpy[2] = event.values[2];
+
         }
     };
 
@@ -116,6 +139,11 @@ public class SensorARActivity extends ARActivity {
     public float[] getOrientation(){
         return currentOrientation;
     }
+
+    public float[] getrpy(){
+        return currentrpy;
+    }
+
 
     public float[] getLocation(){
         return currentLocation;

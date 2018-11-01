@@ -10,8 +10,14 @@
 
     <!-- This layout is where the ARView will go -->
     <RelativeLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:id="@+id/bearingL"-->
+            <!--android:text="BEARINGLEFT"/>-->
         <FrameLayout
             android:id="@+id/ar_view_container"
             android:layout_width="match_parent"
@@ -42,6 +48,23 @@
             android:onClick="onMenuButtonClicked"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/gear_settings" />
+
+        <TextView
+            android:id="@+id/bearingL"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:layout_alignStart="@+id/bearingR"
+            android:layout_alignTop="@+id/menu_button"
+            android:text="BEARING-LEFT" />
+
+        <TextView
+            android:id="@+id/bearingR"
+            android:layout_width="97dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/menu_button"
+            android:layout_marginEnd="0dp"
+            android:text="BEARING-RIGHT" />
 
     </RelativeLayout>
 

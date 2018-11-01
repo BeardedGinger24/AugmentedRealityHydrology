@@ -1,6 +1,9 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +23,8 @@ import java.util.List;
 
 import edu.calstatela.jplone.arframework.landmark.Landmark;
 import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
+import edu.calstatela.jplone.arframework.ui.SensorARActivity;
+import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
@@ -32,12 +37,15 @@ import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 
 public class MainActivity extends AppCompatActivity implements BillboardView_sorting.TouchCallback{
+    private SensorManager mSensorManager;
+
     private static final String TAG = "waka-MainActivity";
     private static final int CREDENTIALS_ACTIVITY_REQUEST_CODE = 5;
 
     private RelativeLayout drawerContentsLayout;
     private DrawerLayout mainDrawerLayout;
     private BillboardView_sorting arview;
+    private SensorARView rpy;
     private SeekBar radiusSeekBar;
 
     private boolean tMountain = false;
@@ -73,6 +81,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ///****************
+        //CODES TO CHECK IF SENSOR EXIST
+//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+//        List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+//        Log.i("sensies" , deviceSensors.toString());
+
+
+        //$$$$$$$$$$$$
 
         if(!isLoggedIn){
             WatertrekCredentials credentials = new WatertrekCredentials(this);
@@ -94,10 +110,19 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleWell = (Switch)findViewById(R.id.switch9);
         toggleRiver = (Switch)findViewById(R.id.switch10);
         toggleSoil = (Switch)findViewById(R.id.switch12);
-
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
+//        rpy = new SensorARView(this);
+
+//        arview.getGX();
+//        arview.getGY();
+//        arview.getGZ();
+//        Log.d("sensory",GX);
+//        Log.d("sensory",arview.getGY());
+//        Log.d("sensory",arview.getGZ());
+
+
 
         FrameLayout mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
         mainLayout.addView(arview);

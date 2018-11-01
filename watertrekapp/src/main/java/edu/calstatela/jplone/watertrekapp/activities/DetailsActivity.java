@@ -7,8 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import edu.calstatela.jplone.watertrekapp.R;
 
@@ -43,6 +46,15 @@ public class DetailsActivity extends AppCompatActivity {
 
         TextView txtData = findViewById(R.id.txt_data);
         txtData.setText(getIntent().getStringExtra("data"));
+
+        Button yaButton = findViewById(R.id.cameraYa);
+        yaButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Code here executes on main thread after user presses button
+                Toast.makeText(DetailsActivity.this, "Rolling Ya Now", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
     //-----Added bu fugi that will display different data from watertrek-----
     //Menu item with items (Map,History, etc...)

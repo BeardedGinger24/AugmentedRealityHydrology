@@ -13,7 +13,7 @@ public class GeoMath {
     public static float metersPerDegreeLon = 111111;
     private static float[] referenceLLA = {34, -117, 0};
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////Converts raw data obtain from location sensor //////////////////////////////////////////////////////////////
 
     public static void setReference(float[] refLLA){
         referenceLLA[0] = refLLA[0];
