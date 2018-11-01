@@ -183,7 +183,7 @@ public class SensorARView extends ARView {
             currentrpy[1] = event.values[1];
             currentrpy[2] = event.values[2];
            String  GZ2 = Float.toString(event.values[0]);
-            String GX2 = Float.toString(event.values[1]);
+            String GX2 = Float.toString(event.values[1]/2);
            String GY2 = Float.toString(event.values[2]);
 
 
