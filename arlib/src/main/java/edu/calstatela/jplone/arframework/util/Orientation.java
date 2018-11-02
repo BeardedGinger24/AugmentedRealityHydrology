@@ -6,6 +6,7 @@ import android.view.Surface;
 public class Orientation {
     public static int getOrientationAngle(Activity activity){
         int orientationCode = activity.getWindowManager().getDefaultDisplay().getRotation();
+//        int orientationCode = activity.getWindowManager().getDefaultDisplay().getOrientation();
         switch(orientationCode){
             case Surface.ROTATION_0:
                 return 0;

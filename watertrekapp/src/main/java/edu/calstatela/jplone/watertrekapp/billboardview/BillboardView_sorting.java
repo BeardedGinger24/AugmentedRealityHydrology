@@ -1,5 +1,7 @@
 package edu.calstatela.jplone.watertrekapp.billboardview;
 
+
+
 import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -59,6 +61,18 @@ public class BillboardView_sorting extends SensorARView{
 //        Log.d("sensory-GX: " , GX);
 //        Log.d("sensory-GY: " , GY);
 //        Log.d("sensory-GZ: " , GZ);
+    }
+
+    public void setRollPitchYaw(int deviceOrientation){
+        switch(deviceOrientation){
+            case 0:
+            case 90:
+            case 180:
+            case 270:
+                this.deviceOrientation = deviceOrientation;
+                break;
+        }
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

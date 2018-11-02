@@ -1,29 +1,29 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.calstatela.jplone.arframework.landmark.Landmark;
 import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
-import edu.calstatela.jplone.arframework.ui.SensorARActivity;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
@@ -36,8 +36,13 @@ import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 
-public class MainActivity extends AppCompatActivity implements BillboardView_sorting.TouchCallback{
+
+public class MainActivity extends AppCompatActivity implements BillboardView_sorting.TouchCallback, SensorEventListener{
     private SensorManager mSensorManager;
+    private Sensor mRotationSensor;
+    private float[] currentrpy = null;
+    private static final int SENSOR_DELAY = 500 * 1000; // 500ms
+    private static final int FROM_RADS_TO_DEGS = -57;
 
     private static final String TAG = "waka-MainActivity";
     private static final int CREDENTIALS_ACTIVITY_REQUEST_CODE = 5;
@@ -81,12 +86,15 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ///****************
-        //CODES TO CHECK IF SENSOR EXIST
-//        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-//        List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-//        Log.i("sensies" , deviceSensors.toString());
 
+        ///****************
+        try {
+            mSensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
+            mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+            mSensorManager.registerListener(this, mRotationSensor, SENSOR_DELAY);
+        } catch (Exception e) {
+            Toast.makeText(this, "Problem With Sensors", Toast.LENGTH_LONG).show();
+        }
 
         //$$$$$$$$$$$$
 
@@ -113,14 +121,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
-//        rpy = new SensorARView(this);
 
-//        arview.getGX();
-//        arview.getGY();
-//        arview.getGZ();
-//        Log.d("sensory",GX);
-//        Log.d("sensory",arview.getGY());
-//        Log.d("sensory",arview.getGZ());
 
 
 
@@ -431,4 +432,43 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
 
     }
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+//            Pitch: (90 , -90)
+//            Bearing/yaw: (0 – 360) in degrees.
+//            roll is -90 to 90
+//            pitch is 180 to -180
+//            yaw is 0 to 270 or 360??
+
+//        Log.d("ROLL: " , GZ2); // goes from 0 to 360 evant value 0
+//        // this might be the yaw
+//        Log.d("PITCH: " , GX2); // goes from 90 to -90 event value 1 divide by two
+//        Log.d("YAW " , GY2); //quadrant 1 && 4 are negative and 2&& 3 are positive  X axis is 90  event value 2
+
+
+
+        float azimuth_angle = sensorEvent.values[0];
+        float pitch_angle = sensorEvent.values[1]/2;
+        float roll_angle = sensorEvent.values[2];
+        ((TextView)findViewById(R.id.bearingL)).setText("Pitch: "+ pitch_angle);
+        ((TextView)findViewById(R.id.bearingR)).setText("Roll: "+azimuth_angle);
+
+    }
+
+
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+
+
+
+
+
+    //*********
+
 }

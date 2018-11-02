@@ -1,26 +1,17 @@
 package edu.calstatela.jplone.arframework.ui;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PixelFormat;
 import android.hardware.SensorEvent;
 import android.location.Location;
-import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
 
 import edu.calstatela.jplone.arframework.sensor.ARGps;
 import edu.calstatela.jplone.arframework.sensor.ARSensor;
 import edu.calstatela.jplone.arframework.util.GeoMath;
-import edu.calstatela.jplone.arframework.util.Permissions;
 import edu.calstatela.jplone.arframework.util.VectorMath;
+//import edu.calstatela.jplone.watertrekapp.billboardview
 
 
 
@@ -185,11 +176,20 @@ public class SensorARView extends ARView {
            String  GZ2 = Float.toString(event.values[0]);
             String GX2 = Float.toString(event.values[1]/2);
            String GY2 = Float.toString(event.values[2]);
+//            Pitch: (90 , -90)
+//            Bearing/yaw: (0 – 360) in degrees.
+//            roll is -90 to 90
+//            pitch is 180 to -180
+//            yaw is 0 to 270 or 360??
+
+            Log.d("ROLL: " , GZ2); // goes from 0 to 360
+            // this might be the yaw
+            Log.d("PITCH: " , GX2); // goes from 90 to -90
+            Log.d("YAW " , GY2); //quadrant 1 && 4 are negative and 2&& 3 are positive  X axis is 90
 
 
-            Log.d("ROLL: " , GZ2);
-            Log.d("PITCH: " , GX2);
-            Log.d("YAW " , GY2);
+
+
 
 
         }

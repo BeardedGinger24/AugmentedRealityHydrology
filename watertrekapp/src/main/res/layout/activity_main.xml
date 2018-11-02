@@ -55,7 +55,8 @@
             android:layout_height="37dp"
             android:layout_alignStart="@+id/bearingR"
             android:layout_alignTop="@+id/menu_button"
-            android:text="BEARING-LEFT" />
+            android:text="BEARING-LEFT"
+            android:textColor="@android:color/holo_red_light" />
 
         <TextView
             android:id="@+id/bearingR"
@@ -64,7 +65,8 @@
             android:layout_alignParentEnd="true"
             android:layout_below="@+id/menu_button"
             android:layout_marginEnd="0dp"
-            android:text="BEARING-RIGHT" />
+            android:text="BEARING-RIGHT"
+            android:textColor="@android:color/holo_red_light" />
 
     </RelativeLayout>
 
