@@ -61,6 +61,8 @@ public class MountainActivity extends AppCompatActivity{
         Marker marker = new Marker(map);
         marker.setPosition(defaultLocation);
         marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
+        marker.setIcon(this.getDrawable(R.drawable.mtn_res_ico_clr));
+        marker.setTitle("Mountain: LatLon("+lat+","+lon+")");
 
         map.getOverlays().add(marker);
     }

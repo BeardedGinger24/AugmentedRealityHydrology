@@ -3,6 +3,9 @@ package edu.calstatela.jplone.watertrekapp.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -60,6 +63,8 @@ public class WellActivity extends AppCompatActivity{
         Marker marker = new Marker(map);
         marker.setPosition(defaultLocation);
         marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
+        marker.setIcon(this.getDrawable(R.drawable.well_res_ico_clr_marker));
+        marker.setTitle("Well: LatLon("+lat+","+lon+")");
 
         map.getOverlays().add(marker);
     }

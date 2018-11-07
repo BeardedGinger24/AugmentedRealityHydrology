@@ -404,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         Landmark landmark = null;
         for(int i = 0; i < mountainList.size(); i++){
             Landmark l = mountainList.get(i);
-            if(id == i + mountainPrefix){
+            if(id == i+mountainPrefix){
                 landmark = l;
                 break;
             }
