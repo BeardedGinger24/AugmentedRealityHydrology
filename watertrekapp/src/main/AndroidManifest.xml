@@ -56,6 +56,10 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBa_gtuzcQV57FHGAXufSRy5kCVnajU1Qs" />
 
+        <activity
+            android:name=".activities.MeshDemoActivity"
+            android:label="@string/title_activity_mesh_demo"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

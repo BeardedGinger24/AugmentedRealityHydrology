@@ -25,6 +25,7 @@ import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
+import edu.calstatela.jplone.watertrekapp.Images.GetImage;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private Switch toggleReservoir;
 
     private int radius = 20;
+
+    Button mesh_demo;
 
     Button login_button;
     Button logout_button;
@@ -88,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         radiusSeekBar = findViewById(R.id.seekBar);
         radiusSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        //mesh demo btn
+        mesh_demo = findViewById(R.id.mesh_demo);
 
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
@@ -180,6 +186,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }else{
             tSoil = false;
         }
+    }
+
+    //mesh on click
+    public void meshDemo(View view){
+        GetImage.launch(this);
     }
 
     public void logout(View v){
