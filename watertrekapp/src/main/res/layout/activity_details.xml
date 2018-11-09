@@ -18,10 +18,24 @@
         android:textSize="16sp"
         android:fontFamily="monospace"
         android:id="@+id/txt_data" />
+
     <Button
-        android:layout_width="match_parent"
+        android:id="@+id/historyButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/cameraYa"
-        android:text="ROLLPITCHYA!"/>
+        android:text="View History: " />
+
+
+    <!--<ListView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/list_data"-->
+        <!--/>-->
+
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/cameraYa"-->
+        <!--android:text="ROLLPITCHYA!"/>-->
 
 </LinearLayout>

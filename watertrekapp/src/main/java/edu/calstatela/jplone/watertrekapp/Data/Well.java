@@ -19,6 +19,7 @@ public class Well {
     public static final int MAX_ID = 4;
     public static final int MIN_ID = 5;
     public static final int STD_ID = 6;
+    public static final int DBGS_UNTIS = 7;
 
     //Primary Fields
     private String masterSiteId,

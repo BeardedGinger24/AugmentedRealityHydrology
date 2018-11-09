@@ -28,9 +28,11 @@ import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
+import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
@@ -40,9 +42,7 @@ import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 public class MainActivity extends AppCompatActivity implements BillboardView_sorting.TouchCallback, SensorEventListener{
     private SensorManager mSensorManager;
     private Sensor mRotationSensor;
-    private float[] currentrpy = null;
     private static final int SENSOR_DELAY = 500 * 1000; // 500ms
-    private static final int FROM_RADS_TO_DEGS = -57;
 
     private static final String TAG = "waka-MainActivity";
     private static final int CREDENTIALS_ACTIVITY_REQUEST_CODE = 5;
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private Switch toggleReservoir;
 
     private int radius = 20;
-
+    Button obstruct_button;
     Button login_button;
     Button logout_button;
 
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ///****************
+        ///$$$$$$$$$$$$$$$$$$$$$$$$for the roll pitch ya,
         try {
             mSensorManager = (SensorManager) getSystemService(Activity.SENSOR_SERVICE);
             mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             Toast.makeText(this, "Problem With Sensors", Toast.LENGTH_LONG).show();
         }
 
-        //$$$$$$$$$$$$
+        //$$$$$$$$$$$$$$$$$$$$$$$$
 
         if(!isLoggedIn){
             WatertrekCredentials credentials = new WatertrekCredentials(this);
@@ -153,6 +153,54 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     public void onMenuButtonClicked(View view) {
         mainDrawerLayout.openDrawer(drawerContentsLayout);
     }
+    // When Obstruction View button is clicked or called
+    public void obstructionClicked(View view){
+        String pitch =  String.valueOf(((TextView)findViewById(R.id.bearingL)).getText());
+        String roll = String.valueOf( ((TextView)findViewById(R.id.bearingR)).getText());
+//        Double currPitch = Double.parseDouble(pitch);
+//        Double currRoll = Double.parseDouble(roll);
+        // Retrieves curr location
+        float[] loc = arview.getLocation();
+        //Longitude
+        String longy = Float.toString(loc[1]);
+        //Lattitude
+        String laty = Float.toString(loc[0]);
+
+        Double currlat =  Double.parseDouble(laty);
+        Double currlong =  Double.parseDouble(longy);
+        ElevationObstructionService.getObstruction(obstructNetworkCallback,currlat,currlong,roll,pitch);
+//        Toast.makeText(this,  pitch + " " + roll, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this,  currlat, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this,  currlong, Toast.LENGTH_LONG).show();
+
+//        Log.d("obstruct",pitch);
+//        Log.d("obstruct","...");
+//        Log.d("obstruct",roll);
+        // call url request
+      //  ElevationObstructionService eoj = new ElevationObstructionService();
+        // NetworkTask.NetworkCallback callback, double latitude, double longitude , double bearing, double pitch
+      // eoj.getObstruction();
+    }
+
+
+    NetworkTaskJSON.NetworkCallback obstructNetworkCallback = new NetworkTaskJSON.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+//            List<Well> lWellList = WellService.parseWells(result);
+//            for(Well well : lWellList){
+//                wellList.add(well);
+//                arview.addBillboard(
+//                        Integer.parseInt(well.getMasterSiteId()),
+//                        R.drawable.well_bb_icon,
+//                        "Well #" + well.getMasterSiteId(),
+//                        "(" + well.getLat() + ", " + well.getLon() + ")",
+//                        Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()), 0
+//                );
+//            }
+//            Toast.makeText(getApplicationContext(),"heloo",Toast.LENGTH_LONG).show();
+            Log.d("JSON",result);
+        }
+    };
 
     public void toggleMountain(View v) {
         if(isLoggedIn) {
@@ -449,10 +497,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
 
         float azimuth_angle = sensorEvent.values[0];
+        String Roll = Float.toString(azimuth_angle);
+        ///2
         float pitch_angle = sensorEvent.values[1]/2;
+        String Pitch = Float.toString(-pitch_angle);
         float roll_angle = sensorEvent.values[2];
-        ((TextView)findViewById(R.id.bearingL)).setText("Pitch: "+ pitch_angle);
-        ((TextView)findViewById(R.id.bearingR)).setText("Roll: "+azimuth_angle);
+        //Pitch
+        ((TextView)findViewById(R.id.bearingL)).setText( Pitch);
+//        Log.d("JSON" , )
+        //ROll
+        ((TextView)findViewById(R.id.bearingR)).setText(Roll);
 
     }
 
@@ -472,3 +526,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //*********
 
 }
+
+
+
+

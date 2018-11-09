@@ -80,6 +80,15 @@ public class WellService {
         NetworkTask nt = new NetworkTask(callback, Well.STD_ID);
         nt.execute(url);
     }
+    public static void getDBGSunits(NetworkTask.NetworkCallback callback, String startDate , String endDate){
+        int masterSiteId = 91133;
+//        yr/month/day
+        // returns  history of depth below ground surface  DBGS
+        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/well/master_site_id/"+masterSiteId+"/dbgs/from/"+startDate+"/through/"+endDate);
+        NetworkTask nt = new NetworkTask(callback, Well.DBGS_UNTIS);
+        nt.execute(url);
+    }
+
 
     //Parse Functions\\
 
@@ -134,11 +143,26 @@ public class WellService {
             dbgsList.add(rowEntry[i]);
         }
 
+
+
         //Print list
 //        for(int i=0; i< dbgsList.size();i++){
 //            Log.d("Item", "INDEX "+i+" "+dbgsList.get(i));
 //        }
         return dbgsList;
+    }
+
+
+    public static List parseDBGSunits(String line){
+        Log.d("dbgs" , line);
+        List<String> unitList = new ArrayList();
+        String[] rowEntry = line.split("\n");
+
+        for(int i=0; i<rowEntry.length;i++){
+            unitList.add(rowEntry[i]);
+        }
+        return unitList;
+
     }
 
     public static List<Well> parseWells(String res) {

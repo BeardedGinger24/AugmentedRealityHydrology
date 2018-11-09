@@ -1,7 +1,5 @@
 package edu.calstatela.jplone.watertrekapp.NetworkUtils;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -12,10 +10,6 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
-
-import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
-
-import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 /**
  * Created by bill on 2/27/18.

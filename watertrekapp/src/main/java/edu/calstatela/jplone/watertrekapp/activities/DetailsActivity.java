@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import edu.calstatela.jplone.watertrekapp.R;
 
@@ -46,14 +45,19 @@ public class DetailsActivity extends AppCompatActivity {
 
         TextView txtData = findViewById(R.id.txt_data);
         txtData.setText(getIntent().getStringExtra("data"));
+    Button historyButton = (Button) findViewById(R.id.historyButton);
 
-        Button yaButton = findViewById(R.id.cameraYa);
-        yaButton.setOnClickListener(new View.OnClickListener() {
+
+        historyButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
             public void onClick(View v) {
-                // Code here executes on main thread after user presses button
-                Toast.makeText(DetailsActivity.this, "Rolling Ya Now", Toast.LENGTH_LONG).show();
+                 Intent intent = new Intent(DetailsActivity.this,
+                        HistoryActivity.class);
+                startActivity(intent); // startActivity allow you to move
             }
         });
+
 
     }
     //-----Added bu fugi that will display different data from watertrek-----
