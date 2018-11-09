@@ -182,10 +182,10 @@ public class SensorARView extends ARView {
 //            pitch is 180 to -180
 //            yaw is 0 to 270 or 360??
 
-            Log.d("ROLL: " , GZ2); // goes from 0 to 360
-            // this might be the yaw
-            Log.d("PITCH: " , GX2); // goes from 90 to -90
-            Log.d("YAW " , GY2); //quadrant 1 && 4 are negative and 2&& 3 are positive  X axis is 90
+//            Log.d("ROLL: " , GZ2); // goes from 0 to 360
+//            // this might be the yaw
+//            Log.d("PITCH: " , GX2); // goes from 90 to -90
+//            Log.d("YAW " , GY2); //quadrant 1 && 4 are negative and 2&& 3 are positive  X axis is 90
 
 
 
