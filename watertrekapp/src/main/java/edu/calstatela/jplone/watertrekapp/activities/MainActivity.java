@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     //mesh on click
     public void meshDemo(View view){
-        GetImage.launch(this);
+        MeshDemoActivity.launch(this);
     }
 
     public void logout(View v){

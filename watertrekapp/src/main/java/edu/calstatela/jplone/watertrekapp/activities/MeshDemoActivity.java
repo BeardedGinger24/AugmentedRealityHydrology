@@ -1,7 +1,9 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,6 +17,7 @@ import mil.nga.tiff.TiffReader;
 
 public class MeshDemoActivity extends AppCompatActivity {
 
+    @android.support.annotation.RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +29,13 @@ public class MeshDemoActivity extends AppCompatActivity {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        String x = getIntent().getStringExtra("path");
-        Log.d("Mesh",x+"");
+        File dir = new File("src/main/java/edu/calstatela/jplone/watertrekapp/Images");
+        Log.d("meshInfo",""+dir);
+        Log.d("meshinfo",""+dir.exists());
+    }
+
+    public static void launch(Activity currentActivity){
+        Intent intent = new Intent(currentActivity, MeshDemoActivity.class);
+        currentActivity.startActivity(intent);
     }
 }
