@@ -11,12 +11,15 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -52,31 +55,65 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-                GraphView graph = (GraphView) findViewById(R.id.graph);
+        // used to format dates
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("M-dd-yyyy");
+
+        // generate Dates
+        Calendar calendar = Calendar.getInstance();
+        Date d1 = calendar.getTime();
+        calendar.add(Calendar.DATE, 1);
+        Date d2 = calendar.getTime();
+        calendar.add(Calendar.DATE, 1);
+        Date d3 = calendar.getTime();
+
+        GraphView graph = (GraphView) findViewById(R.id.graph);
+
+        // populate series with DataPoints
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, 1),
-                new DataPoint(1, 5),
-                new DataPoint(2, 3),
-                new DataPoint(3, 2),
-                new DataPoint(4, 6)
+                new DataPoint(d1, 100),
+                new DataPoint(d2, 150),
+                new DataPoint(d3, 230)
         });
+
+
         // set manual X bounds
         graph.getViewport().setXAxisBoundsManual(true);
-        graph.getViewport().setMinX(0);
-        graph.getViewport().setMaxX(4);
+        graph.getViewport().setMinX(d1.getTime());
+        graph.getViewport().setMaxX(d3.getTime());
 
         // set manual Y bounds
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(1);
-        graph.getViewport().setMaxY(6);
+        graph.getViewport().setMinY(100);
+        graph.getViewport().setMaxY(200);
 
         // enable scaling and scrolling
         graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
         graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
 
+        // add a new series to the graph
         graph.addSeries(series);
 
+        // set title
+        graph.setTitle("DBGS vs. Time");
 
+        // custom label formatter to show feet "ft" and date
+        graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if (isValueX) {
+                    // show date for x values
+                    return simpleDateFormat.format(new Date((long)value));
+                } else {
+                    // show feet for y values
+                    return super.formatLabel(value, isValueX) + " ft";
+                }
+            }
+        });
+
+        // as we use dates as labels, the human rounding to nice readable numbers
+        graph.getGridLabelRenderer().setHumanRounding(false);
+        // count of the horizontal labels, that will be shown at one time
+        graph.getGridLabelRenderer().setNumHorizontalLabels(3);
 
     Button startButton = (Button)findViewById(R.id.sdate);
     startButton.setOnClickListener(new View.OnClickListener(){
