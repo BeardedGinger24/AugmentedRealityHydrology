@@ -499,7 +499,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         float azimuth_angle = sensorEvent.values[0];
         String Roll = Float.toString(azimuth_angle);
         ///2
-        float pitch_angle = sensorEvent.values[1]/2;
+        float pitch_angle = sensorEvent.values[1] + 90;
         String Pitch = Float.toString(-pitch_angle);
         float roll_angle = sensorEvent.values[2];
         //Pitch
