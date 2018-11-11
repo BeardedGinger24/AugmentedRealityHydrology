@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -65,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     int mountainPrefix = 2000000000;
 
     private boolean isLoggedIn = false;
-
-    private Button demo_btn;
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Activity Lifecycle
@@ -187,9 +182,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     }
 
-    //mesh on click
+    //MESHDEMO
     public void meshDemo(View view){
-        MeshDemoActivity.launch(this);
+        Intent intent = new Intent(this, DisplayMeshActivity.class);
+        startActivity(intent);
     }
 
     public void logout(View v){

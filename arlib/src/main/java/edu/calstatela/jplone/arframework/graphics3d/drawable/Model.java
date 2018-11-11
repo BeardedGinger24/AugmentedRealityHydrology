@@ -19,7 +19,7 @@ public class Model implements Drawable, Colorable{
 
     private static int mShaderProgram = -1;
     private int mNumVertices = 0;
-    private int mDrawingMode = GLES20.GL_TRIANGLES;
+    private int mDrawingMode = -1;
 
     private static final int FLOATS_PER_VERTEX = 3;
 

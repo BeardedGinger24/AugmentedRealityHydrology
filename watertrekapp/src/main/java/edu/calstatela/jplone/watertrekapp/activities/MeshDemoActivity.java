@@ -1,23 +1,25 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
-
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
-
+import android.opengl.GLES20;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import edu.calstatela.jplone.arframework.graphics3d.camera.Camera3D;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.ColorHolder;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
+import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
+import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
+import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
+import edu.calstatela.jplone.arframework.ui.SensorARActivity;
+import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
 import edu.calstatela.jplone.watertrekapp.Data.Vector3;
-import edu.calstatela.jplone.watertrekapp.R;
 import mil.nga.tiff.FileDirectory;
 import mil.nga.tiff.Rasters;
 import mil.nga.tiff.TIFFImage;
@@ -26,27 +28,11 @@ import mil.nga.tiff.TiffReader;
 import static java.lang.Math.log;
 import static java.lang.Math.sin;
 
-public class MeshDemoActivity extends AppCompatActivity {
-    String TAG = "MeshDemo";
-    ImageView imageView;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mesh_demo);
+public class MeshDemoActivity extends SensorARActivity{
+    public static class TiffPlanarTerrainMeshGenerator extends AsyncTask<String, Void, MeshData> {
+        String TAG = "MeshDemo";
 
-        TiffPlanarTerrainMeshGenerator task = new TiffPlanarTerrainMeshGenerator();
-        task.execute();
-    }
-
-    public static void launch(Activity currentActivity) {
-        Intent intent = new Intent(currentActivity, MeshDemoActivity.class);
-        currentActivity.startActivity(intent);
-    }
-
-
-    public class TiffPlanarTerrainMeshGenerator extends AsyncTask<String, Void, Vector3[]> {
         MeshData meshData = null;
-
         int baseDownSample = 10;
         int width = 0;
         int height = 0;
@@ -89,6 +75,7 @@ public class MeshDemoActivity extends AppCompatActivity {
         public String getURL(float lon, float lat) {
 
             String base = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/NLCDLandCover2001/ImageServer/exportImage?";
+            String size = "size=400%2C400&";
             String format = "format=tiff&";
             String pixelType = "pixelType=U8&";
             String noDataInterpretation = "noDataInterpretation=esriNoDataMatchAny&";
@@ -105,7 +92,7 @@ public class MeshDemoActivity extends AppCompatActivity {
             //        double maxY = y+bboxSpace;
             //String bbox = minX+","+minY+","+maxX+","+maxY;
             String bbox = "bbox=-15.0%2C56035.0%2C45.0%2C1180435.0&";
-            return base + bbox + format + pixelType + noDataInterpretation + interpolation + f;
+            return base + bbox + size + format + pixelType + noDataInterpretation + interpolation + f;
 
         }
 
@@ -122,9 +109,7 @@ public class MeshDemoActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Vector3[] doInBackground(String... strings) {
-            //passing dummy values for now
-            Bitmap bitmap = null;
+        protected MeshData doInBackground(String... strings) {
             InputStream inputStream = null;
 
             TIFFImage tiffImage = null;
@@ -134,7 +119,6 @@ public class MeshDemoActivity extends AppCompatActivity {
             try {
                 String url = getURL(0, 0);
                 inputStream = new URL(url).openStream();
-                //bitmap = BitmapFactory.decodeStream(inputStream);
 
                 tiffImage = TiffReader.readTiff(inputStream);
                 directories = tiffImage.getFileDirectories();
@@ -146,6 +130,7 @@ public class MeshDemoActivity extends AppCompatActivity {
 
             width = rasters.getWidth();
             height = rasters.getHeight();
+
             double maxHeight = 0;
             int index = 0;
 
@@ -164,7 +149,7 @@ public class MeshDemoActivity extends AppCompatActivity {
 
             for(Vector3 v : vector3s){
                 double midpoint_x = ((width/baseDownSample)/2)-1;
-                double midpoint_z = ((width/baseDownSample)/2)-1;
+                double midpoint_z = ((height/baseDownSample)/2)-1;
 
                 double temp_x = v.getX();
                 if(v.getX()<=midpoint_x){
@@ -174,7 +159,7 @@ public class MeshDemoActivity extends AppCompatActivity {
                 }
 
                 double temp = v.getY();
-                v.setY(temp/maxHeight);
+                v.setY(temp/(maxHeight*5));
 
                 double temp_z = v.getZ();
                 if(v.getZ()<=midpoint_z){
@@ -184,15 +169,16 @@ public class MeshDemoActivity extends AppCompatActivity {
                 }
             }
 
-            return vector3s;
+            int[] triangles = generateTriangles(width/baseDownSample,height/baseDownSample);
+            meshData = new MeshData(vector3s,triangles);
+
+            return meshData;
         }
 
         @Override
-        protected void onPostExecute(Vector3[] vector3s) {
-            super.onPostExecute(vector3s);
-            int[] triangles = generateTriangles(width/baseDownSample,height/baseDownSample);
-
-            meshData = new MeshData(vector3s,triangles);
+        protected void onPostExecute(MeshData meshData) {
+           super.onPostExecute(meshData);
         }
+
     }
 }

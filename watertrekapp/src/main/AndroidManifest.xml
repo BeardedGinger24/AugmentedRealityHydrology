@@ -57,9 +57,9 @@
             android:value="AIzaSyBa_gtuzcQV57FHGAXufSRy5kCVnajU1Qs" />
 
         <activity
-            android:name=".activities.MeshDemoActivity"
-            android:label="@string/title_activity_mesh_demo"
-            android:theme="@style/AppTheme"></activity>
+            android:name=".activities.MeshDemoActivity" />
+        <activity
+            android:name=".activities.DisplayMeshActivity" />
     </application>
 
 </manifest>
