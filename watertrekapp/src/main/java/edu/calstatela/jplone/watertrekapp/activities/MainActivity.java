@@ -19,6 +19,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -182,6 +186,29 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
       // eoj.getObstruction();
     }
 
+    public String parseNatCall(String JSONString) {
+        String elevation="Elevation: ";
+
+        // Parse for elevation
+        try {
+            JSONObject results = new JSONObject(JSONString);
+            String temp = results.getString("obstruction_point");
+            results = new JSONObject(temp);
+            elevation += results.getString("elevation");
+        } catch (JSONException e)  {
+            e.printStackTrace();
+        }
+
+        // Handle error string or append dimension.
+        if (elevation.equals("Elevation: ")) {
+            elevation = "Obstruction view = False";
+        } else {
+            elevation += " meters";
+        }
+
+        return elevation;
+    }
+
 
     NetworkTaskJSON.NetworkCallback obstructNetworkCallback = new NetworkTaskJSON.NetworkCallback() {
         @Override
@@ -199,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 //            }
 //            Toast.makeText(getApplicationContext(),"heloo",Toast.LENGTH_LONG).show();
             Log.d("JSON",result);
+            Toast.makeText(getApplicationContext(), parseNatCall(result),Toast.LENGTH_LONG).show();
         }
     };
 
