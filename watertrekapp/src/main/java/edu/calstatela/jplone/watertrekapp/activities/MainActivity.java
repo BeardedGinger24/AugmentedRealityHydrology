@@ -25,7 +25,6 @@ import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
-import edu.calstatela.jplone.watertrekapp.Images.GetImage;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
