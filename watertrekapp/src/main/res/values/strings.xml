@@ -12,4 +12,6 @@
     <string name="username">Username:</string>
     <string name="password">Password:</string>
     <string name="submit_button">Submit</string>
+    <string name="title_activity_demo">DemoActivity</string>
+    <string name="title_activity_mesh_demo">MeshDemoActivity</string>
 </resources>

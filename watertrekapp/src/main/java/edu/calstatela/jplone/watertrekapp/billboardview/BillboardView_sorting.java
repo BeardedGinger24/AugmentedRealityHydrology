@@ -17,6 +17,8 @@ import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.VectorMath;
+import edu.calstatela.jplone.watertrekapp.Data.MeshData;
+
 
 
 public class BillboardView_sorting extends SensorARView{
@@ -39,7 +41,13 @@ public class BillboardView_sorting extends SensorARView{
             mRemoveList.add(id);
         }
     }
-
+    public void addMesh(MeshData meshData){
+    }
+    public void removeMesh(int id){
+        synchronized(mRemoveList) {
+            mRemoveList.add(id);
+        }
+    }
     public interface TouchCallback{
         void onTouch(int id);
     }

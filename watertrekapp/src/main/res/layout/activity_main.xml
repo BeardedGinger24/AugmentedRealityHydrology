@@ -352,6 +352,17 @@
             android:text="Login"
             android:onClick="login"
             android:textColor="@color/green"/>
+            <Button
+                android:id="@+id/mesh_demo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="500dp"
+                android:text="MeshDemo"
+                android:onClick="meshDemo"
+                android:textColor="@color/green"/>
         </LinearLayout>
 
     </RelativeLayout>

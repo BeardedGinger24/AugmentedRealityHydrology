@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private Switch toggleReservoir;
 
     private int radius = 20;
+    Button mesh_demo;
     Button obstruct_button;
     Button login_button;
     Button logout_button;
@@ -114,6 +115,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         radiusSeekBar = findViewById(R.id.seekBar);
         radiusSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        //mesh demo btn
+        mesh_demo = findViewById(R.id.mesh_demo);
 
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
@@ -173,17 +177,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         Double currlat =  Double.parseDouble(laty);
         Double currlong =  Double.parseDouble(longy);
         ElevationObstructionService.getObstruction(obstructNetworkCallback,currlat,currlong,roll,pitch);
-//        Toast.makeText(this,  pitch + " " + roll, Toast.LENGTH_LONG).show();
-//        Toast.makeText(this,  currlat, Toast.LENGTH_LONG).show();
-//        Toast.makeText(this,  currlong, Toast.LENGTH_LONG).show();
 
-//        Log.d("obstruct",pitch);
-//        Log.d("obstruct","...");
-//        Log.d("obstruct",roll);
-        // call url request
-      //  ElevationObstructionService eoj = new ElevationObstructionService();
-        // NetworkTask.NetworkCallback callback, double latitude, double longitude , double bearing, double pitch
-      // eoj.getObstruction();
     }
 
     public String parseNatCall(String JSONString) {
@@ -213,18 +207,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     NetworkTaskJSON.NetworkCallback obstructNetworkCallback = new NetworkTaskJSON.NetworkCallback() {
         @Override
         public void onResult(int type, String result) {
-//            List<Well> lWellList = WellService.parseWells(result);
-//            for(Well well : lWellList){
-//                wellList.add(well);
-//                arview.addBillboard(
-//                        Integer.parseInt(well.getMasterSiteId()),
-//                        R.drawable.well_bb_icon,
-//                        "Well #" + well.getMasterSiteId(),
-//                        "(" + well.getLat() + ", " + well.getLon() + ")",
-//                        Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()), 0
-//                );
-//            }
-//            Toast.makeText(getApplicationContext(),"heloo",Toast.LENGTH_LONG).show();
             Log.d("JSON",result);
             Toast.makeText(getApplicationContext(), parseNatCall(result),Toast.LENGTH_LONG).show();
         }
@@ -280,6 +262,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }else{
             tSoil = false;
         }
+    }
+
+    //MESHDEMO
+    public void meshDemo(View view){
+        Intent intent = new Intent(this, DisplayMeshActivity.class);
+        startActivity(intent);
     }
 
     public void logout(View v){
@@ -383,15 +371,20 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         @Override
         public void onResult(int type, String result) {
             List<Well> lWellList = WellService.parseWells(result);
-            for(Well well : lWellList){
-                wellList.add(well);
-                arview.addBillboard(
-                        Integer.parseInt(well.getMasterSiteId()),
-                        R.drawable.well_bb_icon,
-                        "Well #" + well.getMasterSiteId(),
-                        "(" + well.getLat() + ", " + well.getLon() + ")",
-                        Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()), 0
-                );
+
+            for(Well well :lWellList){
+                try{
+                    int id = Integer.parseInt(well.getMasterSiteId());
+                    wellList.add(well);
+                    arview.addBillboard(id,
+                                         R.drawable.well_bb_icon,
+                                        "Well # "+ well.getMasterSiteId(),
+                                            "(" + well.getLat() + "," + well.getLon() + ")",
+                                        Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()),0
+                    );
+                }catch(NumberFormatException e){
+
+                }
             }
         }
     };
@@ -478,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(well != null) {
-            DetailsActivity.launchDetailsActivity(this, "well", well.toString());
+            WellActivity.launchDetailsActivity(this, well);
             return;
         }
         //added  by leo
@@ -491,7 +484,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(rL != null) {
-            DetailsActivity.launchDetailsActivity(this, "reservoir", rL.toString());
+            ReservoirActivity.launchDetailsActivity(this, rL);
             return;
         }
 
@@ -504,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(landmark != null){
-            DetailsActivity.launchDetailsActivity(this, "mountain", landmark.title + "\n" + landmark.description);
+            MountainActivity.launchDetailsActivity(this, landmark);
         }
 
     }

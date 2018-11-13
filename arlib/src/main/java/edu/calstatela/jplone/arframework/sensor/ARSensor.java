@@ -21,10 +21,7 @@ public class ARSensor {
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
-    //$$$$$$$$$$$$$$$$$$$$$$
-//    private Sensor mOrientaionSensor;
 
-    //$$$$$$$$$$$$$$$$
     private ArrayList<Listener> mListenerList = new ArrayList<Listener>();
 
     public ARSensor(Context context, int sensorCode){
