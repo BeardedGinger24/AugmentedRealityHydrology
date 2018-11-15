@@ -25,6 +25,7 @@ private ImageView iv;
 
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_LOCATION = 1;
+    private static final int REQUEST_STORAGE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,11 @@ private ImageView iv;
         if(!Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
             //Permissions.requestPermission(this, Permissions.PERMISSION_CAMERA);
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+            havePermissions = false;
+        }
+        if(!Permissions.havePermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE)){
+            //Permissions.requestPermission(this, Permissions.PERMISSION_CAMERA);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE);
             havePermissions = false;
         }
         if(!havePermissions)
@@ -84,6 +90,11 @@ private ImageView iv;
                 startActivity(getIntent());
             }
         } else if(requestCode == REQUEST_CAMERA){
+            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                finish();
+                startActivity(getIntent());
+            }
+        } else if(requestCode == REQUEST_STORAGE){
             if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 finish();
                 startActivity(getIntent());
