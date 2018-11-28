@@ -87,7 +87,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/crosshair" />
+            app:srcCompat="@drawable/ic_add_black_24dp" />
 
     </RelativeLayout>
 
