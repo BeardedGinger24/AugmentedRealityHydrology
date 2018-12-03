@@ -47,12 +47,11 @@ public class LitModel implements Drawable, Colorable{
                     "}                                                                      ";
 
     private static final String fragmentShaderCode =
-            "precision mediump float;           " +
-                    "varying vec4 vColor;               " +
-                    "                                   " +
-                    "void main() {                      " +
-                    "  gl_FragColor = vColor;           " +
-                    "}                                  ";
+            "precision mediump float;" +
+            "varying vec4 vColor;" +
+            "void main() {                      " +
+            "  gl_FragColor = vColor;           " +
+            "}                                  ";
 
 
 

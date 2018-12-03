@@ -37,7 +37,7 @@ public class MeshDemoActivity extends SensorARActivity{
             // one less than the vertex counts in the respective dimensions.
             int hQuadCount = hVertCount - 1;
             int vQuadCount = vVertCount - 1;
-            int[] result = new int[6 * hQuadCount * vQuadCount];
+            int[] result = new int[6 * hQuadCount* vQuadCount];
             int startIndex = 0;
             for (int y = 0; y < vQuadCount; y++) {
                 for (int x = 0; x < hQuadCount; x++) {
@@ -45,14 +45,21 @@ public class MeshDemoActivity extends SensorARActivity{
                     int rt = lt + 1;
                     int lb = lt + hVertCount;
                     int rb = lb + 1;
-                    // TODO Alternate the triangle orientation of each consecutive quad.
+
+//                    result[startIndex] = lt;
+//                    result[startIndex + 1] = lb;
+//                    result[startIndex + 2] = rb;
+//                    result[startIndex + 3] = rb;
+//                    result[startIndex + 4] = rt;
+//                    result[startIndex + 5] = lt;
                     result[startIndex] = lt;
-                    result[startIndex + 1] = lb;
+                    result[startIndex + 1] = rt;
                     result[startIndex + 2] = rb;
                     result[startIndex + 3] = rb;
-                    result[startIndex + 4] = rt;
+                    result[startIndex + 4] = lb;
                     result[startIndex + 5] = lt;
                     startIndex += 6;
+
                 }
             }
             return result;
@@ -128,7 +135,7 @@ public class MeshDemoActivity extends SensorARActivity{
                     v.setX(((temp_x-midpoint_x)/midpoint_x));
                 }
                 double temp = v.getY();
-                v.setY(temp/(maxHeight*5));
+                v.setY(temp/(maxHeight));
                 double temp_z = v.getZ();
                 if(v.getZ()<=midpoint_z){
                     v.setZ(-((midpoint_z-temp_z)/midpoint_z));

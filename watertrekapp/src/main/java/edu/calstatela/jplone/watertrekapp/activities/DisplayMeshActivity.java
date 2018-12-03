@@ -3,8 +3,10 @@ import java.util.concurrent.ExecutionException;
 import edu.calstatela.jplone.arframework.graphics3d.camera.Camera3D;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.ColorHolder;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.LitModel;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
+import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARActivity;
 import edu.calstatela.jplone.arframework.util.Orientation;
@@ -44,21 +46,25 @@ public class DisplayMeshActivity extends SensorARActivity{
         }
         Model mesh = new Model();
         mesh.loadVertices(verts);
+        //mesh.loadNormals(MeshHelper.calculateNormals(verts));
         mesh.setDrawingModeTriangles();
-        ColorHolder purple = new ColorHolder(mesh, new float[]{1, 0, 1, 1});
+        ColorHolder purple = new ColorHolder(mesh, new float[]{1, 0, 1, 0.01f});
         entity1 = scene.addDrawable(purple);
-        entity1.setPosition(0, -0.5f, 2);
+        entity1.setPosition(-0.2f, -0.01f, -0.9f);
+        entity1.yaw(10);
+
         Model wireFrame = new Model();
         wireFrame.loadVertices(verts);
-        wireFrame.setDrawingModeLineStrip();
-        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,1});
+        wireFrame.setDrawingModeLines();
+        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,0.01f});
         entity2 = scene.addDrawable(black);
-        entity2.setPosition(0,-0.5f,2);
+        entity2.setPosition(-0.2f,-0.01f,-0.9f);
+        entity2.yaw(10);
     }
     @Override
     public void GLResize(int width, int height) {
         super.GLResize(width, height);
-        camera.setPerspective(60, (float)width / height, 0.01f, 100000000f);
+        camera.setPerspective(60, (float)width / height, 0.01f, 100000f);
         camera.setViewport(0, 0, width, height);
     }
     @Override
@@ -74,8 +80,8 @@ public class DisplayMeshActivity extends SensorARActivity{
         }
         /* Update Entities/Scenes */
         //this will rotate the entity on the specified axis
-        entity1.yaw(0.5f);
-        entity2.yaw(0.5f);
+//        entity1.yaw(0.5f);
+//        entity2.yaw(0.5f);
         /* Draw */
         scene.draw(camera.getProjectionMatrix(), camera.getViewMatrix());
     }

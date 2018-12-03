@@ -57,6 +57,10 @@ public class Model implements Drawable, Colorable{
         mDrawingMode = GLES20.GL_TRIANGLES;
     }
 
+    public void  setDrawingModeTriangleStrip() { mDrawingMode = GLES20.GL_TRIANGLE_STRIP;}
+
+    public void setDrawingModeLines(){ mDrawingMode = GLES20.GL_LINES;}
+
 
     @Override
     public void draw(float[] MVPMatrix){
