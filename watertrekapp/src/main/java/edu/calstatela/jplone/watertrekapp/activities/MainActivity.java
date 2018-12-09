@@ -18,8 +18,6 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -267,6 +265,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //MESHDEMO
     public void meshDemo(View view){
         Intent intent = new Intent(this, DisplayMeshActivity.class);
+        float[] loc = arview.getLocation();
+        intent.putExtra("lat",loc[0]+"");
+        intent.putExtra("lon",loc[1]+"");
+        intent.putExtra("baseUrl",getString(R.string.demurl));
         startActivity(intent);
     }
 

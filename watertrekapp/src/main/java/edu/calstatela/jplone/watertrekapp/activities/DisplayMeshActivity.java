@@ -1,23 +1,24 @@
 package edu.calstatela.jplone.watertrekapp.activities;
+import android.util.Log;
+
 import java.util.concurrent.ExecutionException;
 import edu.calstatela.jplone.arframework.graphics3d.camera.Camera3D;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.ColorHolder;
-import edu.calstatela.jplone.arframework.graphics3d.drawable.LitModel;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
-import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARActivity;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
+
 public class DisplayMeshActivity extends SensorARActivity{
+    String TAG = "Mesh-Activity";
     private Camera3D camera;
     private Entity entity1,entity2;
     private Scene scene;
     MeshData meshData = null;
-    MeshDemoActivity.TiffPlanarTerrainMeshGenerator asyncTask =new MeshDemoActivity.TiffPlanarTerrainMeshGenerator();
-    @Override
+    MeshDemo.TiffPlanarTerrainMeshGenerator asyncTask =new MeshDemo.TiffPlanarTerrainMeshGenerator();
     public void GLInit() {
         super.GLInit();
         Billboard.init();
@@ -25,7 +26,11 @@ public class DisplayMeshActivity extends SensorARActivity{
         entity1 = null;
         entity2 = null;
         camera = new Camera3D();
-        asyncTask.execute();
+
+        String lon = getIntent().getStringExtra("lon");
+        String lat = getIntent().getStringExtra("lat");
+        String baseUrl = getIntent().getStringExtra("baseUrl");
+        asyncTask.execute(lon,lat,baseUrl);
         try {
             meshData = asyncTask.get();
         } catch (InterruptedException e) {
@@ -46,25 +51,24 @@ public class DisplayMeshActivity extends SensorARActivity{
         }
         Model mesh = new Model();
         mesh.loadVertices(verts);
-        //mesh.loadNormals(MeshHelper.calculateNormals(verts));
         mesh.setDrawingModeTriangles();
         ColorHolder purple = new ColorHolder(mesh, new float[]{1, 0, 1, 0.01f});
         entity1 = scene.addDrawable(purple);
-        entity1.setPosition(-0.2f, -0.01f, -0.9f);
-        entity1.yaw(10);
+        entity1.setPosition(0f, -meshData.UserElevation, 0f);
+        //entity1.yaw(0);
 
         Model wireFrame = new Model();
         wireFrame.loadVertices(verts);
         wireFrame.setDrawingModeLines();
-        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,0.01f});
+        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,1f});
         entity2 = scene.addDrawable(black);
-        entity2.setPosition(-0.2f,-0.01f,-0.9f);
-        entity2.yaw(10);
+        entity2.setPosition(0f,-meshData.UserElevation,0f);
+        //entity2.yaw(0);
     }
     @Override
     public void GLResize(int width, int height) {
         super.GLResize(width, height);
-        camera.setPerspective(60, (float)width / height, 0.01f, 100000f);
+        camera.setPerspective(60, (float)width / height, 0.001f, 100000f);
         camera.setViewport(0, 0, width, height);
     }
     @Override
@@ -78,10 +82,6 @@ public class DisplayMeshActivity extends SensorARActivity{
 //                camera.setLatLonAlt(currentLocation);
 //                Log.d(TAG, "setting camera orientation");
         }
-        /* Update Entities/Scenes */
-        //this will rotate the entity on the specified axis
-//        entity1.yaw(0.5f);
-//        entity2.yaw(0.5f);
         /* Draw */
         scene.draw(camera.getProjectionMatrix(), camera.getViewMatrix());
     }
