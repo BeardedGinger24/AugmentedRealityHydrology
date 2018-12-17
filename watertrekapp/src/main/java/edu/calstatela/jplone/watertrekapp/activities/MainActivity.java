@@ -101,6 +101,19 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         //$$$$$$$$$$$$$$$$$$$$$$$$
 
+
+        // Check to see if the user is already logged in
+        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
+        String userName = credentialsTest.getUsername();
+        String passWord = credentialsTest.getPassword();
+        if(!userName.isEmpty() && !passWord.isEmpty()){
+            Log.d("USERNAME", "username: " + userName);
+            Log.d("PASSWORD", "password: " + passWord);
+
+            isLoggedIn = true;
+        }
+
+
         if(!isLoggedIn){
             WatertrekCredentials credentials = new WatertrekCredentials(this);
             CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
@@ -142,12 +155,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     protected void onPause() {
         super.onPause();
         arview.onPause();
+        mSensorManager.unregisterListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         arview.onResume();
+        mSensorManager.registerListener(this, mRotationSensor, SENSOR_DELAY);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -318,15 +333,17 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(requestCode == CREDENTIALS_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
             String newUsername = data.getStringExtra("username");
             String newPassword = data.getStringExtra("password");
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            credentials.setUsername(newUsername);
-            credentials.setPassword(newPassword);
-            NetworkTask.updateWatertrekCredentials(newUsername, newPassword);
+                WatertrekCredentials credentials = new WatertrekCredentials(this);
+                credentials.setUsername(newUsername);
+                credentials.setPassword(newPassword);
+                NetworkTask.updateWatertrekCredentials(newUsername, newPassword);
 
-            login_button.setVisibility(View.GONE);
-            logout_button.setVisibility(View.VISIBLE);
-            isLoggedIn = true;
-            toggleSwitches();
+                login_button.setVisibility(View.GONE);
+                logout_button.setVisibility(View.VISIBLE);
+                isLoggedIn = true;
+                toggleSwitches();
+
+
         }
     }
 
@@ -520,16 +537,39 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
 
         float azimuth_angle = sensorEvent.values[0];
-        String Roll = Float.toString(azimuth_angle);
+        String Roll = Integer.toString((int) azimuth_angle);
         ///2
         float pitch_angle = sensorEvent.values[1] + 90;
-        String Pitch = Float.toString(-pitch_angle);
+        String Pitch = Integer.toString((int) -pitch_angle);
         float roll_angle = sensorEvent.values[2];
+
+        // Cardinal Directions to be displayed with Roll
+        int rollInt = Integer.parseInt(Roll);
+        String direction = "";
+        if(rollInt > 360 - (22) || rollInt < (22)){
+            direction = "N";
+        } else if (rollInt > 90 - (22) && rollInt < 90 + (22)) {
+            direction = "E";
+        } else if (rollInt > 180 - (22) && rollInt < 180 + (22)) {
+            direction = "S";
+        } else if (rollInt > 270 - (22) && rollInt < 270 + (22)) {
+            direction = "W";
+        } else if (rollInt > 45 - (23) && rollInt < 45 + (23)) {
+            direction = "NE";
+        } else if (rollInt > 135 - (23) && rollInt < 135 + (23)) {
+            direction = "SE";
+        } else if (rollInt > 225 - (23) && rollInt < 225 + (23)) {
+            direction = "SW";
+        } else if (rollInt > 315 - (23) && rollInt < 315 + (23)) {
+            direction = "NW";
+        }
+
+
         //Pitch
-        ((TextView)findViewById(R.id.bearingL)).setText( Pitch);
+        ((TextView)findViewById(R.id.bearingL)).setText(Pitch);
 //        Log.d("JSON" , )
         //ROll
-        ((TextView)findViewById(R.id.bearingR)).setText(Roll);
+        ((TextView)findViewById(R.id.bearingR)).setText(direction + " " + Roll);
 
     }
 

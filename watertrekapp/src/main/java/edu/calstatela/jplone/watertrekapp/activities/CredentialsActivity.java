@@ -4,7 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -16,9 +21,11 @@ import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 public class CredentialsActivity extends Activity{
     private static final String TAG = "waka-credentials";
 
-    EditText mUsernameEditText;
-    EditText mPasswordEditText;
+    TextInputEditText mUsernameEditText;
+    TextInputEditText mPasswordEditText;
     Button mSubmitButton;
+    TextInputLayout mUsernameLayout;
+    TextInputLayout mPasswordLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,11 +57,17 @@ public class CredentialsActivity extends Activity{
 //        passwordLayout.addView(passwordTextView);
 //        passwordLayout.addView(passwordEditText);
 
-        mUsernameEditText = (EditText) findViewById(R.id.et_username);
-        mPasswordEditText = (EditText) findViewById(R.id.et_password);
+        mUsernameEditText = (TextInputEditText) findViewById(R.id.et_username);
+        mPasswordEditText = (TextInputEditText) findViewById(R.id.et_password);
+
+        mUsernameLayout = (TextInputLayout) findViewById(R.id.username_layout);
+        mPasswordLayout = (TextInputLayout) findViewById(R.id.password_layout);
 
         mSubmitButton = (Button) findViewById(R.id.b_submit_credentials);
         mSubmitButton.setOnClickListener(buttonListener);
+
+        mUsernameEditText.addTextChangedListener(new MyTextWatcher(mUsernameEditText));
+        mPasswordEditText.addTextChangedListener(new MyTextWatcher(mPasswordEditText));
 
 //        verticalLayout.addView(sectionTitleTextView);
 //        verticalLayout.addView(usernameLayout);
@@ -81,20 +94,89 @@ public class CredentialsActivity extends Activity{
             String usernameString = mUsernameEditText.getText().toString();
             String passwordString = mPasswordEditText.getText().toString();
 
-            Intent intent = new Intent();
-            intent.putExtra("username", usernameString);
-            intent.putExtra("password", passwordString);
-            setResult(RESULT_OK, intent);
+//            if(usernameString.equals("") || usernameString.isEmpty()){
+//
+//            } else if (passwordString.equals("") || passwordString.isEmpty()){
+//
+//            }
 
-            finish();
+            if(submitForm()) {
+                Intent intent = new Intent();
+                intent.putExtra("username", usernameString);
+                intent.putExtra("password", passwordString);
+                setResult(RESULT_OK, intent);
+
+                finish();
+            }
+
+
         }
     };
+
+    private boolean submitForm() {
+        if (!validateUsername()) { return false; }
+        if (!validatePassword()) { return false; }
+
+        return true;
+    }
+
+    private boolean validateUsername() {
+        String username = mUsernameEditText.getText().toString().trim();
+
+        if(username.isEmpty()){
+            mUsernameEditText.setError("Please Enter a Username");
+            requestFocus(mUsernameEditText);
+            return false;
+        } else {
+            mUsernameLayout.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+
+    private boolean validatePassword() {
+        String password = mPasswordEditText.getText().toString().trim();
+
+        if(password.isEmpty()){
+            mPasswordEditText.setError("Please Enter a Password");
+            requestFocus(mPasswordEditText);
+            return false;
+        } else {
+            mPasswordLayout.setErrorEnabled(false);
+        }
+
+        return true;
+    }
 
     public static void launch(Activity currentActivity, String defaultUsername, String defaultPassword, int requestCode){
         Intent intent = new Intent(currentActivity, CredentialsActivity.class);
         intent.putExtra("username", defaultUsername);
         intent.putExtra("password", defaultPassword);
         currentActivity.startActivityForResult(intent, requestCode);
+    }
+
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+    }
+
+    private class MyTextWatcher implements TextWatcher {
+
+        private View view;
+
+        private MyTextWatcher(View view) {
+            this.view = view;
+        }
+
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void afterTextChanged(Editable editable) {
+        }
     }
 
 }
