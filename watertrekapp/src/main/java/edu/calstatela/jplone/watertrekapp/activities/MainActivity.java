@@ -2,17 +2,20 @@ package edu.calstatela.jplone.watertrekapp.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private Switch toggleMountain;
     private Switch toggleWell;
     private Switch toggleReservoir;
+
+    private ImageButton ibWell, ibRiver, ibReservoir, ibSoilMoisture, ibMtn;
 
     private int radius = 20;
     Button mesh_demo;
@@ -129,6 +134,18 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         //mesh demo btn
         mesh_demo = findViewById(R.id.mesh_demo);
+
+        ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
+        ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
+        ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
+        ibSoilMoisture = (ImageButton) findViewById(R.id.imageButton_Soil_Moisture);
+        ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
+
+        ibWell.setBackgroundTintMode(null);
+        ibMtn.setBackgroundTintMode(null);
+        ibSoilMoisture.setBackgroundTintMode(null);
+        ibReservoir.setBackgroundTintMode(null);
+        ibRiver.setBackgroundTintMode(null);
 
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
@@ -231,10 +248,18 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }else{
             tMountain = false;
         }
-        if(tMountain)
+
+        if(tMountain){
             addMountains();
-        else
+            ibMtn.setBackgroundTintMode(PorterDuff.Mode.SRC);
+            ibMtn.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+            toggleMountain.setChecked(true);
+        } else{
             removeMountains();
+            ibMtn.setBackgroundTintMode(null);
+            toggleMountain.setChecked(false);
+        }
+
     }
 
     public void toggleReservoir(View v) {
@@ -243,10 +268,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }else{
             tReservoir = false;
         }
-        if(tReservoir)
+        if(tReservoir) {
             addReservoirs();
-        else
+            ibReservoir.setBackgroundTintMode(PorterDuff.Mode.SRC);
+            ibReservoir.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+            toggleReservoir.setChecked(true);
+        } else {
             removeReservoirs();
+            ibReservoir.setBackgroundTintMode(null);
+            toggleReservoir.setChecked(false);
+        }
     }
 
     public void toggleWell(View v) {
@@ -255,10 +286,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }else{
             tWell = false;
         }
-        if(tWell)
+        if(tWell) {
             addWells();
-        else
+            ibWell.setBackgroundTintMode(PorterDuff.Mode.SRC);
+            ibWell.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+            toggleWell.setChecked(true);
+        } else {
             removeWells();
+            ibWell.setBackgroundTintMode(null);
+            toggleWell.setChecked(false);
+        }
     }
 
     public void toggleRiver(View v) {
