@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activty_splash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ara_background"
+    tools:context="edu.calstatela.jplone.watertrekapp.activities.SplashActivity">
+
+    <!--Image source: https://images.freeimages.com/images/large-previews/3d3/skagit-river-3-1367375.jpg-->
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/ara_ico"
+            android:layout_gravity="center"
+            android:src="@drawable/ara_icon"
+            android:layout_width="118dp"
+            android:layout_height="124dp"
+        />
+        <TextView
+            android:id="@+id/proj_ara"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Project ARA"
+            android:textSize="23sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+
+</RelativeLayout>

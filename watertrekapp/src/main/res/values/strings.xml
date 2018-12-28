@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Watertrek App</string>
+    <string name="showResources">Show Resources</string>
+    <string name="settings">Settings</string>
+    <string name="range">Range (km)</string>
+    <string name="mountains">Mountains</string>
+    <string name="wells">Wells</string>
+    <string name="credentials">WaterTrek Credentials</string>
+    <string name="soilMoisture">Soil Moisture</string>
+    <string name="rivers">Rivers</string>
+    <string name="reservoirs">Reservoirs</string>
+    <string name="username">Username:</string>
+    <string name="password">Password:</string>
+    <string name="submit_button">Submit</string>
+    <string name="title_activity_demo">DemoActivity</string>
+    <string name="title_activity_mesh_demo">MeshDemoActivity</string>
+    <string name="demurl">http://ec2-50-18-69-218.us-west-1.compute.amazonaws.com/arcgis/rest/services/earth/srtm_conUS_merge_30m_v1/ImageServer/exportImage?</string>
+</resources>
