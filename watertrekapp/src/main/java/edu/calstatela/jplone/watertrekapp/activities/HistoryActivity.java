@@ -241,6 +241,9 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     // retrieve data from url  NEED to Fix to pass mastersiteID of the well
 
     private void addWells(String WELLID){
+//        //$$$$$$$$$$$$$$$$$$ clear list so things dont pile up twice
+//        dbgsUList.clear();
+
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$DATE VERIFICATION$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Log.d("checkDate" , firstDate);
         Log.d("checkDate" , lastDate);
@@ -260,7 +263,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         int monthEnddate = Integer.parseInt(eparts[1]);
         int dayEndDate = Integer.parseInt(eparts[2]);
         // wrong year input
-        if (yearStartDate > yearEndDate){
+        if ((yearStartDate == yearEndDate) && (monthStartdate == monthEnddate) && (dayStartDate == dayEndDate) ){
+            Log.d("checkDate","Dates cannot be the same");
+            Toast.makeText(getApplicationContext(), " Start Date cannot be the same as EndDate", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+       else if (yearStartDate > yearEndDate){
             Log.d("checkDate","yearstartdate is Wrong cannot search backwards!!!");
             Toast.makeText(getApplicationContext(), "End Date cannot Preceed Start Date", Toast.LENGTH_LONG).show();
             return;
@@ -288,16 +297,11 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 }
                 //rihgt day input
-                else if (dayStartDate < dayEndDate){
+                else if (dayStartDate <= dayEndDate){
                     Log.d("checkDate","daystartdate is correct");
                     Toast.makeText(getApplicationContext(), "Searching ...", Toast.LENGTH_LONG).show();
                 }
-                else if(dayStartDate == dayEndDate){
-                    Log.d("checkDate","Dates cannot be the same");
-                    Toast.makeText(getApplicationContext(), " Start Date cannot be the same as EndDate", Toast.LENGTH_LONG).show();
-                    return;
 
-                }
             }
         }
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$DATE VERIFICATION$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -309,6 +313,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         @Override
         public void onResult(int type, String result) {
             List<String> dbgsunitList = WellService.parseDBGSunits(result);
+            if (dbgsunitList.size() < 1){
+                Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else
+                // clears old list so it doesnt double stack / repeat Data twice
+                dbgsUList.clear();
             for(String dbu : dbgsunitList){
                 dbgsUList.add(dbu);
 

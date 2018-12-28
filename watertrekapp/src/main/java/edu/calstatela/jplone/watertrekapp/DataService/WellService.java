@@ -81,7 +81,7 @@ public class WellService {
         nt.execute(url);
     }
     public static void getDBGSunits(NetworkTask.NetworkCallback callback, String startDate , String endDate, String masterSiteId){
-//        int masterSiteId = 91133;
+//        int masterSiteId = 91133; example ID
         String masterId = masterSiteId;
 //        yr/month/day
         // returns  history of depth below ground surface  DBGS
@@ -158,6 +158,12 @@ public class WellService {
         Log.d("dbgs" , line);
         List<String> unitList = new ArrayList();
         String[] rowEntry = line.split("\n");
+        if (rowEntry[1].equals("null")){
+            return unitList ;
+        }
+        if (rowEntry[1] == null){
+            return unitList ;
+        }
 
         for(int i=0; i<rowEntry.length;i++){
             unitList.add(rowEntry[i]);

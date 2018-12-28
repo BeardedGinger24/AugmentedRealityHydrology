@@ -84,6 +84,7 @@ public class WellActivity extends AppCompatActivity{
         currentActivity.startActivity(intent);
     }
     @Override
+
     protected void onPause() {
         super.onPause();
         map.onPause();
