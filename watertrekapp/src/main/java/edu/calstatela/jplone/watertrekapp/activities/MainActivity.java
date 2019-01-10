@@ -32,9 +32,12 @@ import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
+import edu.calstatela.jplone.watertrekapp.Data.Snotel;
+import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
+import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
@@ -77,9 +80,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     Button obstruct_button;
     Button login_button;
     Button logout_button;
-
+    //Data Type ArrayList that hold POI OBJ
     private ArrayList<Well> wellList = new ArrayList<>();
-    private ArrayList<Reservoir> reservoirList = new ArrayList<>(); ///////////////////////////////////////added by Leo***
+    private ArrayList<Reservoir> reservoirList = new ArrayList<>();
+    private ArrayList<SoilMoisture> soilList = new ArrayList<>();
+    private ArrayList<Snotel> snotelList = new ArrayList<>();
+
     private LandmarkTable mountainList = new LandmarkTable();
     int mountainPrefix = 2000000000;
 
@@ -306,11 +312,23 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     }
 
+
+
     public void toggleSoil(View v) {
         if(isLoggedIn) {
             tSoil = !tSoil;
         }else{
             tSoil = false;
+        }
+        if(tSoil) {
+            addSoilPatches();
+            ibSoilMoisture.setBackgroundTintMode(PorterDuff.Mode.SRC);
+            ibSoilMoisture.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+            toggleSoil.setChecked(true);
+        } else {
+            removeSoilPatches();
+            ibSoilMoisture.setBackgroundTintMode(null);
+            toggleSoil.setChecked(false);
         }
     }
 
@@ -488,6 +506,53 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     };
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //     SoilMoisture  Data Methods added by Leo *********************
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    private void addSoilPatches(){
+        //retrieves all soil patches
+        SoilMoistureService.getSoilMoistures(soilmoistureNetworkCallback);
+    }
+    private void removeSoilPatches(){
+        for(SoilMoisture sm : soilList){
+            //Removes Soil Moisture  based on there unique ID or Wbanno
+            int id = Integer.parseInt(sm.getWbanno());
+            arview.removeBillboard(id);
+        }
+        soilList.clear();
+    }
+
+    NetworkTask.NetworkCallback soilmoistureNetworkCallback = new NetworkTask.NetworkCallback() {
+
+        @Override
+        public void onResult(int type, String result) {
+            // variable loc gets current location based on gps longitude and lattitude
+            float[] loc = arview.getLocation();     // added by  leo
+            // Return soil Moisture  nearest to range once passed in currently hard coded
+            List<SoilMoisture> soilMoistList = SoilMoistureService.parseAllSoilMoist(result , loc[0] , loc[1]); // change method
+            // for every soil obj  that is near me add it to soillist  and add to Billboard in order to display it
+
+            for(SoilMoisture moistySoil : soilMoistList){
+                Log.d("soily", moistySoil.getWbanno());
+
+                soilList.add(moistySoil);
+                arview.addBillboard(
+                        Integer.parseInt(moistySoil.getWbanno()),
+
+                        R.drawable.soil_bb_icon,
+                        "Soil #" + moistySoil.getWbanno(),
+                        "(" + moistySoil.getLat() + ", " + moistySoil.getLon() + ")",
+                        Float.parseFloat(moistySoil.getLat()), Float.parseFloat(moistySoil.getLon()), 0
+                );
+
+
+            }
+        }
+    };
+
     ////////////////////////////////////////////////////////////////////////////////
     ///
     ///                             SEEKBAR/SLIDER FOR RANGE
@@ -520,6 +585,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         Well well = null;
         for(Well w : wellList){
+            Log.d("LaunchWellDetails",w.getMasterSiteId());
             int wId = Integer.parseInt(w.getMasterSiteId());
             if(wId == id) {
                 well = w;
@@ -533,6 +599,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         //added  by leo
         Reservoir  rL = null;
         for(Reservoir r : reservoirList){
+            Log.d("LaunchResDetails",r.getSiteNo());
             int rId = Integer.parseInt(r.getSiteNo());
             if(rId == id) {
                 rL = r;
@@ -543,6 +610,24 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             ReservoirActivity.launchDetailsActivity(this, rL);
             return;
         }
+        //Soil Moisture
+        SoilMoisture  sL = null;
+        for(SoilMoisture s : soilList){
+            Log.d("LaunchSoildetails",s.getWbanno());
+            int sId = Integer.parseInt(s.getWbanno());
+            if(sId == id) {
+                sL = s;
+                break;
+            }
+        }
+        if(sL != null) {
+            SoilMoistureActivity.launchDetailsActivity(this, sL);
+//            Log.d("LaunchSoildetails","going now...");
+            return;
+        }
+        //Snotel
+
+        //Rapids
 
         Landmark landmark = null;
         for(int i = 0; i < mountainList.size(); i++){

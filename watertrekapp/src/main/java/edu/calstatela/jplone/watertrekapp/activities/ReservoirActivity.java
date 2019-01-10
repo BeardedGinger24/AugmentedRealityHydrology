@@ -23,7 +23,6 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import java.util.ArrayList;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
-import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.R;
 public class ReservoirActivity extends AppCompatActivity{
     MapView map;
