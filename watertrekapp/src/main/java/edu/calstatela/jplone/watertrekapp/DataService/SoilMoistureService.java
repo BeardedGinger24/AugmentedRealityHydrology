@@ -66,7 +66,7 @@ public class SoilMoistureService {
 //////////////////////////////////////////////////////////////////////
 
     //Add created soil objects to list and return.
-    public static List parseAllSoilMoist(String line, float longitu, float lat ){
+    public static List parseAllSoilMoist(String line, float longitu, float lat, int  radius ){
         Log.d("soiledInit","pasingsoil has been called");
         Log.d("soiledInit",line);
         double mycurrLat = (double) lat;
@@ -91,7 +91,7 @@ public class SoilMoistureService {
             double longy =  Double.parseDouble(smList.getLon());
             // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
             // if less than or equal to range (100) add reserNear to List and return it back
-            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= 500)
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius)
             {
                 soilNear.add(smList);
                 Log.d("soiledDistance",smList.getWbanno() + " soil within range ");

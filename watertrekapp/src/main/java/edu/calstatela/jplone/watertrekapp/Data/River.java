@@ -2,9 +2,7 @@ package edu.calstatela.jplone.watertrekapp.Data;
 
 import java.util.List;
 
-/**
- * Created by nes on 4/23/18.
- */
+
 
 public class River {
     private String comId,lengthKm, shapeLength,fType;
