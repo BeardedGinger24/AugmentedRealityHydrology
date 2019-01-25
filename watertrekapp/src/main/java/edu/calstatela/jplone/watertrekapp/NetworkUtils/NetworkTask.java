@@ -31,23 +31,27 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        if(params.length == 0) // expecting a URL String
+        if(params.length == 0) { // expecting a URL String
+            Log.d(TAG,"In if");
             return null;
+        }else{
+            Log.d(TAG,"In if");
+        }
         try {
             URL url = new URL(params[0]);
+            Log.d(TAG,"In Try");
             HttpsURLConnection urlConnection =
                     (HttpsURLConnection) url.openConnection();
-
+            Log.d(TAG,"After openConnect()");
             Authenticator.setDefault(new Authenticator(){
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(watertrekUsername, watertrekPassword.toCharArray());
                 }
             });
-
+            Log.d(TAG,"After authenticator");
             urlConnection.connect();
-
+            Log.d(TAG,"After connect()");
             String response = urlConnection.getResponseMessage();
-
             if(response.equals("OK")) {
                 BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 String result = "";
@@ -60,8 +64,12 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
                     count++;
                 }
                 br.close();
+                Log.d(TAG,"RESPONSE WAS: "+response);
                 return result;
-
+            }else{
+                Log.d(TAG,"RESPONSE WAS: "+response);
+                Log.d(TAG,"VALID CREDENTIALS");
+                //handle valid credentials here??
             }
 
             return null;
@@ -69,12 +77,15 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
         catch(Exception e) {
             Log.d(TAG, "Exception!");
             Log.d(TAG,  e.toString() + ": " + e.getMessage());
+            Log.d(TAG,"INVALID CREDENTIALS");
+            //handle invalid credentials here??
         }
         return null;
     }
 
     @Override
     protected void onPostExecute(String result) {
+        Log.d(TAG,"In postExe");
         callback.onResult(this.data_type, result);
     }
 
@@ -84,6 +95,7 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
 
 
     public static void updateWatertrekCredentials(String username, String password){
+        Log.d(TAG,"In updateCredentials");
         watertrekUsername = username;
         watertrekPassword = password;
     }

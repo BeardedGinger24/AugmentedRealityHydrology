@@ -2,6 +2,7 @@ package edu.calstatela.jplone.watertrekapp.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -14,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
 
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
@@ -27,6 +30,8 @@ public class CredentialsActivity extends Activity{
     TextInputLayout mUsernameLayout;
     TextInputLayout mPasswordLayout;
 
+    String currUser;
+    String currPass;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,11 +83,13 @@ public class CredentialsActivity extends Activity{
 
         // If default username and password have been provided in the intent, fill in fields
         String currentUsername = getIntent().getStringExtra("username");
+        currUser = currentUsername;
         if(currentUsername == null)
             currentUsername = "";
         mUsernameEditText.setText(currentUsername);
 
         String currentPassword = getIntent().getStringExtra("password");
+        currPass = currentPassword;
         if(currentPassword == null)
             currentPassword = "";
         mPasswordEditText.setText(currentPassword);
@@ -116,6 +123,7 @@ public class CredentialsActivity extends Activity{
     private boolean submitForm() {
         if (!validateUsername()) { return false; }
         if (!validatePassword()) { return false; }
+
 
         return true;
     }
