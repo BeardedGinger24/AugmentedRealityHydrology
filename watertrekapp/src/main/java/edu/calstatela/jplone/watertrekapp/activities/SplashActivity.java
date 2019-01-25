@@ -7,11 +7,13 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.ActivityCompat;
 import android.Manifest;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.security.Permission;
@@ -21,7 +23,9 @@ import edu.calstatela.jplone.watertrekapp.R;
 
 public class SplashActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 private TextView tv;
+private TextView textLoading;
 private ImageView iv;
+private ProgressBar pb;
 
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_LOCATION = 1;
@@ -36,8 +40,10 @@ private ImageView iv;
         //getSupportActionBar().hide();
 
         setContentView(R.layout.activity_splash);
-        tv = (TextView) findViewById(R.id.proj_ara);
-        iv = (ImageView) findViewById(R.id.ara_ico);
+        tv = findViewById(R.id.proj_ara);
+        textLoading = findViewById(R.id.loadingText);
+        iv = findViewById(R.id.ara_ico);
+        pb = findViewById(R.id.indeterminateBar);
 
 
         boolean havePermissions = true;
@@ -63,11 +69,12 @@ private ImageView iv;
         Animation myanim = AnimationUtils.loadAnimation(this, R.anim.mytransition);
         tv.startAnimation(myanim);
         iv.startAnimation(myanim);
+        pb.startAnimation(myanim);
         final Intent i = new Intent(this, MainActivity.class);
         Thread timer = new Thread(){
             public void run (){
                 try {
-                    sleep(1000);
+                    sleep(5000);
                 }catch (InterruptedException e){
                     e.printStackTrace();
                 }
