@@ -28,10 +28,12 @@ public class GeoMath {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void latLonAltToXYZ(float[] latLonAlt, float[] xyz){
+    public static float[] latLonAltToXYZ(float[] latLonAlt, float[] xyz){
         xyz[0] = (latLonAlt[1] - referenceLLA[1]) * metersPerDegreeLon;
         xyz[1] = latLonAlt[2] - referenceLLA[2];
         xyz[2] = (referenceLLA[0] - latLonAlt[0]) * metersPerDegreeLat;
+
+        return xyz;
     }
 
     public static void xyzToLatLonAlt(float[] xyz, float[] latLonAlt){

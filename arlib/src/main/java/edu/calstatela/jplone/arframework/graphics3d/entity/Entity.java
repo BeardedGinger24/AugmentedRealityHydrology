@@ -31,8 +31,8 @@ public class Entity extends ScaledModelMatrix implements Drawable {
     }
 
     public void setLatLonAlt(float[] latLonAlt){
-        GeoMath.latLonAltToXYZ(latLonAlt, tempXYZ);
-        setPosition(tempXYZ[0], tempXYZ[1], tempXYZ[2]);
+        float[] myXYZ = GeoMath.latLonAltToXYZ(latLonAlt, tempXYZ);
+        setPosition(myXYZ[0], myXYZ[1], myXYZ[2]);
     }
 
 

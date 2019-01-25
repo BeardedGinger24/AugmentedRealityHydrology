@@ -29,10 +29,16 @@ public class DisplayMeshActivity extends SensorARActivity{
 
         String lon = getIntent().getStringExtra("lon");
         String lat = getIntent().getStringExtra("lat");
+        float alt = Float.parseFloat(getIntent().getStringExtra("alt"));
         String baseUrl = getIntent().getStringExtra("baseUrl");
         asyncTask.execute(lon,lat,baseUrl);
         try {
             meshData = asyncTask.get();
+            float[] latlonalt = new float[3];
+            latlonalt[0]= Float.parseFloat(lat);
+            latlonalt[1]= Float.parseFloat(lon);
+            latlonalt[2]= alt-0.05f;
+            meshData.setLatlonAlt(latlonalt);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -54,7 +60,8 @@ public class DisplayMeshActivity extends SensorARActivity{
         mesh.setDrawingModeTriangles();
         ColorHolder purple = new ColorHolder(mesh, new float[]{1, 0, 1, 0.01f});
         entity1 = scene.addDrawable(purple);
-        entity1.setPosition(0f, -meshData.UserElevation, 0f);
+        entity1.setLatLonAlt(meshData.getLatlonAlt());
+        //entity1.setPosition(0f, 0.01f, 0f);
         //entity1.yaw(0);
 
         Model wireFrame = new Model();
@@ -62,7 +69,8 @@ public class DisplayMeshActivity extends SensorARActivity{
         wireFrame.setDrawingModeLines();
         ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,1f});
         entity2 = scene.addDrawable(black);
-        entity2.setPosition(0f,-meshData.UserElevation,0f);
+        entity2.setLatLonAlt(meshData.getLatlonAlt());
+        //entity2.setPosition(0f,0.01f,0f);
         //entity2.yaw(0);
     }
     @Override

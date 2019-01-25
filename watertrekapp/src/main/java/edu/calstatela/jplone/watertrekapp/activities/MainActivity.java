@@ -36,6 +36,7 @@ import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.LoginService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private LandmarkTable mountainList = new LandmarkTable();
     int mountainPrefix = 2000000000;
 
+    NetworkTask task;
     private boolean isLoggedIn = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -117,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
             isLoggedIn = true;
         }
-
 
         if(!isLoggedIn){
             WatertrekCredentials credentials = new WatertrekCredentials(this);
@@ -157,8 +158,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
-
-
 
 
         FrameLayout mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
@@ -232,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         return elevation;
     }
-
 
     NetworkTaskJSON.NetworkCallback obstructNetworkCallback = new NetworkTaskJSON.NetworkCallback() {
         @Override
@@ -320,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         float[] loc = arview.getLocation();
         intent.putExtra("lat",loc[0]+"");
         intent.putExtra("lon",loc[1]+"");
+        intent.putExtra("alt",loc[2]+"");
         intent.putExtra("baseUrl",getString(R.string.demurl));
         startActivity(intent);
     }
@@ -365,6 +364,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //      Credentials Methods
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
+    NetworkTask.NetworkCallback logincallback = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+
+        }
+    };
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == CREDENTIALS_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
@@ -375,6 +380,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                 credentials.setPassword(newPassword);
                 NetworkTask.updateWatertrekCredentials(newUsername, newPassword);
 
+                LoginService.checkLoginStatus(logincallback);
                 login_button.setVisibility(View.GONE);
                 logout_button.setVisibility(View.VISIBLE);
                 isLoggedIn = true;
