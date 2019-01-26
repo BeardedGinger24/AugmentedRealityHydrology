@@ -7,10 +7,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,9 +23,22 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -313,6 +328,17 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }else{
             tRiver = false;
         }
+        if(tRiver) {
+            addRiverz();
+            ibRiver.setBackgroundTintMode(PorterDuff.Mode.SRC);
+            ibRiver.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+            toggleRiver.setChecked(true);
+        } else {
+            removeRiverz();
+            ibRiver.setBackgroundTintMode(null);
+            toggleRiver.setChecked(false);
+        }
+
     }
 
 
@@ -592,9 +618,23 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+
+
     private void addRiverz(){
-        //retrieves all soil patches
-        RiverService.getAllRiverIDS(riverNetworkCallback);
+        // Retrieves curr location
+        float[] loc = arview.getLocation();
+        //Longitude
+        String longy = Float.toString(loc[1]);
+        //Lattitude
+        String laty = Float.toString(loc[0]);
+
+        Double currlat =  Double.parseDouble(laty);
+        Double currlong =  Double.parseDouble(longy);
+        //retrieves all Rivers/ Stream Gauges
+
+//        RiverService.getRivers(currlat,currlong,radius);
+        RiverService.getRivers(RiverNetworkCallback,currlat,currlong,radius);
     }
     private void removeRiverz(){
         for(River rv : riverList){
@@ -605,37 +645,32 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         riverList.clear();
     }
 
-    NetworkTask.NetworkCallback riverNetworkCallback = new NetworkTask.NetworkCallback() {
 
+    NetworkTask.NetworkCallback RiverNetworkCallback = new NetworkTask.NetworkCallback() {
         @Override
         public void onResult(int type, String result) {
-            // variable loc gets current location based on gps longitude and lattitude
-            float[] loc = arview.getLocation();     // added by  leo
-            // Return soil Moisture  nearest to range once passed in currently hard coded
-            List<SoilMoisture> soilMoistList = SoilMoistureService.parseAllSoilMoist(result , loc[0] , loc[1],radius); // change method
-            // for every soil obj  that is near me add it to soillist  and add to Billboard in order to display it
+            List<River> lRiverList = RiverService.parseRivers(result);
             // Check to see if GET call is empty if so display message to user else continue
-            if (soilMoistList.size() >=1){
-                for(SoilMoisture moistySoil : soilMoistList){
-                    Log.d("soily", moistySoil.getWbanno());
+            if (lRiverList.size() >=1){
+                for(River riv :lRiverList){
+                    try{
+                        int id = Integer.parseInt(riv.getSiteNo());
+                        riverList.add(riv);
+                        arview.addBillboard(id,
+                                R.drawable.river_bb_icon,
+                                "River # "+ riv.getSiteNo(),
+                                "(" + riv.getLat() + "," + riv.getLon() + ")",
+                                Float.parseFloat(riv.getLat()), Float.parseFloat(riv.getLon()),0
+                        );
+                    }catch(NumberFormatException e){
 
-                    soilList.add(moistySoil);
-                    arview.addBillboard(
-                            Integer.parseInt(moistySoil.getWbanno()),
-
-                            R.drawable.soil_bb_icon,
-                            "Soil #" + moistySoil.getWbanno(),
-                            "(" + moistySoil.getLat() + ", " + moistySoil.getLon() + ")",
-                            Float.parseFloat(moistySoil.getLat()), Float.parseFloat(moistySoil.getLon()), 0
-                    );
-
-
+                    }
                 }
             }
             else
             {
-                Log.d("soiledDistance", " There are currently no Soil Moistures within range ");
-                Toast.makeText(getApplicationContext(), "There are currently no Soil Moistures within range",
+                Log.d("River","There are currently no Streams/Rivers within range ");
+                Toast.makeText(getApplicationContext(), "There are currently no Streams/Rivers within range",
                         Toast.LENGTH_LONG).show();
             }
 
@@ -719,8 +754,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         //Rapids/ Rivers
         River  rivL = null;
         for(River r : riverList){
-            Log.d("LaunchRiverdetails",r.getComId());
-            int rivId = Integer.parseInt(r.getComId());
+            Log.d("LaunchRiverdetails-MAIN",r.getSiteNo());
+            int rivId = Integer.parseInt(r.getSiteNo());
             if(rivId == id) {
                 rivL = r;
                 break;
