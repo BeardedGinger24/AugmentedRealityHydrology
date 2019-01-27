@@ -10,7 +10,6 @@ public class Entity extends ScaledModelMatrix implements Drawable {
     private static final String TAG = "waka-Entity";
 
     private Drawable mDrawable = null;
-    private static float[] tempXYZ = new float[3];
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -31,8 +30,8 @@ public class Entity extends ScaledModelMatrix implements Drawable {
     }
 
     public void setLatLonAlt(float[] latLonAlt){
-        float[] myXYZ = GeoMath.latLonAltToXYZ(latLonAlt, tempXYZ);
-        setPosition(myXYZ[0], myXYZ[1], myXYZ[2]);
+        float[] mxyz = GeoMath.latLonAltToXYZ(latLonAlt);
+        setPosition(mxyz[0], mxyz[1], mxyz[2]);
     }
 
 

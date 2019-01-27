@@ -55,8 +55,6 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBa_gtuzcQV57FHGAXufSRy5kCVnajU1Qs" />
         <activity
-            android:name=".activities.MeshDemoActivity" />
-        <activity
             android:name=".activities.DisplayMeshActivity" />
     </application>
 

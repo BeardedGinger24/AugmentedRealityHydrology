@@ -22,7 +22,7 @@ public class CircleScene extends Scene{
     }
 
     public void setCenterLatLonAlt(float[] latLonAlt){
-        GeoMath.latLonAltToXYZ(latLonAlt, mCenter);
+        GeoMath.latLonAltToXYZ(latLonAlt);
     }
 
     public void setCenterXYZ(float[] center){

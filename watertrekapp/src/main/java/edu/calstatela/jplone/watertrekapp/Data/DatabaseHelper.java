@@ -14,6 +14,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
+
 /**
  * Created by ProgrammingKnowledge on 4/3/2015.
  */
@@ -28,20 +30,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Table Names
     private static final String TABLE_DBGS = "DBGS";
+    private static final String TABLE_MESHDATA = "MESHDATA";
     private static final String TABLE_WELL = "WELL";
     private static final String TABLE_SOILMOISTURE = "SOILMOISTURE";
     private static final String TABLE_SNOTEL = "SNOTEL";
     private static final String TABLE_RESERVOIR = "RESERVOIR";
     private static final String TABLE_LOG = "LOG";
+
     //common column names
     private static final String KEY_LAT = "LAT";
     private static final String KEY_LON = "LON";
+    private static final String KEY_ALT = "ALT";
     private static final String KEY_MAX = "MAX";
     private static final String KEY_MIN = "MIN";
     private static final String KEY_MAXDATE = "MAXDATE";
     private static final String KEY_MINDATE = "MINDATE";
     private static final String KEY_SITE_NO = "SITE_NO";
     private static final String KEY_STATION_NAME = "STATION_NAME";
+
+    //Mesh coloumn names
+    private static final String KEY_DIRECTORY = "DIRECTORY";
+    private static final String KEY_FILENAME = "FILENAME";
 
 
     //Well column names
@@ -61,7 +70,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_TIME = "TIME";
     private static final String KEY_ID = "ID";
 
-    //CREATE TABLE RESERVOIR
+    private static final String CREATE_TABLE_MESHDATA = "CREATE TABLE IF NOT EXISTS "+TABLE_MESHDATA+" ("+KEY_FILENAME+" VARCHAR(30), "+KEY_DIRECTORY+" VARCHAR(30), "
+            +KEY_LAT+" DOUBLE, "+KEY_LON+" DOUBLE, "+KEY_ALT+" DOUBLE)";
     //private static final String CREATE_TABLE_RESERVOIR = "create table " + TABLE_RESERVOIR + "（" + KEY_SITE_NO + " varchar(300) PRIMARY KEY ASC,"
     //      + KEY_DESCRIPTION + " varchar(300)," +  KEY_LAT + " double," + KEY_MAX + " double, " + KEY_MIN + " DOUBLE)";
     private static final String CREATE_TABLE_WELL = "CREATE TABLE IF NOT EXISTS "+ TABLE_WELL + "(" + KEY_MASTER_SITE_ID + " VARCHAR(30), "
@@ -74,25 +84,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_SOILMOISTURE = "CREATE TABLE IF NOT EXISTS "+ TABLE_SOILMOISTURE + "("+ KEY_WBANNO +
             " VARCHAR(30), " + KEY_LON + " VARCHAR(30), " + KEY_LAT + " VARCHAR(30), "+ KEY_MAX + " VARCHAR(30), " + KEY_MIN + " VARCHAR(30))";
     private static final String CREATE_TABLE_LOG = "CREATE TABLE IF NOT EXISTS LOG ( LAT TEXT, LON TEXT, ID TEXT, TIME TEXT)";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
+
     @Override
     public void onCreate(SQLiteDatabase db){
-        db.execSQL(CREATE_TABLE_WELL);
+        db.execSQL(CREATE_TABLE_MESHDATA);
         db.execSQL(CREATE_TABLE_WELL);
         db.execSQL(CREATE_TABLE_SOILMOISTURE);
         db.execSQL(CREATE_TABLE_LOG);
-        //db.execSQL(CREATE_TABLE_WELL);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESHDATA);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WELL);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DBGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SOILMOISTURE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOG);
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_WELL);
-
         onCreate(db);
     }
 
@@ -102,7 +112,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
     }
 
-
+    //Mesh functions
+    public void addMeshData(SQLiteDatabase db,MeshData meshData){
+        ContentValues values = new ContentValues();
+        float loc[] = meshData.getLatlonAlt();
+        values.put(KEY_DIRECTORY,meshData.dir);
+        values.put(KEY_FILENAME,meshData.filename);
+        values.put(KEY_LAT,loc[0]);
+        values.put(KEY_LON,loc[1]);
+        values.put(KEY_ALT,loc[2]);
+        db.insert(TABLE_MESHDATA,null,values);
+    }
+    public float[] getMeshData(SQLiteDatabase db, String filename){
+        String query = "SELECT "+"*"+" FROM " + TABLE_MESHDATA + " WHERE " + KEY_FILENAME + " = " + "'"+filename+"'";
+        Cursor c = db.rawQuery(query, null);
+        if( c != null) {
+            c.moveToFirst();
+        }
+        float[] loc = new float[]{c.getFloat(c.getColumnIndex(KEY_LAT)),c.getFloat(c.getColumnIndex(KEY_LON)),c.getFloat(c.getColumnIndex(KEY_ALT))};
+        return loc;
+    }
     //well functions
     public void addWell (Well well){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -119,9 +148,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_STDDEV, well.getStdDev());
         db.replace(TABLE_WELL, null, values);
     }
+    public void deleteWell(String masterSiteID){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_WELL, KEY_MASTER_SITE_ID + " = ?",
+                new String[] {masterSiteID});
+        db.delete(TABLE_DBGS, KEY_MASTER_SITE_ID + " = ?",
+                new String[] {masterSiteID});
+    }
     public Well getWell(String masterSiteID){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_WELL + "WHERE" + KEY_MASTER_SITE_ID + " = " + masterSiteID;
+        String query = "SELECT * FROM " + TABLE_WELL + " WHERE " + KEY_MASTER_SITE_ID + " = " + masterSiteID;
         Log.e(LOG, query);
         Cursor c = db.rawQuery(query, null);
         if( c != null)
@@ -171,22 +207,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return Wells;
     }
-    public void deleteWell(String masterSiteID){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_WELL, KEY_MASTER_SITE_ID + " = ?",
-                new String[] {masterSiteID});
-        db.delete(TABLE_DBGS, KEY_MASTER_SITE_ID + " = ?",
-                new String[] {masterSiteID});
-    }
+    //Soil functions
     public void addSoil(SoilMoisture soil){
-            SQLiteDatabase db = this.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(KEY_WBANNO, soil.getWbanno());
-            values.put(KEY_LON, soil.getLon());
-            values.put(KEY_LAT, soil.getLat());
-            values.put(KEY_MAX, soil.getMax());
-            values.put(KEY_MIN, soil.getMin());
-            db.replace(TABLE_SOILMOISTURE, null, values);
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_WBANNO, soil.getWbanno());
+        values.put(KEY_LON, soil.getLon());
+        values.put(KEY_LAT, soil.getLat());
+        values.put(KEY_MAX, soil.getMax());
+        values.put(KEY_MIN, soil.getMin());
+        db.replace(TABLE_SOILMOISTURE, null, values);
 
     }
     public List<SoilMoisture> getSoils(){

@@ -128,8 +128,7 @@ public class BillboardView_depthTest extends SensorARView{
         // Update Entities to be properly rotated and scaled
         if(getLocation() != null) {
             float[] loc = getLocation();
-            float[] xyz = new float[3];
-            GeoMath.latLonAltToXYZ(loc, xyz);
+            float[] xyz = GeoMath.latLonAltToXYZ(loc);
             for (Entity e : mEntityList) {
                 float[] pos = e.getPosition();
                 e.setLookAtWithConstantDistanceScale(pos[0], pos[1], pos[2], xyz[0], xyz[1], xyz[2], 0, 1, 0, 0.2f);
@@ -162,8 +161,7 @@ public class BillboardView_depthTest extends SensorARView{
         float shortestDistance = -1;
         int indexOfClosest = -1;
 
-        float[] xyzLoc = new float[3];
-        GeoMath.latLonAltToXYZ(getLocation(), xyzLoc);
+        float[] xyzLoc = GeoMath.latLonAltToXYZ(getLocation());
 
         for(int i = 0; i < mEntityList.size(); i++){
             Entity e = mEntityList.get(i);
@@ -182,8 +180,7 @@ public class BillboardView_depthTest extends SensorARView{
             }
 
             BillboardInfo info = mCurrentInfos.get(i);
-            float[] infoXYZ = new float[3];
-            GeoMath.latLonAltToXYZ(new float[]{info.lat, info.lon, info.alt}, infoXYZ);
+            float[] infoXYZ = GeoMath.latLonAltToXYZ(new float[]{info.lat, info.lon, info.alt});
         }
 
         if(indexOfClosest >= 0) {

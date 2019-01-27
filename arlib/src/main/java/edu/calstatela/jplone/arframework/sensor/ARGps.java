@@ -41,6 +41,7 @@ public class ARGps {
 
     public boolean start(){
         boolean havePermission = ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        Log.d(TAG,"IN START OF ARGPS: haspermmison="+havePermission);
         if(havePermission){
             try {
                 mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(mLocationSuccessListener);

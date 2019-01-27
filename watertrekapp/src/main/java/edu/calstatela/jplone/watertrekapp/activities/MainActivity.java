@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleWell = (Switch)findViewById(R.id.switch9);
         toggleRiver = (Switch)findViewById(R.id.switch10);
         toggleSoil = (Switch)findViewById(R.id.switch12);
+
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
@@ -315,11 +316,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //MESHDEMO
     public void meshDemo(View view){
         Intent intent = new Intent(this, DisplayMeshActivity.class);
-        float[] loc = arview.getLocation();
-        intent.putExtra("lat",loc[0]+"");
-        intent.putExtra("lon",loc[1]+"");
-        intent.putExtra("alt",loc[2]+"");
-        intent.putExtra("baseUrl",getString(R.string.demurl));
         startActivity(intent);
     }
 

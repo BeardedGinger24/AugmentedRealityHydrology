@@ -4,12 +4,25 @@ public class MeshData {
     public int[] Triangles;
     public float UserElevation;
     public float[] latlonalt;
+    String dir;
+    String filename;
     public MeshData(Vector3[] vertices, int[] triangles,float userElevation) {
         Vertices = vertices;
         Triangles = triangles;
-        UserElevation = userElevation+0.001f;
+        UserElevation = userElevation;
     }
-
+    public void setFilename(String filename){
+        this.filename = filename;
+    }
+    public String getFilename(){
+        return this.filename;
+    }
+    public void setDir(String dir){
+        this.dir = dir;
+    }
+    public String getDir(){
+        return this.dir;
+    }
     public void setLatlonAlt(float[] latlonalt) {
         this.latlonalt = latlonalt;
     }
