@@ -30,6 +30,7 @@ import java.util.List;
 import edu.calstatela.jplone.arframework.landmark.Landmark;
 import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
+import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
@@ -315,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     //MESHDEMO
     public void meshDemo(View view){
+        GeoMath.setReference(arview.getLocation());
         Intent intent = new Intent(this, DisplayMeshActivity.class);
         startActivity(intent);
     }

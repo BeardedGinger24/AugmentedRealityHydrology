@@ -11,6 +11,7 @@ import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARActivity;
+import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;

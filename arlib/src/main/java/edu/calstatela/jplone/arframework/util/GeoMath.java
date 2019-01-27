@@ -6,12 +6,13 @@ package edu.calstatela.jplone.arframework.util;
 //    to precision of float. These problems will disappear if variables changed to double.
 
 import android.location.Location;
+import android.util.Log;
 
 public class GeoMath {
-
+    public static String TAG = "waka-Geo";
     public static float metersPerDegreeLat = 111111;
     public static float metersPerDegreeLon = 111111;
-    private static float[] referenceLLA = {34, -117, 0};
+    private static float[] referenceLLA = {34, -117, 70};
 
     /////////////////////////////////////Converts raw data obtain from location sensor //////////////////////////////////////////////////////////////
 
@@ -32,8 +33,9 @@ public class GeoMath {
         float[] xyz = new float[3];
         xyz[0] = (latLonAlt[1] - referenceLLA[1]); //* metersPerDegreeLon;
         xyz[1] = (latLonAlt[2] - referenceLLA[2])/100;
-        xyz[2] = (referenceLLA[0] - latLonAlt[0]); //* metersPerDegreeLat;
+        xyz[2] = (latLonAlt[0] - referenceLLA[0])/10; //* metersPerDegreeLat;
 
+        Log.d(TAG,"Reference: "+referenceLLA[0]+","+referenceLLA[1]+","+referenceLLA[2]);
         return xyz;
     }
 
