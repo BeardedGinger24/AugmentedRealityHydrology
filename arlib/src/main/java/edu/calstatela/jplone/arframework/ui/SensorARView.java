@@ -11,9 +11,6 @@ import edu.calstatela.jplone.arframework.sensor.ARGps;
 import edu.calstatela.jplone.arframework.sensor.ARSensor;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.VectorMath;
-//import edu.calstatela.jplone.watertrekapp.billboardview
-
-
 
 public class SensorARView extends ARView {
     private static final String TAG = "waka-SensorARView";
