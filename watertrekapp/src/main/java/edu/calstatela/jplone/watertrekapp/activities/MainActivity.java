@@ -38,7 +38,7 @@ import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
-import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
+//import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
 import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
@@ -594,7 +594,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addRiverz(){
         //retrieves all soil patches
-        RiverService.getAllRiverIDS(riverNetworkCallback);
+        //RiverService.getAllRiverIDS(riverNetworkCallback);
     }
     private void removeRiverz(){
         for(River rv : riverList){
@@ -727,7 +727,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(rivL != null) {
-            RiverActivity.launchDetailsActivity(this, rivL);
+            //RiverActivity.launchDetailsActivity(this, rivL);
 //            Log.d("LaunchSoildetails","going now...");
             return;
         }

@@ -15,7 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class NetworkTaskJSON extends AsyncTask<String,Void,String> {
+public class  NetworkTaskJSON extends AsyncTask<String,Void,String> {
     private NetworkCallback callbackJS;
     private int data_type;
     public NetworkTaskJSON(NetworkCallback callbackJS,int data_type )

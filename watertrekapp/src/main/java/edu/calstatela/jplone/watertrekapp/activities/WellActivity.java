@@ -28,6 +28,8 @@ import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import java.util.ArrayList;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
+import edu.calstatela.jplone.watertrekapp.DataService.WellService;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
 public class WellActivity extends AppCompatActivity{
     MapView map;
@@ -36,6 +38,8 @@ public class WellActivity extends AppCompatActivity{
     ItemizedOverlayWithFocus<OverlayItem> mOverlay;
     ArrayList<OverlayItem> markers;
     String  welluniqueID;
+    String max;
+    String min;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +47,7 @@ public class WellActivity extends AppCompatActivity{
         float lat = Float.parseFloat(getIntent().getStringExtra("lat"));
         float lon = Float.parseFloat(getIntent().getStringExtra("lon"));
         welluniqueID = getIntent().getStringExtra("masterSiteId");
+        max = getIntent().getStringExtra("max");
         Log.d("wwwid",welluniqueID);
         defaultLocation = new GeoPoint(lat,lon);
         TextView txtData = findViewById(R.id.txt_data);
@@ -71,16 +76,46 @@ public class WellActivity extends AppCompatActivity{
                 Intent intent = new Intent(WellActivity.this,
                         HistoryActivity.class);
                 intent.putExtra("wellID", welluniqueID);
+                intent.putExtra("max", max);
+                intent.putExtra("min",min);
                 startActivity(intent); // startActivity allow you to move
             }
         });
+
+        // max from wells
+        WellService.getMax(wellNetworkCallbackTwo, Integer.parseInt(welluniqueID));
+        // min from wells
+        WellService.getMin(wellNetworkCallbackThree, Integer.parseInt(welluniqueID));
+
     }
+
+    // METHOD that helps retrieve max value
+    NetworkTask.NetworkCallback wellNetworkCallbackTwo = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+             max = WellService.parseMax(result);
+
+        }
+    };
+
+    // METHOD that helps retrieve min value
+    NetworkTask.NetworkCallback wellNetworkCallbackThree = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            min = WellService.parseMin(result);
+
+        }
+    };
     public static void launchDetailsActivity(Activity currentActivity, Well e) {
         Intent intent = new Intent(currentActivity, WellActivity.class);
         intent.putExtra("data", e.toString());
         intent.putExtra("lat",e.getLat());
         intent.putExtra("lon",e.getLon());
         intent.putExtra("masterSiteId",e.getMasterSiteId());
+
+        // adding another field to intent
+        intent.putExtra("max", e.getMax());
+        intent.putExtra("min",e.getMin());
         currentActivity.startActivity(intent);
     }
     @Override

@@ -31,15 +31,11 @@
         tools:context=".activities.HistoryActivity">
 
 
-
-
-
         <Button
             android:id="@+id/go2hist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HistoryGO!"
-           />
+            android:text="History Go!" />
 
         <TextView
         android:id="@+id/txt_data"

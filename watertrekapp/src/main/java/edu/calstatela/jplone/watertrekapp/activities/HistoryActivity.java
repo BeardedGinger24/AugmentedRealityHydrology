@@ -45,18 +45,44 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     private ArrayList<String> dbgsUList = new ArrayList<>();
     public int startBclick,endBclick;
     String WELLID;
+    String MAX;
+    String MIN;
 
 //need to change dialog from calender to scroller
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         WELLID = getIntent().getStringExtra("wellID");
-        Button searchButt = findViewById(R.id.Search);
 
+        // max from wells
+        MAX = getIntent().getStringExtra("max");
+
+        // min from wells
+        MIN = getIntent().getStringExtra("min");
+        Button searchButt = findViewById(R.id.Search);
 
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        // Testing
+        Log.i("Well-ID", WELLID);
+        Log.i("Max-Value", MAX);
+        Log.i("Min-Value", MIN);
+
+        // Parsing values to doubles
+        String maxParse[] = MAX.split(" ");
+        double maxValue = Double.parseDouble(maxParse[0]);
+
+        String minParse[] = MIN.split(" ");
+        double minValue = Double.parseDouble(minParse[0]);
+
+        Log.i("Max-Value-Parsed", maxParse[0]);
+        Log.i("Min-Value-Parsed", minParse[0]);
+
+
+
+
 
         // used to format dates
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("M-dd-yyyy");
@@ -73,9 +99,9 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
         // populate series with DataPoints
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(d1, 100),
-                new DataPoint(d2, 150),
-                new DataPoint(d3, 230)
+                new DataPoint(d1, 0),
+                new DataPoint(d2, 5),
+                new DataPoint(d3, 20)
         });
 
 
@@ -86,8 +112,9 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
         // set manual Y bounds
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(100);
-        graph.getViewport().setMaxY(200);
+        // minimum value of dbgs is actually the max as it records water level from ground surface the higher the value the lower the water level.
+        graph.getViewport().setMinY(0);
+        graph.getViewport().setMaxY(minValue);
 
         // enable scaling and scrolling
         graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
@@ -156,6 +183,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 //        Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR,year);
         calendar.set(Calendar.MONTH,month);
+
         calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
         month = month+1;
         String smonth = Integer.toString(month);
@@ -313,8 +341,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         @Override
         public void onResult(int type, String result) {
             List<String> dbgsunitList = WellService.parseDBGSunits(result);
+            String maxValue = WellService.parseMax(result);
+            MAX = maxValue;
             if (dbgsunitList.size() < 1){
-                Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             }
             else
@@ -326,6 +356,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             }
         }
     };
+
 
 
 
