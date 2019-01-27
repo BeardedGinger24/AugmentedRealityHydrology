@@ -16,10 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.ActivityCompat;
 import android.Manifest;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,15 +47,16 @@ import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 public class SplashActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
-    String TAG = "splash";
+    static String TAG = "splash";
     private TextView tv;
     private TextView loadingText;
     private ImageView iv;
     private ProgressBar pb;
+    private Button startBtn;
 
     Context context;
     MeshData meshData;
-    float[] currentLocation = {34.0f,-117.93f,69.54f};
+    float[] currentLocation;
     SensorARView sensorARView;
     MeshService.getDEM asyncTask;
 
@@ -63,6 +66,8 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     private static final int REQUEST_CAMERA = 0;
     private static final int REQUEST_LOCATION = 1;
     private static final int REQUEST_STORAGE = 2;
+
+    Thread t1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         loadingText = findViewById(R.id.loadingText);
         iv = findViewById(R.id.ara_ico);
         pb = findViewById(R.id.indeterminateBar);
+        startBtn = findViewById(R.id.startBtn);
 
         boolean havePermissions = true;
         if(!Permissions.havePermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION)){
@@ -99,22 +105,18 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         Animation myanim = AnimationUtils.loadAnimation(this, R.anim.mytransition);
         tv.startAnimation(myanim);
         iv.startAnimation(myanim);
-        pb.startAnimation(myanim);
-        loadingText.setText("Loading Data ...");
-        loadingText.setAnimation(myanim);
+        startBtn.startAnimation(myanim);
+        pb.setVisibility(View.INVISIBLE);
+        loadingText.setVisibility(View.INVISIBLE);
+        startBtn.setVisibility(View.VISIBLE);
 
-
-        Thread t1 = new Thread(new Runnable() {
+        t1 = new Thread(new Runnable() {
             @Override
             public void run() {
                 // start the service  to get location update
 
                 Intent i = new Intent(context, MainActivity.class);
                 String baseurl = getString(R.string.demurl);
-
-                if(sensorARView.getLocation()!=null){
-                    currentLocation = sensorARView.getLocation();
-                }
 
                 asyncTask= new MeshService.getDEM();
                 asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl);
@@ -138,8 +140,8 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
                 startActivity(i);
             }
         });
-        t1.start();
 
+        //startUp();
     }
 
     @Override
@@ -183,6 +185,14 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
         }
+    }
+    public void startClicked(View view){
+        currentLocation = sensorARView.getLocation();
+        startBtn.setVisibility(View.GONE);
+        pb.setVisibility(View.VISIBLE);
+        loadingText.setVisibility(View.VISIBLE);
+        loadingText.setText("Loading Data ...");
+        t1.start();
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

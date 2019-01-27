@@ -32,8 +32,16 @@ public class GeoMath {
     public static float[] latLonAltToXYZ(float[] latLonAlt){
         float[] xyz = new float[3];
         xyz[0] = (latLonAlt[1] - referenceLLA[1]); //* metersPerDegreeLon;
-        xyz[1] = (latLonAlt[2] - referenceLLA[2])/100;
-        xyz[2] = (latLonAlt[0] - referenceLLA[0])/10; //* metersPerDegreeLat;
+        float tempY = (latLonAlt[2] - referenceLLA[2])/10;
+        if(tempY>0){
+            tempY=(-1*tempY);
+            if(tempY>(-0.01)){
+                tempY = tempY*10;
+            }
+            xyz[1] = tempY;
+        }
+        xyz[1] = tempY;
+        xyz[2] = (latLonAlt[0] - referenceLLA[0]); //* metersPerDegreeLat;
 
         Log.d(TAG,"Reference: "+referenceLLA[0]+","+referenceLLA[1]+","+referenceLLA[2]);
         return xyz;

@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         //$$$$$$$$$$$$$$$$$$$$$$$$
 
-
         // Check to see if the user is already logged in
         WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
         String userName = credentialsTest.getUsername();
@@ -161,12 +160,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
 
-
         FrameLayout mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
         mainLayout.addView(arview);
 
         mountainList.loadMountains();
-
     }
 
     @Override

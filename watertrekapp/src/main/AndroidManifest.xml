@@ -28,7 +28,8 @@
         </activity>
         <activity
             android:name=".activities.MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+        </activity>
         <activity
             android:name=".activities.CredentialsActivity"
             android:screenOrientation="portrait" />
