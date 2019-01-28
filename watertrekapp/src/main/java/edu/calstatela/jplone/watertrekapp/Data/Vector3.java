@@ -31,6 +31,6 @@ public class Vector3 {
         this.z = z;
     }
     public String getVals(){
-        return "("+x+","+y+","+z+")";
+        return x+","+y+","+z+";";
     }
 }

@@ -10,10 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class CSVReader {
+import edu.calstatela.jplone.watertrekapp.Data.Vector3;
 
+public class CSVReader {
+    static String TAG = "waka-CSV";
     public static float[] readCSV(File file){
-        String TAG = "Mesh";
         try {
             FileInputStream fis = new FileInputStream(file);
             BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
@@ -32,6 +33,42 @@ public class CSVReader {
             for(int i = 0; i<stringresult.length; i++){
                 float temp = Float.parseFloat(stringresult[i]);
                 result[i] = temp;
+            }
+
+            return result;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static Vector3[] readVecFile(File file){
+
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+
+            String line = null;
+            StringBuilder sb = new StringBuilder();
+            while((line=reader.readLine()) !=null){
+                sb.append(line);
+            }
+            reader.close();
+
+            Log.d(TAG,sb.toString());
+            String[] stringresult = sb.toString().split(";");
+            Vector3[] result = new Vector3[stringresult.length];
+
+            for(int i = 0; i<stringresult.length; i++){
+                Vector3 tempVec = null;
+                String[] tempVals = stringresult[i].split(",");
+                tempVec.setX(Double.parseDouble(tempVals[0]));
+                tempVec.setY(Double.parseDouble(tempVals[1]));
+                tempVec.setZ(Double.parseDouble(tempVals[2]));
+
+                result[i] = tempVec;
             }
 
             return result;

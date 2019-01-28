@@ -35,10 +35,9 @@ public class GeoMath {
         float tempY = (latLonAlt[2] - referenceLLA[2])/10;
         if(tempY>0){
             tempY=(-1*tempY);
-            if(tempY>(-0.01)){
+            while(tempY<0 && tempY>(-0.009)){
                 tempY = tempY*10;
             }
-            xyz[1] = tempY;
         }
         xyz[1] = tempY;
         xyz[2] = (latLonAlt[0] - referenceLLA[0]); //* metersPerDegreeLat;

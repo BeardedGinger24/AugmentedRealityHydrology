@@ -6,22 +6,28 @@ import java.io.File;
 import java.util.concurrent.ExecutionException;
 import edu.calstatela.jplone.arframework.graphics3d.camera.Camera3D;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.BillboardMaker;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.ColorHolder;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
+import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARActivity;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
+import edu.calstatela.jplone.watertrekapp.Data.Vector3;
 import edu.calstatela.jplone.watertrekapp.Helpers.CSVReader;
+import edu.calstatela.jplone.watertrekapp.R;
+import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 public class DisplayMeshActivity extends SensorARActivity{
     String TAG = "waka-Mesh";
     private Camera3D camera;
     private Entity entity1,entity2;
     private Scene scene;
+    //Vector3[] vecs;
     private DatabaseHelper helper;
     private SQLiteDatabase db;
     public void GLInit() {
@@ -35,9 +41,13 @@ public class DisplayMeshActivity extends SensorARActivity{
         setupScene();
     }
     private void setupScene(){
-        File file = new File(getFilesDir(),"terrain");
-        float[] verts = CSVReader.readCSV(file);
-        float[] loc = meshdataLoc(file.getName());
+        //File file1 = new File(getFilesDir(),"meshVecs");
+        //vecs= CSVReader.readVecFile(file1);
+
+        File file2 = new File(getFilesDir(),"terrain");
+        float[] verts = CSVReader.readCSV(file2);
+        float[] loc = meshdataLoc(file2.getName());
+
         Log.d(TAG,"meshdata loc: "+loc[0]+","+loc[1]+","+loc[2]);
 
         Model mesh = new Model();
@@ -59,6 +69,13 @@ public class DisplayMeshActivity extends SensorARActivity{
         entity2.setLatLonAlt(loc);
         //entity2.setPosition(0f,-0.1f,0f);
         //entity2.yaw(0);
+//
+//        Billboard bb = new BillboardMaker().make(this, R.drawable.well_bb_icon);
+//        ScaleObject sbb = new ScaleObject(bb, 2, 1, 1);
+//        Entity e = new Entity();
+//        e.setDrawable(sbb);
+//        float[] bbLoc = getbbLoc(new float[]{33.8f,-118.0f},loc);
+//        e.setLatLonAlt(new float[]{});
     }
     @Override
     public void GLResize(int width, int height) {
@@ -85,5 +102,19 @@ public class DisplayMeshActivity extends SensorARActivity{
         helper = new DatabaseHelper(this);
         db=helper.getReadableDatabase();
         return helper.getMeshData(db,filename);
+    }
+    public float[] getbbLoc(float[] bbloc,float[] meshloc){
+        float bbx = bbloc[1];
+        float bby = bbloc[0];
+
+        float mx = meshloc[1];
+        float my = meshloc[0];
+
+        double x = (bbx)-(mx-0.20)/0.002;
+        double y = ((my+0.20)-(bby))/.002;
+        int index = (int) (x+y);
+
+        float[] result = {};
+        return null;
     }
 }

@@ -42,6 +42,7 @@ import edu.calstatela.jplone.arframework.util.Permissions;
 import edu.calstatela.jplone.arframework.util.VectorMath;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
+import edu.calstatela.jplone.watertrekapp.Data.Vector3;
 import edu.calstatela.jplone.watertrekapp.DataService.MeshService;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
@@ -122,12 +123,14 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
                 asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl);
                 try {
                     meshData = asyncTask.get();
-                    meshData.setFilename("terrain");
+                    meshData.setFilenameTerrain("terrain");
+                    meshData.setFilenameTerrainVecs("meshvecs");
                     meshData.setDir(context.getFilesDir()+"");
 
                     helper = new DatabaseHelper(context);
                     db = helper.getWritableDatabase();
                     helper.addMeshData(db,meshData);
+
 
                     //Write meshdata to file
                     genVerts(meshData);
@@ -140,8 +143,6 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
                 startActivity(i);
             }
         });
-
-        //startUp();
     }
 
     @Override
@@ -166,7 +167,8 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
             index += 3;
         }
 
-        writeToFile(verts,"terrain");
+        //writeToFile(meshData.Vertices,meshData.getFilenameTerrainVecs());
+        writeToFile(verts,meshData.getFilenameTerrain());
     }
     public void writeToFile(float[] input,String filename){
         StringBuilder sb = new StringBuilder();
@@ -176,6 +178,21 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
             if(i<input.length-1){
                 sb.append(",");
             }
+        }
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(this.openFileOutput(filename, Context.MODE_PRIVATE));
+            outputStreamWriter.write(sb.toString());
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+    public void writeToFile(Vector3[] input,String filename){
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i<input.length; i++){
+            sb.append(input[i].getVals());
         }
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(this.openFileOutput(filename, Context.MODE_PRIVATE));
