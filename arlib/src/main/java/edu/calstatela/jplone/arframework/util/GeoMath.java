@@ -33,13 +33,16 @@ public class GeoMath {
         float[] xyz = new float[3];
         xyz[0] = (latLonAlt[1] - referenceLLA[1]); //* metersPerDegreeLon;
         float tempY = (latLonAlt[2] - referenceLLA[2])/10;
-        if(tempY>0){
-            tempY=(-1*tempY);
-            while(tempY<0 && tempY>(-0.009)){
-                tempY = tempY*10;
-            }
-        }
-        xyz[1] = tempY;
+//        if(tempY>0){
+//            tempY=(-1*tempY);
+//            while(tempY<0 && tempY>(-0.001)){
+//                tempY = tempY*10;
+//            }
+//        }
+//        if(tempY==0){
+//            tempY = -0.01f;
+//        }
+        xyz[1] = -0.02f;
         xyz[2] = (latLonAlt[0] - referenceLLA[0]); //* metersPerDegreeLat;
 
         Log.d(TAG,"Reference: "+referenceLLA[0]+","+referenceLLA[1]+","+referenceLLA[2]);

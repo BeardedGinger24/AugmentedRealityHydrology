@@ -27,7 +27,7 @@ public class DisplayMeshActivity extends SensorARActivity{
     private Camera3D camera;
     private Entity entity1,entity2;
     private Scene scene;
-    //Vector3[] vecs;
+    Vector3[] vecs;
     private DatabaseHelper helper;
     private SQLiteDatabase db;
     public void GLInit() {
@@ -41,8 +41,8 @@ public class DisplayMeshActivity extends SensorARActivity{
         setupScene();
     }
     private void setupScene(){
-        //File file1 = new File(getFilesDir(),"meshVecs");
-        //vecs= CSVReader.readVecFile(file1);
+        File file1 = new File(getFilesDir(),"meshVecs");
+        vecs= CSVReader.readVecFile(file1);
 
         File file2 = new File(getFilesDir(),"terrain");
         float[] verts = CSVReader.readCSV(file2);

@@ -167,7 +167,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
             index += 3;
         }
 
-        //writeToFile(meshData.Vertices,meshData.getFilenameTerrainVecs());
+        writeToFile(meshData.Vertices,meshData.getFilenameTerrainVecs());
         writeToFile(verts,meshData.getFilenameTerrain());
     }
     public void writeToFile(float[] input,String filename){

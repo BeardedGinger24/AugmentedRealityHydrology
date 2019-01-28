@@ -71,7 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_TIME = "TIME";
     private static final String KEY_ID = "ID";
 
-    private static final String CREATE_TABLE_MESHDATA = "CREATE TABLE IF NOT EXISTS "+TABLE_MESHDATA+" ("+KEY_FILENAME_TERRAIN+" VARCHAR(30), "
+    private static final String CREATE_TABLE_MESHDATA = "CREATE TABLE IF NOT EXISTS "+TABLE_MESHDATA+" ("+KEY_FILENAME_TERRAIN+" VARCHAR(30), "+KEY_FILENAME_VECS+" VARCHAR(30), "
             + KEY_DIRECTORY+" VARCHAR(30), " +KEY_LAT+ " DOUBLE, "+KEY_LON+" DOUBLE, "+KEY_ALT+" DOUBLE)";
     //private static final String CREATE_TABLE_RESERVOIR = "create table " + TABLE_RESERVOIR + "（" + KEY_SITE_NO + " varchar(300) PRIMARY KEY ASC,"
     //      + KEY_DESCRIPTION + " varchar(300)," +  KEY_LAT + " double," + KEY_MAX + " double, " + KEY_MIN + " DOUBLE)";
@@ -119,7 +119,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         float loc[] = meshData.getLatlonAlt();
         values.put(KEY_DIRECTORY,meshData.dir);
         values.put(KEY_FILENAME_TERRAIN,meshData.filenameTerrain);
-        //values.put(KEY_FILENAME_VECS,meshData.filenameVecs);
+        values.put(KEY_FILENAME_VECS,meshData.filenameVecs);
         values.put(KEY_LAT,loc[0]);
         values.put(KEY_LON,loc[1]);
         values.put(KEY_ALT,loc[2]);
