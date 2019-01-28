@@ -22,10 +22,12 @@ import edu.calstatela.jplone.watertrekapp.Helpers.CSVReader;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
+import static android.icu.lang.UProperty.MATH;
+
 public class DisplayMeshActivity extends SensorARActivity{
     String TAG = "waka-Mesh";
     private Camera3D camera;
-    private Entity entity1,entity2;
+    private Entity entity1,entity2,e;
     private Scene scene;
     Vector3[] vecs;
     private DatabaseHelper helper;
@@ -41,7 +43,7 @@ public class DisplayMeshActivity extends SensorARActivity{
         setupScene();
     }
     private void setupScene(){
-        File file1 = new File(getFilesDir(),"meshVecs");
+        File file1 = new File(getFilesDir(),"meshvecs");
         vecs= CSVReader.readVecFile(file1);
 
         File file2 = new File(getFilesDir(),"terrain");
@@ -69,13 +71,14 @@ public class DisplayMeshActivity extends SensorARActivity{
         entity2.setLatLonAlt(loc);
         //entity2.setPosition(0f,-0.1f,0f);
         //entity2.yaw(0);
-//
-//        Billboard bb = new BillboardMaker().make(this, R.drawable.well_bb_icon);
-//        ScaleObject sbb = new ScaleObject(bb, 2, 1, 1);
-//        Entity e = new Entity();
-//        e.setDrawable(sbb);
-//        float[] bbLoc = getbbLoc(new float[]{33.8f,-118.0f},loc);
-//        e.setLatLonAlt(new float[]{});
+
+        Billboard bb = new BillboardMaker().make(this, R.drawable.well_bb_icon);
+        ScaleObject sbb = new ScaleObject(bb, 0.002f, 0.001f, 0.001f);
+        e = new Entity();
+        e.setDrawable(sbb);
+        float[] bbLoc = getbbLoc(new float[]{loc[0]-0.002f,loc[1]-0.009f},loc);
+        e.setPosition(bbLoc[0],bbLoc[1]+0.04f,bbLoc[2]);
+
     }
     @Override
     public void GLResize(int width, int height) {
@@ -96,6 +99,7 @@ public class DisplayMeshActivity extends SensorARActivity{
         }
         /* Draw */
         scene.draw(camera.getProjectionMatrix(), camera.getViewMatrix());
+        e.draw(camera.getProjectionMatrix(),camera.getViewMatrix(),e.getModelMatrix());
     }
 
     public float[] meshdataLoc(String filename){
@@ -110,11 +114,12 @@ public class DisplayMeshActivity extends SensorARActivity{
         float mx = meshloc[1];
         float my = meshloc[0];
 
-        double x = (bbx)-(mx-0.20)/0.002;
-        double y = ((my+0.20)-(bby))/.002;
-        int index = (int) (x+y);
+        double x = (Math.abs(mx-0.20)-Math.abs(bbx))/0.002;
+        double y = (Math.abs(my+0.20)-Math.abs(bby))/0.002;
+        int index = (int) (x+(y*200));
 
-        float[] result = {};
-        return null;
+        Vector3 vec = vecs[index];
+        float[] result = {(float) vec.getZ(), (float) vec.getX(), (float) vec.getY()};
+        return result;
     }
 }

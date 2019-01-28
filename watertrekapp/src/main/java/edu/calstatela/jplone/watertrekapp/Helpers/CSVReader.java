@@ -62,7 +62,7 @@ public class CSVReader {
             Vector3[] result = new Vector3[stringresult.length];
 
             for(int i = 0; i<stringresult.length; i++){
-                Vector3 tempVec = null;
+                Vector3 tempVec = new Vector3(0,0,0);
                 String[] tempVals = stringresult[i].split(",");
                 tempVec.setX(Double.parseDouble(tempVals[0]));
                 tempVec.setY(Double.parseDouble(tempVals[1]));
@@ -71,11 +71,14 @@ public class CSVReader {
                 result[i] = tempVec;
             }
 
+            Log.d(TAG,"Reached Result in CSV READER");
             return result;
 
         } catch (FileNotFoundException e) {
+            Log.d(TAG,e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
+            Log.d(TAG,e.getMessage());
             e.printStackTrace();
         }
         return null;

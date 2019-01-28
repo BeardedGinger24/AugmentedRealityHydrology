@@ -105,7 +105,7 @@ public class BillboardView_sorting extends SensorARView{
     public void GLResize(int width, int height) {
         super.GLResize(width, height);
         mCamera.setViewport(0, 0, width, height);
-        mCamera.setPerspective(60, (float)width / height, 0.1f, 1000000f);
+        mCamera.setPerspective(60, (float)width / height, 0.02f, 1000000f);
     }
 
     @Override
