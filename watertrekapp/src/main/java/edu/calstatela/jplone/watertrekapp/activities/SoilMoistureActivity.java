@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.osmdroid.api.IMapController;
@@ -27,12 +29,14 @@ public class SoilMoistureActivity extends AppCompatActivity {
     IMapController mapController;
     ItemizedOverlayWithFocus<OverlayItem> mOverlay;
     ArrayList<OverlayItem> markers;
+    String SoilMoistureuniqueID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         float lat = Float.parseFloat(getIntent().getStringExtra("lat"));
         float lon = Float.parseFloat(getIntent().getStringExtra("lon"));
+        SoilMoistureuniqueID = getIntent().getStringExtra("wbanno");
         defaultLocation = new GeoPoint(lat,lon);
         TextView txtData = findViewById(R.id.txt_data);
         txtData.setText(getIntent().getStringExtra("data"));
@@ -49,6 +53,22 @@ public class SoilMoistureActivity extends AppCompatActivity {
         marker.setIcon(this.getDrawable(R.drawable.soil_bb_icon));
         marker.setTitle("Soil Moisture: LatLon("+lat+","+lon+")");
         map.getOverlays().add(marker);
+
+        //*********Launch History Activity******************
+        Button goHist = (Button) findViewById(R.id.go2hist);
+
+
+        goHist.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SoilMoistureActivity.this,
+                        HistoryActivity.class);
+                intent.putExtra("SoilID", SoilMoistureuniqueID);
+                startActivity(intent); // startActivity allow you to move
+            }
+        });
+
     }
     public static void launchDetailsActivity(Activity currentActivity, SoilMoisture e) {
         Log.d("LaunchSoildetails","going now...");
@@ -56,6 +76,7 @@ public class SoilMoistureActivity extends AppCompatActivity {
         intent.putExtra("data", e.toString());
         intent.putExtra("lat",e.getLat());
         intent.putExtra("lon",e.getLon());
+        intent.putExtra("wbanno",e.getWbanno());
         currentActivity.startActivity(intent);
     }
     @Override

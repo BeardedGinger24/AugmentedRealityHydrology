@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -41,16 +42,42 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     private TextView mDisplaydate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     //DELETE TESTERLIST
-
+    // Various arrayList for various POI
     private ArrayList<String> dbgsUList = new ArrayList<>();
+    private ArrayList<String> dischargeList = new ArrayList<>();
+    // Wells Dbgs
+    // Rivers Discharge
+    // Buttons for start Data and End Date
     public int startBclick,endBclick;
+    //Unique ID for that specific chosen POI
     String WELLID;
+    String RiverID;
+    String ReservoirID;
+    String SoilMoistureID;
+    Boolean isWellNull;
+    Boolean isRiverNull;
+    Boolean isReservoirNull;
+    Boolean isSoilNull;
+
 
 //need to change dialog from calender to scroller
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         WELLID = getIntent().getStringExtra("wellID");
+        RiverID = getIntent().getStringExtra("RiverID");
+        ReservoirID = getIntent().getStringExtra("ReservoirID");
+        SoilMoistureID = getIntent().getStringExtra("SoilID");
+//        Log.d("isnull?", "WELL: " + WELLID);
+//        Log.d("isnull?", "River: " + RiverID);
+//        Log.d("isnull?", "Reservoir: " + ReservoirID);
+//        Log.d("isnull?", "Soil: " + SoilMoistureID);
+         isWellNull = WELLID == null;
+         isRiverNull = RiverID == null;
+         isReservoirNull = ReservoirID == null;
+         isSoilNull = SoilMoistureID == null;
+        // Check to see which POI data where looking at
+
         Button searchButt = findViewById(R.id.Search);
 
 
@@ -97,6 +124,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         graph.addSeries(series);
 
         // set title
+        // Make Case Statement to set Graph Title  depending on Selected POI
         graph.setTitle("DBGS vs. Time");
 
         // custom label formatter to show feet "ft" and date
@@ -239,11 +267,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
 
     // retrieve data from url  NEED to Fix to pass mastersiteID of the well
-
-    private void addWells(String WELLID){
-//        //$$$$$$$$$$$$$$$$$$ clear list so things dont pile up twice
-//        dbgsUList.clear();
-
+    public Boolean dateVerifier(){
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$DATE VERIFICATION$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Log.d("checkDate" , firstDate);
         Log.d("checkDate" , lastDate);
@@ -266,23 +290,24 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         if ((yearStartDate == yearEndDate) && (monthStartdate == monthEnddate) && (dayStartDate == dayEndDate) ){
             Log.d("checkDate","Dates cannot be the same");
             Toast.makeText(getApplicationContext(), " Start Date cannot be the same as EndDate", Toast.LENGTH_LONG).show();
-            return;
+            return false;
         }
 
-       else if (yearStartDate > yearEndDate){
+        else if (yearStartDate > yearEndDate){
             Log.d("checkDate","yearstartdate is Wrong cannot search backwards!!!");
             Toast.makeText(getApplicationContext(), "End Date cannot Preceed Start Date", Toast.LENGTH_LONG).show();
-            return;
+            return false;
         }
         //correct year input
         else if  (yearStartDate <= yearEndDate){
 //            Toast.makeText(getApplicationContext(), "Searching ...", Toast.LENGTH_LONG).show();
             Log.d("checkDate","yearstartdate is correct");
+
             //wrong month input
             if (monthStartdate > monthEnddate){
                 Log.d("checkDate","monthstartdate is Wrong cannot search backwards!!!");
                 Toast.makeText(getApplicationContext(), "End Date cannot Preceed Start Date", Toast.LENGTH_LONG).show();
-                return;
+                return false;
 
             }
             // correct month input
@@ -293,22 +318,40 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 if (dayStartDate > dayEndDate){
                     Log.d("checkDate","daystartdate is Wrong cannot search backwards!!!");
                     Toast.makeText(getApplicationContext(), "End Date cannot Preceed Start Date", Toast.LENGTH_LONG).show();
-                    return;
+                    return false;
 
                 }
                 //rihgt day input
                 else if (dayStartDate <= dayEndDate){
                     Log.d("checkDate","daystartdate is correct");
                     Toast.makeText(getApplicationContext(), "Searching ...", Toast.LENGTH_LONG).show();
+                    return true;
                 }
 
             }
         }
         // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$DATE VERIFICATION$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate,WELLID);
+        return true;
+    }
 
+    private void addWells(String WELLID){
+//        //$$$$$$$$$$$$$$$$$$ clear list so things dont pile up twice
+//        dbgsUList.clear();
+//        dateVerifier();
+        if (dateVerifier() != false){
+            WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate,WELLID);
+        }
+//        RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
+    }
+
+    private void addRivers(String RiverID){
+//        dateVerifier();
+        if (dateVerifier() != false){
+            RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
+        }
     }
     // METHOD that populates recyclerView
+    //*****************************WELL RecylerView Starts ******************************************
     NetworkTask.NetworkCallback wellNetworkCallback = new NetworkTask.NetworkCallback() {
         @Override
         public void onResult(int type, String result) {
@@ -327,6 +370,33 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         }
     };
 
+    //*****************************WELL RecylerView Ends ******************************************
+
+    //*****************************RIVER/STREAMGAUGES RecylerView Starts ******************************************
+    NetworkTask.NetworkCallback riverNetworkCallback = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            List<String> dischargeList = RiverService.parseDischarges(result);
+            if (dischargeList.size() < 1){
+                Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else
+                // clears old list so it doesnt double stack / repeat Data twice
+                dischargeList.clear();
+            for(String dsl : dischargeList){
+                dischargeList.add(dsl);
+
+            }
+        }
+    };
+
+    //*****************************RIVER/STREAMGAUGES RecylerView Ends ******************************************
+
+    // for river discharge  parse using xml
+
+//    "https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/09331850/discharge/from/1981-01-01T00:00:00/through/1990-01-01T00:00:00"
+   // String riverurl = "https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/09331850/discharge/from/1981-01-01T00%3A00%3A00/through/1990-01-01T00%3A00%3A00";
 
 
 
@@ -337,17 +407,26 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     // Need to fix issue on Double clicking in order to get the date to display
     public void displayHistoryList(View v)
     {
-        Log.d("wwwid" , WELLID);
-
-        addWells(WELLID);
+//        Log.d("wwwid" , WELLID);
+        if(isWellNull == false){
+            addWells(WELLID);
+            ListView lv = findViewById(R.id.historyList);
+//        testerarraylist
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
+            lv.setAdapter(adapter);
+        }
+        if (isRiverNull == false){
+            addRivers(RiverID);
+            ListView lv = findViewById(R.id.historyList);
+//        testerarraylist
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dischargeList);
+            lv.setAdapter(adapter);
+        }
 
 //        Log.d("starz" , firstDate);
 //        Log.d("starz" , lastDate);
 
-        ListView lv = findViewById(R.id.historyList);
-//        testerarraylist
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
-        lv.setAdapter(adapter);
+
 //        final StringBuilder sb = new StringBuilder(starttext.getText().length());
 //        sb.append(starttext.getText());
 //        String x = sb.toString();
