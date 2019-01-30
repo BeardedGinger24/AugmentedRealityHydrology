@@ -36,8 +36,14 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
     TextView starttext;
     TextView endtext ;
+    GraphView graph;
+    LineGraphSeries<DataPoint> series;
     public String firstDate;
     public String lastDate;
+    public ArrayList<String> xValue = new ArrayList<>();
+    public ArrayList<String> yValue = new ArrayList<>();
+
+    Calendar calendar;
 
     private TextView mDisplaydate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
@@ -86,20 +92,20 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         setContentView(R.layout.activity_history);
 
         // used to format dates
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("M-dd-yyyy");
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
 
         // generate Dates
-        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
         Date d1 = calendar.getTime();
         calendar.add(Calendar.DATE, 1);
         Date d2 = calendar.getTime();
         calendar.add(Calendar.DATE, 1);
         Date d3 = calendar.getTime();
 
-        GraphView graph = (GraphView) findViewById(R.id.graph);
+        graph = (GraphView) findViewById(R.id.graph);
 
-        // populate series with DataPoints
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
+//         populate series with DataPoints
+        series = new LineGraphSeries<>(new DataPoint[] {
                 new DataPoint(d1, 100),
                 new DataPoint(d2, 150),
                 new DataPoint(d3, 230)
@@ -113,12 +119,12 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
         // set manual Y bounds
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(100);
-        graph.getViewport().setMaxY(200);
+        graph.getViewport().setMinY(0);
+        graph.getViewport().setMaxY(300);
 
         // enable scaling and scrolling
-        graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-        graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+        graph.getViewport().setScalable(false); // enables horizontal zooming and scrolling
+        graph.getViewport().setScalableY(false); // enables vertical zooming and scrolling
 
         // add a new series to the graph
         graph.addSeries(series);
@@ -363,11 +369,47 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             else
                 // clears old list so it doesnt double stack / repeat Data twice
                 dbgsUList.clear();
-            for(String dbu : dbgsunitList){
-                dbgsUList.add(dbu);
+                for (int i = 0; i < dbgsunitList.size(); i++) {
+                    String dbu = dbgsunitList.get(i);
+                    dbgsUList.add(dbu);
+                    if (i > 0) {
+                        String[] date = dbu.split("T");
+                        // values are seperated by tabs not spaces.
+                        String[] value = dbu.split("\t");
+                        xValue.add(date[0]);
+                        yValue.add(value[1]);
+                        Log.i("x-value", xValue.get(i-1));
+                        Log.i("y-value", yValue.get(i-1));
+                    }
+                }
+            calendar = Calendar.getInstance();
+            Date d1 = calendar.getTime();
+            calendar.add(Calendar.DATE, 1);
+            Date d2 = calendar.getTime();
+            calendar.add(Calendar.DATE, 1);
+            Date d3 = calendar.getTime();
+                series.resetData(new DataPoint[] { new DataPoint(d1,100), new DataPoint(d2, 150), new DataPoint(d3, 200)});
 
+
+//                for (String dbu : dbgsunitList) {
+//                    dbgsUList.add(dbu);
+//                    Log.i("Well-Data", dbu);
+//                    if (i > 0) {
+//                        String[] temp = dbu.split("T");
+//                        String[] temp2 = dbu.split(" ");
+//                        String[] temp3 = temp2[1].split("f");
+//                        xValue.add(temp[0]);
+//                        yValue.add(temp3[0]);
+////                        Log.i("x-value", xValue.get(i));
+//////                        Log.i("y-value", yValue.get(i));
+//                        Log.i("Armenian", "Test");
+//                    }
+////                    Log.i("Armenian", "Test");
+//                    i++;
+//
+//                }
             }
-        }
+
     };
 
     //*****************************WELL RecylerView Ends ******************************************
@@ -414,6 +456,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 //        testerarraylist
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
             lv.setAdapter(adapter);
+            Log.i("xValue", "hello");
         }
         if (isRiverNull == false){
             addRivers(RiverID);
