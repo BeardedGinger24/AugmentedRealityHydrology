@@ -173,6 +173,16 @@
                 android:onClick="toggleSoil"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/soil_bb_icon" />
+            <ImageButton
+                android:id="@+id/imageButton_Snotel"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:onClick="toggleSnotel"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/snotel_res_ico" />
 
             <ImageButton
                 android:id="@+id/imageButton_Mountain"
@@ -362,6 +372,17 @@
             android:layout_marginTop="360dp"
             android:text="@string/soilMoisture"
             android:onClick="toggleSoil"
+            android:textColor="@color/white"/>
+        <Switch
+            android:id="@+id/switch13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="360dp"
+            android:text="Snotel"
+            android:onClick="toggleSnotel"
             android:textColor="@color/white"/>
 
         <LinearLayout

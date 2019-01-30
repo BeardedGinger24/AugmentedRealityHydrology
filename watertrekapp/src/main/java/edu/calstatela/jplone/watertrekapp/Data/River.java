@@ -7,6 +7,7 @@ import java.util.List;
 public class River {
     public static final int TYPE_ID = 69;
     public static final int DISCHARGE_UNITS = 70;
+    public static final int AVGFLUX = 71;
     private String comId,lengthKm, shapeLength,fType;
     private List Multiyline;
     private String siteTpCd;

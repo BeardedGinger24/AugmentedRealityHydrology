@@ -30,6 +30,12 @@ public class RiverService {
         NetworkTask nt = new NetworkTask(callback,River.DISCHARGE_UNITS);
         nt.execute(url);
     }
+    public static void avgFlux(NetworkTask.NetworkCallback callback, String startDate , String endDate, String comid){
+        String comID = comid;
+      String url =  " https://watertrek.jpl.nasa.gov/hydrology/rest/river/comid/1176550/avg/2016-01-28T00:00:00/2019-01-28T00:00:00";
+        NetworkTask nt = new NetworkTask(callback,River.AVGFLUX);
+        nt.execute(url);
+    }
 
     public static void getRivers(NetworkTask.NetworkCallback callback, double latitude, double longitude, double radius) {
         double[] gpsPoints = getPolygon(latitude, longitude, radius);
@@ -146,21 +152,21 @@ public class RiverService {
 
     public static List parseDischarges(String line){
         Log.d("discharge" , line);
-        List<String> unitList = new ArrayList();
+        List<String> unitdisList = new ArrayList();
         String[] rowEntry = line.split("\n");
         if (rowEntry[1].equals("null")){
-            return unitList ;
+            return unitdisList ;
         }
         if (rowEntry[1] == null){
-            return unitList ;
+            return unitdisList ;
         }
 
         for(int i=0; i<rowEntry.length;i++){
-            unitList.add(rowEntry[i]);
+            unitdisList.add(rowEntry[i]);
         }
-        Log.d("discharge",unitList.get(2));
 
-        return unitList;
+        Log.d("discharge", "END");
+        return unitdisList;
 
     }
 

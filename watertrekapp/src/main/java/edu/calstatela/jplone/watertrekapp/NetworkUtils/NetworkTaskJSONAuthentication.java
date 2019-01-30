@@ -1,4 +1,4 @@
-package edu.calstatela.jplone.watertrekapp.DataService;
+package edu.calstatela.jplone.watertrekapp.NetworkUtils;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,9 +17,7 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 
-// HOW to retrieve river DATA USING JSON instead of xml/text
-public class RiverJSON {
-
+public class NetworkTaskJSONAuthentication  {
 
 
     public String readJSONFeed(String address) {
@@ -36,6 +34,7 @@ public class RiverJSON {
         try {
             Authenticator.setDefault(new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
+
                     return new PasswordAuthentication("water", "water4us!".toCharArray());
                 }
             });
@@ -70,10 +69,11 @@ public class RiverJSON {
     private class ReadJSONFeedTask extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... urls) {
-            Log.d("JSON", "HERE IS GOING TO GO THE JSONCALLLS!!!!");
+            Log.d("JSON", "ReadingJSONFEED CURRENTLY...");
             return readJSONFeed(urls[0]);
         }
 
+        // depends on JSONOBJECT
         protected void onPostExecute(String result) {
             try {
                 JSONObject riverJsonOBJ = new JSONObject(result);
@@ -100,6 +100,5 @@ public class RiverJSON {
 
     // launches json search to retrieve data
 //    new ReadJSONFeedTask().execute(url);
-
 
 }

@@ -54,6 +54,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     String RiverID;
     String ReservoirID;
     String SoilMoistureID;
+    // checks to see if id was passed thru
     Boolean isWellNull;
     Boolean isRiverNull;
     Boolean isReservoirNull;
@@ -145,6 +146,8 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         graph.getGridLabelRenderer().setHumanRounding(false);
         // count of the horizontal labels, that will be shown at one time
         graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+
+
 
     Button startButton = (Button)findViewById(R.id.sdate);
     startButton.setOnClickListener(new View.OnClickListener(){
@@ -304,7 +307,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             Log.d("checkDate","yearstartdate is correct");
 
             //wrong month input
-            if (monthStartdate > monthEnddate){
+            if ((monthStartdate > monthEnddate) && (yearStartDate == yearEndDate)){
                 Log.d("checkDate","monthstartdate is Wrong cannot search backwards!!!");
                 Toast.makeText(getApplicationContext(), "End Date cannot Preceed Start Date", Toast.LENGTH_LONG).show();
                 return false;
@@ -335,9 +338,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     }
 
     private void addWells(String WELLID){
-//        //$$$$$$$$$$$$$$$$$$ clear list so things dont pile up twice
-//        dbgsUList.clear();
-//        dateVerifier();
+
         if (dateVerifier() != false){
             WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate,WELLID);
         }
@@ -347,6 +348,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     private void addRivers(String RiverID){
 //        dateVerifier();
         if (dateVerifier() != false){
+            Log.d("discharge", "Calling rivernetworkcallback");
             RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
         }
     }
@@ -376,17 +378,22 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     NetworkTask.NetworkCallback riverNetworkCallback = new NetworkTask.NetworkCallback() {
         @Override
         public void onResult(int type, String result) {
+            Log.d("discharge", "before parsingdischarges");
             List<String> dischargeList = RiverService.parseDischarges(result);
+            Log.d("discharge", "after parsingdischarges");
             if (dischargeList.size() < 1){
-                Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
+                Log.d("discharge", "No information has been recorded thus far");
+                Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             }
-            else
+            else {
                 // clears old list so it doesnt double stack / repeat Data twice
-                dischargeList.clear();
-            for(String dsl : dischargeList){
-                dischargeList.add(dsl);
+               // dischargeList.clear();
+                for (String dsl : dischargeList) {
+                    Log.d("discharge", dsl);
+                    dischargeList.add(dsl);
 
+                }
             }
         }
     };
@@ -409,14 +416,15 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     {
 //        Log.d("wwwid" , WELLID);
         if(isWellNull == false){
-            addWells(WELLID);
-            ListView lv = findViewById(R.id.historyList);
-//        testerarraylist
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
-            lv.setAdapter(adapter);
+//            addWells(WELLID);
+//            ListView lv = findViewById(R.id.historyList);
+////        testerarraylist
+//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
+//            lv.setAdapter(adapter);
         }
         if (isRiverNull == false){
             addRivers(RiverID);
+            Log.d("discharge", "ADDED RIVERES ");
             ListView lv = findViewById(R.id.historyList);
 //        testerarraylist
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dischargeList);

@@ -83,14 +83,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private boolean tWell = false;
     private boolean tRiver = false;
     private boolean tSoil = false;
+    private boolean tSnotel = false;
 
     private Switch toggleSoil;
     private Switch toggleRiver;
     private Switch toggleMountain;
     private Switch toggleWell;
     private Switch toggleReservoir;
+    private Switch toggleSnotel;
 
-    private ImageButton ibWell, ibRiver, ibReservoir, ibSoilMoisture, ibMtn;
+    private ImageButton ibWell, ibRiver, ibReservoir, ibSoilMoisture, ibMtn, ibSnotel;
 
     private int radius = 20;
     Button mesh_demo;
@@ -164,12 +166,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
         ibSoilMoisture = (ImageButton) findViewById(R.id.imageButton_Soil_Moisture);
         ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
+        ibSnotel = (ImageButton) findViewById(R.id.imageButton_Snotel);
 
         ibWell.setBackgroundTintMode(null);
         ibMtn.setBackgroundTintMode(null);
         ibSoilMoisture.setBackgroundTintMode(null);
         ibReservoir.setBackgroundTintMode(null);
         ibRiver.setBackgroundTintMode(null);
+        ibSnotel.setBackgroundTintMode(null);
 
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
@@ -178,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleWell = (Switch)findViewById(R.id.switch9);
         toggleRiver = (Switch)findViewById(R.id.switch10);
         toggleSoil = (Switch)findViewById(R.id.switch12);
+        toggleSnotel = (Switch) findViewById(R.id.switch13);
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
@@ -361,6 +366,25 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     }
 
+
+    public void toggleSnotel(View v) {
+        if(isLoggedIn) {
+            tSnotel = !tSnotel;
+        }else{
+            tSnotel = false;
+        }
+        if(tSnotel) {
+            addSnotelPillows();
+            ibSnotel.setBackgroundTintMode(PorterDuff.Mode.SRC);
+            ibSnotel.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+            toggleSnotel.setChecked(true);
+        } else {
+            removeSnotelPillows();
+            ibSnotel.setBackgroundTintMode(null);
+            toggleSnotel.setChecked(false);
+        }
+    }
+
     //MESHDEMO
     public void meshDemo(View view){
         Intent intent = new Intent(this, DisplayMeshActivity.class);
@@ -380,6 +404,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleMountain(v);
         toggleWell(v);
         toggleSoil(v);
+        toggleSnotel(v);
         toggleRiver(v);
 
         toggleRiver.setChecked(false);
@@ -387,6 +412,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleWell.setChecked(false);
         toggleMountain.setChecked(false);
         toggleReservoir.setChecked(false);
+        toggleSnotel.setChecked(false);
 
         toggleSwitches();
     }
@@ -406,6 +432,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleWell.setClickable(isLoggedIn);
         toggleMountain.setClickable(isLoggedIn);
         toggleSoil.setClickable(isLoggedIn);
+        toggleSnotel.setClickable(isLoggedIn);
     }
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -676,6 +703,29 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         }
     };
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //     Snotel Data Methods
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void addSnotelPillows(){
+
+    }
+
+
+    public void removeSnotelPillows(){
+
+    }
+
+
+
+
+
+
+
+
+
 
     ////////////////////////////////////////////////////////////////////////////////
     ///
