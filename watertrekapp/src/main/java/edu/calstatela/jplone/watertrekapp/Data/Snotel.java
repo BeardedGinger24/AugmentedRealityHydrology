@@ -5,6 +5,7 @@ package edu.calstatela.jplone.watertrekapp.Data;
  */
 
 public class Snotel {
+
     String stationId;
     String lon;
     String lat;
@@ -69,5 +70,16 @@ public class Snotel {
 
     public void setUnits(String units) {
         this.units = units;
+    }
+
+
+    public String toString() {
+        String ret = "";
+        ret += "type:            Snotel\n";
+        ret += "stationId:    " + stationId + "\n";
+        ret += "lat:             " + lat + "\n";
+        ret += "lon:             " + lon + "\n";
+
+        return ret;
     }
 }

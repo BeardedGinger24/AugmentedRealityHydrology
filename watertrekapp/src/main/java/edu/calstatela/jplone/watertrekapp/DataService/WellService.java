@@ -15,6 +15,7 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 
 public class WellService {
 
+
     //  Get calls  \\
 
     public static void getWell(NetworkTask.NetworkCallback callback, double latitude, double longitude){
@@ -80,11 +81,12 @@ public class WellService {
         NetworkTask nt = new NetworkTask(callback, Well.STD_ID);
         nt.execute(url);
     }
-    public static void getDBGSunits(NetworkTask.NetworkCallback callback, String startDate , String endDate){
-        int masterSiteId = 91133;
+    public static void getDBGSunits(NetworkTask.NetworkCallback callback, String startDate , String endDate, String masterSiteId){
+//        int masterSiteId = 91133; example ID
+        String masterId = masterSiteId;
 //        yr/month/day
         // returns  history of depth below ground surface  DBGS
-        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/well/master_site_id/"+masterSiteId+"/dbgs/from/"+startDate+"/through/"+endDate);
+        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/well/master_site_id/"+masterId+"/dbgs/from/"+startDate+"/through/"+endDate);
         NetworkTask nt = new NetworkTask(callback, Well.DBGS_UNTIS);
         nt.execute(url);
     }
@@ -107,7 +109,7 @@ public class WellService {
         String[] lines = line.split("\n");
         for(int k = 1; k <lines.length; k++){
             //Log.d("nSplit",lines[k]);
-                wellAvg += lines[k];
+            wellAvg += lines[k];
         }
         return wellAvg;
     }
@@ -157,6 +159,12 @@ public class WellService {
         Log.d("dbgs" , line);
         List<String> unitList = new ArrayList();
         String[] rowEntry = line.split("\n");
+        if (rowEntry[1].equals("null")){
+            return unitList ;
+        }
+        if (rowEntry[1] == null){
+            return unitList ;
+        }
 
         for(int i=0; i<rowEntry.length;i++){
             unitList.add(rowEntry[i]);

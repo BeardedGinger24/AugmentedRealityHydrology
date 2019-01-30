@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,12 +35,15 @@ public class WellActivity extends AppCompatActivity{
     IMapController mapController;
     ItemizedOverlayWithFocus<OverlayItem> mOverlay;
     ArrayList<OverlayItem> markers;
+    String  welluniqueID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         float lat = Float.parseFloat(getIntent().getStringExtra("lat"));
         float lon = Float.parseFloat(getIntent().getStringExtra("lon"));
+        welluniqueID = getIntent().getStringExtra("masterSiteId");
+        Log.d("wwwid",welluniqueID);
         defaultLocation = new GeoPoint(lat,lon);
         TextView txtData = findViewById(R.id.txt_data);
         txtData.setText(getIntent().getStringExtra("data"));
@@ -66,6 +70,7 @@ public class WellActivity extends AppCompatActivity{
             public void onClick(View v) {
                 Intent intent = new Intent(WellActivity.this,
                         HistoryActivity.class);
+                intent.putExtra("wellID", welluniqueID);
                 startActivity(intent); // startActivity allow you to move
             }
         });
@@ -75,9 +80,11 @@ public class WellActivity extends AppCompatActivity{
         intent.putExtra("data", e.toString());
         intent.putExtra("lat",e.getLat());
         intent.putExtra("lon",e.getLon());
+        intent.putExtra("masterSiteId",e.getMasterSiteId());
         currentActivity.startActivity(intent);
     }
     @Override
+
     protected void onPause() {
         super.onPause();
         map.onPause();

@@ -9,9 +9,7 @@ import java.util.List;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 
-/**
- * Created by nes on 3/5/18.
- */
+
 
 public class ReservoirService {
 
@@ -28,7 +26,7 @@ public class ReservoirService {
         // use our longitude and latitude 3rd and 4th column  to filter site NO  and description 1st and 2nd column
         // String url ="https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no/"+ site_no+"/storage";
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no";        //Log.d("URL", ""+url);
-       // NetworkTask nt = new NetworkTask(callback, Reservoir.ADDTL_ID);
+        // NetworkTask nt = new NetworkTask(callback, Reservoir.ADDTL_ID);
         NetworkTask nt = new NetworkTask(callback, Reservoir.TYPE_ID);
 
         //Log.d("getSTRG", "In REST CALL");
@@ -58,7 +56,7 @@ public class ReservoirService {
     //Add created Reservoir objects to list and return.
     //hardcoded value to show reserviors of closest 100  km Reservior
     //  becasue none within 25km where i live just pass range as a parameter to fix
-    public static List parseAllReservoirs(String line, float longitu, float lat ){
+    public static List parseAllReservoirs(String line, float longitu, float lat , int radius){
         double mycurrLat = (double) lat;
         double mycurrlong = (double) longitu;
         // , float longitu, float lat
@@ -79,9 +77,13 @@ public class ReservoirService {
             double longy =  Double.parseDouble(rnm.getLon());
             // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
             // if less than or equal to range (100) add reserNear to List and return it back
-            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= 100)
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius)
             {
                 reservoirNear.add(rnm);
+                Log.d("Reser",rnm.getSiteNo() + " rerservior within range ");
+            }
+            else {
+                Log.d("Reser",rnm.getSiteNo() + " rerservior NOT  within range ");
             }
 
         }
