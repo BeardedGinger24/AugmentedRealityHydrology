@@ -80,9 +80,7 @@ public class MeshService {
                     }
                     vector3s[index] = new Vector3(x, heightVal, y);
                     if (maxHeight < heightVal) {
-                        Log.d(TAG,"Before:"+maxHeight);
                         maxHeight = heightVal;
-                        Log.d(TAG,"After:"+maxHeight);
                     }
                     index++;
                 }
@@ -109,7 +107,7 @@ public class MeshService {
                 }
             }
             int[] triangles = generateTriangles(width/baseDownSample,height/baseDownSample);
-            meshData = new MeshData(vector3s,triangles,(float)vector3s[(vector3s.length/2)-1].getY());
+            meshData = new MeshData(vector3s,triangles);
             meshData.setLatlonAlt(new float[]{lat,lon,alt});
             return meshData;
         }

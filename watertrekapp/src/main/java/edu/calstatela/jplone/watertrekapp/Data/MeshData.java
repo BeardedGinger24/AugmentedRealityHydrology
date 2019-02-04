@@ -1,16 +1,16 @@
 package edu.calstatela.jplone.watertrekapp.Data;
 public class MeshData {
-    public Vector3[] Vertices;
+    public Vector3[] Vectors;
     public int[] Triangles;
-    public float UserElevation;
     public float[] latlonalt;
+
     String dir;
     String filenameTerrain;
     String filenameVecs;
-    public MeshData(Vector3[] vertices, int[] triangles,float userElevation) {
-        Vertices = vertices;
+
+    public MeshData(Vector3[] vector3s, int[] triangles) {
+        Vectors = vector3s;
         Triangles = triangles;
-        UserElevation = userElevation;
     }
     public void setFilenameTerrain(String filename){
         this.filenameTerrain = filename;

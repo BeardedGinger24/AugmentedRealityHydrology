@@ -123,7 +123,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_LAT,loc[0]);
         values.put(KEY_LON,loc[1]);
         values.put(KEY_ALT,loc[2]);
-        db.insert(TABLE_MESHDATA,null,values);
+        db.replace(TABLE_MESHDATA,null,values);
+        //db.insert(TABLE_MESHDATA,null,values);
     }
     public float[] getMeshData(SQLiteDatabase db, String filename){
         String query = "SELECT "+"*"+" FROM " + TABLE_MESHDATA + " WHERE " + KEY_FILENAME_TERRAIN + " = " + "'"+filename+"'";

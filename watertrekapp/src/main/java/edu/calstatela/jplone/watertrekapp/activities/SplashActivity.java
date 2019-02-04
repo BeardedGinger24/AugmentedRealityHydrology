@@ -161,13 +161,13 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         float[] verts = new float[meshData.Triangles.length*3];
         int index = 0;
         for(int i = 0; i<meshData.Triangles.length-1; i++){
-            verts[index] = (float) meshData.Vertices[meshData.Triangles[i]].getX();
-            verts[index+1] = (float) meshData.Vertices[meshData.Triangles[i]].getY();
-            verts[index+2] = (float) meshData.Vertices[meshData.Triangles[i]].getZ();
+            verts[index] = (float) meshData.Vectors[meshData.Triangles[i]].getX();
+            verts[index+1] = (float) meshData.Vectors[meshData.Triangles[i]].getY();
+            verts[index+2] = (float) meshData.Vectors[meshData.Triangles[i]].getZ();
             index += 3;
         }
 
-        writeToFile(meshData.Vertices,meshData.getFilenameTerrainVecs());
+        writeToFile(meshData.Vectors,meshData.getFilenameTerrainVecs());
         writeToFile(verts,meshData.getFilenameTerrain());
     }
     public void writeToFile(float[] input,String filename){

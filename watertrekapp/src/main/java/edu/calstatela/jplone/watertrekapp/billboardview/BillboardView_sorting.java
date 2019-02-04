@@ -11,18 +11,42 @@ import java.util.ArrayList;
 
 import edu.calstatela.jplone.arframework.graphics3d.camera.Camera3D;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.BillboardInfo;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.BillboardMaker;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.ColorHolder;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
 import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.VectorMath;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
-
+import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
+import edu.calstatela.jplone.watertrekapp.Data.Vector3;
+import edu.calstatela.jplone.watertrekapp.R;
 
 
 public class BillboardView_sorting extends SensorARView{
+    private static final String TAG = "waka-bbView";
+    private TouchCallback mTouchCallback = null;
 
+    private Context mContext;
+    private int deviceOrientation = 0;
+
+    private ArrayList<BillboardInfo> mAddList = new ArrayList<>();
+    private ArrayList<Integer> mRemoveList = new ArrayList<>();
+    private ArrayList<BillboardInfo> mCurrentInfos = new ArrayList<>();
+    private ArrayList<Entity> mEntityList;
+
+    ArrayList<MeshInfo> meshAddList = new ArrayList<>();
+    ArrayList<String> meshRemoveList = new ArrayList<>();
+    ArrayList<MeshInfo> meshCurrentInfos = new ArrayList<>();
+    ArrayList<Entity> meshList;
+
+    float[] loc;
+    float[] mXYZ;
+    Vector3[] vecs;
+    private Camera3D mCamera;
 
     public BillboardView_sorting(Context context){
         super(context);
@@ -41,11 +65,16 @@ public class BillboardView_sorting extends SensorARView{
             mRemoveList.add(id);
         }
     }
-    public void addMesh(MeshData meshData){
+    public void addMesh(MeshInfo info){
+        vecs = info.getVecs();
+        loc = info.getLatlonalt();
+        synchronized(meshAddList) {
+            meshAddList.add(info);
+        }
     }
-    public void removeMesh(int id){
-        synchronized(mRemoveList) {
-            mRemoveList.add(id);
+    public void removeMesh(String type){
+        synchronized(meshRemoveList) {
+            meshRemoveList.add(type);
         }
     }
     public interface TouchCallback{
@@ -99,6 +128,10 @@ public class BillboardView_sorting extends SensorARView{
         mCamera.setDepthTestEnabled(false);
 
         mEntityList = new ArrayList<>();
+        meshList = new ArrayList<>();
+
+        loc = new float[3];
+        mXYZ = new float[3];
     }
 
     @Override
@@ -119,14 +152,19 @@ public class BillboardView_sorting extends SensorARView{
         if(getOrientation() != null)
             mCamera.setOrientationQuaternion(getOrientation(), deviceOrientation);
 
-        // If existing Billboards need to be re-added due to new GLContext, re-add them
+        // If existing Billboards/Meshes need to be re-added due to new GLContext, re-add them
         if(mEntityList.isEmpty() && !mCurrentInfos.isEmpty() && this.getLocation() != null){
             for(BillboardInfo info : mCurrentInfos){
                 newEntity(info);
             }
         }
+        if(meshList.isEmpty() && !meshCurrentInfos.isEmpty() && this.getLocation() != null){
+            for(MeshInfo info : meshCurrentInfos){
+                newMesh(info);
+            }
+        }
 
-        // If new Billboards need to be added... add them
+        // If new Billboards/Meshes need to be added... add them
         synchronized(mAddList) {
             if (!mAddList.isEmpty() && getLocation() != null) {
                 for (BillboardInfo info : mAddList) {
@@ -136,8 +174,16 @@ public class BillboardView_sorting extends SensorARView{
                 mAddList.clear();
             }
         }
-
-        // If billboard need to be removed... remove
+        synchronized(meshAddList) {
+            if (!meshAddList.isEmpty() && getLocation() != null) {
+                for (MeshInfo info : meshAddList) {
+                    meshCurrentInfos.add(info);
+                    newMesh(info);
+                }
+                meshAddList.clear();
+            }
+        }
+        // If billboard/Mesh need to be removed... remove
         synchronized(mRemoveList) {
             if (!mRemoveList.isEmpty()) {
                 for (Integer id : mRemoveList) {
@@ -151,45 +197,66 @@ public class BillboardView_sorting extends SensorARView{
                 mRemoveList.clear();
             }
         }
-
-        // Update Entities to be properly rotated and scaled
-        if(getLocation() != null) {
-            float[] loc = getLocation();
-            float[] xyz = GeoMath.latLonAltToXYZ(loc);
-            for (Entity e : mEntityList) {
-                float[] pos = e.getPosition();
-                e.setLookAtWithScale(pos[0], 0, pos[2], xyz[0], xyz[1], xyz[2], 0, 1, 0, 0.01f);
+        synchronized(meshRemoveList) {
+            if (!meshRemoveList.isEmpty()) {
+                for (String type : meshRemoveList) {
+                    for (int i = 0; i < meshCurrentInfos.size(); i++) {
+                        if (meshCurrentInfos.get(i).getType() == type) {
+                            meshCurrentInfos.remove(i);
+                            meshList.remove(i);
+                        }
+                    }
+                }
+                meshRemoveList.clear();
             }
         }
+//        //Update Entities to be properly rotated and scaled
+//        if(getLocation() != null) {
+//            float[] loc = getLocation();
+//            float[] xyz = GeoMath.latLonAltToXYZ(loc);
+//            for (Entity e : mEntityList) {
+//                //float[] bbloc = getbbloc();
+//                float[] pos = e.getPosition();
+//                e.setPosition(pos[0],pos[1],pos[2]);
+//                //e.setLookAtWithScale(pos[0], 0, pos[2], xyz[0], xyz[1], xyz[2], 0, 1, 0, 0.01f);
+//            }
+//            for(Entity e : meshList){
+//                float[] pos = e.getPosition();
+//                e.setPosition(pos[0],pos[1],pos[2]);
+//            }
+//        }
 
-        // Draw billboards
+        // Draw billboards/Meshes
         if(getLocation() != null) {
+            for(Entity e : meshList){
+                e.draw(mCamera.getProjectionMatrix(),mCamera.getViewMatrix(),e.getModelMatrix());
+            }
             for (Entity e : mEntityList) {
                 e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
             }
         }
 
 
-        // Maintain Billboards sorted based on distance from location
-        if(getLocation() != null) {
-            float[] loc = getLocation();
-            float[] xyz = GeoMath.latLonAltToXYZ(loc);
-
-            float prevDistance = 0;
-            for (int i = 0; i < mEntityList.size(); i++) {
-                Entity e = mEntityList.get(i);
-                float[] pos = e.getPosition();
-                float distance = VectorMath.distance(xyz, pos);
-                if(distance > prevDistance && i > 0){
-                    mEntityList.set(i, mEntityList.get(i-1));
-                    mEntityList.set(i-1, e);
-                    BillboardInfo temp = mCurrentInfos.get(i);
-                    mCurrentInfos.set(i, mCurrentInfos.get(i-1));
-                    mCurrentInfos.set(i-1, temp);
-                }
-                prevDistance = distance;
-            }
-        }
+//        //Maintain Billboards sorted based on distance from location
+//        if(getLocation() != null) {
+//            float[] loc = getLocation();
+//            float[] xyz = GeoMath.latLonAltToXYZ(loc);
+//
+//            float prevDistance = 0;
+//            for (int i = 0; i < mEntityList.size(); i++) {
+//                Entity e = mEntityList.get(i);
+//                float[] pos = e.getPosition();
+//                float distance = VectorMath.distance(xyz, pos);
+//                if(distance > prevDistance && i > 0){
+//                    mEntityList.set(i, mEntityList.get(i-1));
+//                    mEntityList.set(i-1, e);
+//                    BillboardInfo temp = mCurrentInfos.get(i);
+//                    mCurrentInfos.set(i, mCurrentInfos.get(i-1));
+//                    mCurrentInfos.set(i-1, temp);
+//                }
+//                prevDistance = distance;
+//            }
+//        }
 
 
     }
@@ -248,51 +315,62 @@ public class BillboardView_sorting extends SensorARView{
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private void newEntity(BillboardInfo info){
-        Billboard bb = BillboardMaker.make(mContext, info.iconResource);
-        ScaleObject sbb = new ScaleObject(bb, 2, 1, 1);
+        Billboard bb = new BillboardMaker().make(mContext, info.iconResource);
+        ScaleObject sbb = new ScaleObject(bb, 0.02f, 0.01f, 0.01f);
         Entity e = new Entity();
         e.setDrawable(sbb);
-        e.setLatLonAlt(new float[]{info.lat, info.lon, info.alt});
+        float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},loc);
+        e.setPosition(bbLoc[0],-0.03f-bbLoc[1],bbLoc[2]);
+        e.yaw(45);
+        Log.d(TAG,"BB XYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
         mEntityList.add(e);
     }
+    private void newMesh(MeshInfo info){
+        float[] temp = info.getLatlonalt();
+        float[] meshLoc = getbbLoc(temp,getLocation());
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //      private variables
-    //
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    private static final String TAG = "waka-bbView";
-    private TouchCallback mTouchCallback = null;
+        Model mesh = new Model();
+        mesh.loadVertices(info.getVerts());
+        mesh.setDrawingModeTriangles();
+        ColorHolder purple = new ColorHolder(mesh, new float[]{1, 0, 1, 0.01f});
+        Entity entity1 = new Entity();
+        entity1.setDrawable(purple);
+        entity1.setPosition(meshLoc[0],-0.04f-meshLoc[1],meshLoc[2]);
+        //entity1.setLatLonAlt(info.getLatlonalt());
+        meshList.add(entity1);
 
-    private Context mContext;
-    private int deviceOrientation = 0;
-
-    private ArrayList<BillboardInfo> mAddList = new ArrayList<>();
-    private ArrayList<Integer> mRemoveList = new ArrayList<>();
-
-    private ArrayList<BillboardInfo> mCurrentInfos = new ArrayList<>();
-    private ArrayList<Entity> mEntityList;
-
-    private Camera3D mCamera;
+        Log.d(TAG,"XYZ :"+temp[0]+","+temp[1]+","+temp[2]);
+        float[] temp2 = entity1.getPosition();
+        Log.d(TAG,"XYZ :"+temp2[0]+","+temp2[1]+","+temp2[2]);
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //      utility class
-    //
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    class BillboardInfo{
-        public BillboardInfo(int id, int iconResource, String title, String text, float lat, float lon, float alt){
-            this.id = id; this.iconResource = iconResource;
-            this.title = title; this.text = text;
-            this.lat = lat; this.lon = lon; this.alt = alt;
+        Model wireFrame = new Model();
+        wireFrame.loadVertices(info.getVerts());
+        wireFrame.setDrawingModeLines();
+        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,1f});
+        Entity entity2 = new Entity();
+        entity2.setDrawable(black);
+        entity2.setPosition(meshLoc[0],-0.04f-meshLoc[1],meshLoc[2]);
+        //entity2.setLatLonAlt(info.getLatlonalt());
+        meshList.add(entity2);
+        mXYZ = entity1.getPosition();
+    }
+    public float[] getbbLoc(float[] bbloc,float[] meshloc){
+        float bbx = bbloc[1];
+        float bby = bbloc[0];
+
+        float mx = meshloc[1];
+        float my = meshloc[0];
+
+        double x = (Math.abs(mx-0.20)-Math.abs(bbx))/0.002;
+        double y = (Math.abs(my+0.20)-Math.abs(bby))/0.002;
+        int index = (int) (x+(y*200));
+
+        if(index<vecs.length && index>=0) {
+            Vector3 vec = vecs[index];
+            float[] result = { (float) vec.getX(),(float) vec.getY(),(float) vec.getZ()};
+            return result;
         }
-        public int id;
-        public int iconResource;
-        public String title = "";
-        public String text = "";
-        public float lat;
-        public float lon;
-        public float alt;
+        return new float[]{0,0,0};
     }
 }

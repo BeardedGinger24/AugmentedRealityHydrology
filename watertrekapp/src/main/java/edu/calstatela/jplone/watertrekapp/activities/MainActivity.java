@@ -2,6 +2,7 @@ package edu.calstatela.jplone.watertrekapp.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,16 +34,20 @@ import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Orientation;
+import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
+import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.Data.Snotel;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
+import edu.calstatela.jplone.watertrekapp.Data.Vector3;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
 import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
+import edu.calstatela.jplone.watertrekapp.Helpers.CSVReader;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.LoginService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
@@ -58,6 +64,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private static final String TAG = "waka-MainActivity";
     private static final int CREDENTIALS_ACTIVITY_REQUEST_CODE = 5;
+
+
+    private DatabaseHelper helper;
+    private SQLiteDatabase db;
 
     private RelativeLayout drawerContentsLayout;
     private DrawerLayout mainDrawerLayout;
@@ -370,8 +380,26 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //MESHDEMO
     public void meshDemo(View view){
         GeoMath.setReference(arview.getLocation());
-        Intent intent = new Intent(this, DisplayMeshActivity.class);
-        startActivity(intent);
+        MeshInfo info = getMeshInfo("terrain");
+        arview.addMesh(info);
+//        Intent intent = new Intent(this, DisplayMeshActivity.class);
+//        startActivity(intent);
+    }
+    public MeshInfo getMeshInfo(String type){
+        File file1 = new File(getFilesDir(),"meshvecs");
+        Vector3[] vecs= CSVReader.readVecFile(file1);
+
+        File file2 = new File(getFilesDir(),"terrain");
+        float[] verts = CSVReader.readCSV(file2);
+
+        float[] loc = meshdataLoc(file2.getName());
+
+        return new MeshInfo(vecs,type,loc,verts);
+    }
+    public float[] meshdataLoc(String filename){
+        helper = new DatabaseHelper(this);
+        db=helper.getReadableDatabase();
+        return helper.getMeshData(db,filename);
     }
 
     public void logout(View v){
@@ -544,15 +572,18 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             // Check to see if GET call is empty if so display message to user else continue
             if (rreservoirList.size() >=1){
                 for(Reservoir reservoirr : rreservoirList){
+                    try {
+                        reservoirList.add(reservoirr);
+                        arview.addBillboard(
+                                Integer.parseInt(reservoirr.getSiteNo()),
+                                R.drawable.reservoir_bb_icon,
+                                "Reservoir #" + reservoirr.getSiteNo(),
+                                "(" + reservoirr.getLat() + ", " + reservoirr.getLon() + ")",
+                                Float.parseFloat(reservoirr.getLat()), Float.parseFloat(reservoirr.getLon()), 0
+                        );
+                    }catch(NumberFormatException e) {
 
-                    reservoirList.add(reservoirr);
-                    arview.addBillboard(
-                            Integer.parseInt(reservoirr.getSiteNo()),
-                            R.drawable.reservoir_bb_icon,
-                            "Reservoir #" + reservoirr.getSiteNo(),
-                            "(" + reservoirr.getLat() + ", " + reservoirr.getLon() + ")",
-                            Float.parseFloat(reservoirr.getLat()), Float.parseFloat(reservoirr.getLon()), 0
-                    );
+                    }
 
 
                 }
@@ -598,18 +629,21 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             // Check to see if GET call is empty if so display message to user else continue
             if (soilMoistList.size() >=1){
                 for(SoilMoisture moistySoil : soilMoistList){
-                    Log.d("soily", moistySoil.getWbanno());
+                    try {
+                        Log.d("soily", moistySoil.getWbanno());
 
-                    soilList.add(moistySoil);
-                    arview.addBillboard(
-                            Integer.parseInt(moistySoil.getWbanno()),
+                        soilList.add(moistySoil);
+                        arview.addBillboard(
+                                Integer.parseInt(moistySoil.getWbanno()),
 
-                            R.drawable.soil_bb_icon,
-                            "Soil #" + moistySoil.getWbanno(),
-                            "(" + moistySoil.getLat() + ", " + moistySoil.getLon() + ")",
-                            Float.parseFloat(moistySoil.getLat()), Float.parseFloat(moistySoil.getLon()), 0
-                    );
+                                R.drawable.soil_bb_icon,
+                                "Soil #" + moistySoil.getWbanno(),
+                                "(" + moistySoil.getLat() + ", " + moistySoil.getLon() + ")",
+                                Float.parseFloat(moistySoil.getLat()), Float.parseFloat(moistySoil.getLon()), 0
+                        );
+                    }catch(NumberFormatException e){
 
+                    }
 
                 }
             }
@@ -651,7 +685,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private void removeRiverz(){
         for(River rv : riverList){
             //Removes Soil Moisture  based on there unique ID or Wbanno
-            int id = Integer.parseInt(rv.getComId());
+            int id = Integer.parseInt(rv.getSiteNo());
             arview.removeBillboard(id);
         }
         riverList.clear();

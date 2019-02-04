@@ -37,31 +37,6 @@ public class CredentialsActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_credentials);
 
-        // Setup Layout
-//        LinearLayout verticalLayout = new LinearLayout(this);
-//        verticalLayout.setOrientation(LinearLayout.VERTICAL);
-//
-//        TextView sectionTitleTextView = new TextView(this);
-//        sectionTitleTextView.setText("Watertrek Credentials");
-//
-//        LinearLayout usernameLayout = new LinearLayout(this);
-//        usernameLayout.setOrientation(LinearLayout.HORIZONTAL);
-//        TextView usernameTextView = new TextView(this);
-//        usernameTextView.setText("username: ");
-//        usernameEditText = new EditText(this);
-//        usernameEditText.setMinWidth(200);
-//        usernameLayout.addView(usernameTextView);
-//        usernameLayout.addView(usernameEditText);
-//
-//        LinearLayout passwordLayout = new LinearLayout(this);
-//        passwordLayout.setOrientation(LinearLayout.HORIZONTAL);
-//        TextView passwordTextView = new TextView(this);
-//        passwordTextView.setText("password: ");
-//        passwordEditText = new EditText(this);
-//        passwordEditText.setMinWidth(200);
-//        passwordLayout.addView(passwordTextView);
-//        passwordLayout.addView(passwordEditText);
-
         mUsernameEditText = (TextInputEditText) findViewById(R.id.et_username);
         mPasswordEditText = (TextInputEditText) findViewById(R.id.et_password);
 
@@ -73,13 +48,6 @@ public class CredentialsActivity extends Activity{
 
         mUsernameEditText.addTextChangedListener(new MyTextWatcher(mUsernameEditText));
         mPasswordEditText.addTextChangedListener(new MyTextWatcher(mPasswordEditText));
-
-//        verticalLayout.addView(sectionTitleTextView);
-//        verticalLayout.addView(usernameLayout);
-//        verticalLayout.addView(passwordLayout);
-//        verticalLayout.addView(submitButton);
-
-//        this.setContentView(verticalLayout);
 
         // If default username and password have been provided in the intent, fill in fields
         String currentUsername = getIntent().getStringExtra("username");
@@ -100,12 +68,6 @@ public class CredentialsActivity extends Activity{
         public void onClick(View view) {
             String usernameString = mUsernameEditText.getText().toString();
             String passwordString = mPasswordEditText.getText().toString();
-
-//            if(usernameString.equals("") || usernameString.isEmpty()){
-//
-//            } else if (passwordString.equals("") || passwordString.isEmpty()){
-//
-//            }
 
             if(submitForm()) {
                 Intent intent = new Intent();
