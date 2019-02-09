@@ -103,10 +103,6 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         if(!havePermissions)
             return;
 
-        Animation myanim = AnimationUtils.loadAnimation(this, R.anim.mytransition);
-        tv.startAnimation(myanim);
-        iv.startAnimation(myanim);
-        startBtn.startAnimation(myanim);
         pb.setVisibility(View.INVISIBLE);
         loadingText.setVisibility(View.INVISIBLE);
         startBtn.setVisibility(View.VISIBLE);

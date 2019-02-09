@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private Switch toggleSnotel;
 
     private ImageButton ibWell, ibRiver, ibReservoir, ibSoilMoisture, ibMtn, ibSnotel;
-
+    MeshInfo meshInfo;
     private int radius = 20;
     Button mesh_demo;
     Button obstruct_button;
@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private ArrayList<Snotel> snotelList = new ArrayList<>();
     int mountainPrefix = 2000000000;
 
-    NetworkTask task;
     private boolean isLoggedIn = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -187,6 +186,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainLayout.addView(arview);
 
         mountainList.loadMountains();
+
+        arview.setMeshStatus(false);
+        meshInfo = getMeshInfo("terrain");
     }
 
     @Override
@@ -379,9 +381,17 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     //MESHDEMO
     public void meshDemo(View view){
-        GeoMath.setReference(arview.getLocation());
-        MeshInfo info = getMeshInfo("terrain");
-        arview.addMesh(info);
+        if(arview.meshNull()){
+            arview.addMesh(getMeshInfo("terrain"));
+        }
+        if(arview.getMeshStatus()){
+            arview.setMeshStatus(false);
+            ibMtn.setBackgroundTintMode(null);
+        }else{
+            arview.setMeshStatus(true);
+            ibMtn.setBackgroundTintMode(PorterDuff.Mode.SRC);
+            ibMtn.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+        }
 //        Intent intent = new Intent(this, DisplayMeshActivity.class);
 //        startActivity(intent);
     }
@@ -479,6 +489,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     private void addMountains(){
+        if(arview.meshNull()){
+            arview.addMesh(getMeshInfo("terrain"));
+        }
         for(int i = 0; i < mountainList.size(); i++){
             Landmark l = mountainList.get(i);
             arview.addBillboard(mountainPrefix+i, R.drawable.mtn_res_ico_clr, l.title, l.description, l.latitude, l.longitude, l.altitude);
@@ -499,6 +512,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     private void addWells(){
+        if(arview.meshNull()){
+            arview.addMesh(getMeshInfo("terrain"));
+        }
         float[] loc = arview.getLocation();
         WellService.getWells(wellNetworkCallback, loc[0], loc[1], radius);
     }
@@ -515,6 +531,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         @Override
         public void onResult(int type, String result) {
             List<Well> lWellList = WellService.parseWells(result);
+            Log.d(TAG,result);
             // Check to see if GET call is empty if so display message to user else continue
             if (lWellList.size() >=1){
                 for(Well well :lWellList){
@@ -528,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                                 Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()),0
                         );
                     }catch(NumberFormatException e){
-
+                        Log.d(TAG,e.toString());
                     }
                 }
             }
@@ -549,6 +566,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     private void addReservoirs(){
+        if(arview.meshNull()){
+            arview.addMesh(getMeshInfo("terrain"));
+        }
         ReservoirService.getAllStorageValues(reservoirNetworkCallback);
     }
     private void removeReservoirs(){
@@ -605,6 +625,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     private void addSoilPatches(){
+        if(arview.meshNull()){
+            arview.addMesh(getMeshInfo("terrain"));
+        }
         //retrieves all soil patches
         SoilMoistureService.getSoilMoistures(soilmoistureNetworkCallback);
     }
@@ -668,6 +691,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
 
     private void addRiverz(){
+        if(arview.meshNull()){
+            arview.addMesh(getMeshInfo("terrain"));
+        }
         // Retrieves curr location
         float[] loc = arview.getLocation();
         //Longitude
@@ -729,7 +755,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     public void addSnotelPillows(){
-
+        if(arview.meshNull()){
+            arview.addMesh(getMeshInfo("terrain"));
+        }
     }
 
 

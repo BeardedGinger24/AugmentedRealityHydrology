@@ -17,6 +17,7 @@ import edu.calstatela.jplone.arframework.graphics3d.drawable.ColorHolder;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
 import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
+import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.VectorMath;
@@ -38,16 +39,17 @@ public class BillboardView_sorting extends SensorARView{
     private ArrayList<BillboardInfo> mCurrentInfos = new ArrayList<>();
     private ArrayList<Entity> mEntityList;
 
+    //Scene scene;
     ArrayList<MeshInfo> meshAddList = new ArrayList<>();
-    ArrayList<String> meshRemoveList = new ArrayList<>();
     ArrayList<MeshInfo> meshCurrentInfos = new ArrayList<>();
     ArrayList<Entity> meshList;
 
-    float[] loc;
-    float[] mXYZ;
+    Scene scene;
+    float[] meshLoc;
     Vector3[] vecs;
     private Camera3D mCamera;
 
+    boolean drawMesh;
     public BillboardView_sorting(Context context){
         super(context);
         mContext = context;
@@ -59,7 +61,6 @@ public class BillboardView_sorting extends SensorARView{
             mAddList.add(info);
         }
     }
-
     public void removeBillboard(int id){
         synchronized(mRemoveList) {
             mRemoveList.add(id);
@@ -67,15 +68,19 @@ public class BillboardView_sorting extends SensorARView{
     }
     public void addMesh(MeshInfo info){
         vecs = info.getVecs();
-        loc = info.getLatlonalt();
+        meshLoc = info.getLatlonalt();
         synchronized(meshAddList) {
             meshAddList.add(info);
         }
     }
-    public void removeMesh(String type){
-        synchronized(meshRemoveList) {
-            meshRemoveList.add(type);
-        }
+    public boolean getMeshStatus(){
+        return drawMesh;
+    }
+    public void setMeshStatus(boolean b){
+        drawMesh=b;
+    }
+    public boolean meshNull(){
+        return vecs==null;
     }
     public interface TouchCallback{
         void onTouch(int id);
@@ -130,15 +135,15 @@ public class BillboardView_sorting extends SensorARView{
         mEntityList = new ArrayList<>();
         meshList = new ArrayList<>();
 
-        loc = new float[3];
-        mXYZ = new float[3];
+        meshLoc = new float[3];
+        drawMesh = false;
     }
 
     @Override
     public void GLResize(int width, int height) {
         super.GLResize(width, height);
         mCamera.setViewport(0, 0, width, height);
-        mCamera.setPerspective(60, (float)width / height, 0.02f, 1000000f);
+        mCamera.setPerspective(60, (float)width / height, 0.01f, 1000000f);
     }
 
     @Override
@@ -183,7 +188,7 @@ public class BillboardView_sorting extends SensorARView{
                 meshAddList.clear();
             }
         }
-        // If billboard/Mesh need to be removed... remove
+        // If billboard need to be removed... remove
         synchronized(mRemoveList) {
             if (!mRemoveList.isEmpty()) {
                 for (Integer id : mRemoveList) {
@@ -195,19 +200,6 @@ public class BillboardView_sorting extends SensorARView{
                     }
                 }
                 mRemoveList.clear();
-            }
-        }
-        synchronized(meshRemoveList) {
-            if (!meshRemoveList.isEmpty()) {
-                for (String type : meshRemoveList) {
-                    for (int i = 0; i < meshCurrentInfos.size(); i++) {
-                        if (meshCurrentInfos.get(i).getType() == type) {
-                            meshCurrentInfos.remove(i);
-                            meshList.remove(i);
-                        }
-                    }
-                }
-                meshRemoveList.clear();
             }
         }
 //        //Update Entities to be properly rotated and scaled
@@ -228,8 +220,11 @@ public class BillboardView_sorting extends SensorARView{
 
         // Draw billboards/Meshes
         if(getLocation() != null) {
-            for(Entity e : meshList){
-                e.draw(mCamera.getProjectionMatrix(),mCamera.getViewMatrix(),e.getModelMatrix());
+            if(drawMesh && scene !=null) {
+//                for(Entity e : meshList){
+//                    e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
+//                }
+                scene.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix());
             }
             for (Entity e : mEntityList) {
                 e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
@@ -319,41 +314,39 @@ public class BillboardView_sorting extends SensorARView{
         ScaleObject sbb = new ScaleObject(bb, 0.02f, 0.01f, 0.01f);
         Entity e = new Entity();
         e.setDrawable(sbb);
-        float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},loc);
+        float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},meshLoc);
         e.setPosition(bbLoc[0],-0.03f-bbLoc[1],bbLoc[2]);
         e.yaw(45);
-        Log.d(TAG,"BB XYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
+        Log.d(TAG,"BBXYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
         mEntityList.add(e);
+        //scene.add(e);
     }
     private void newMesh(MeshInfo info){
-        float[] temp = info.getLatlonalt();
-        float[] meshLoc = getbbLoc(temp,getLocation());
+        scene = new Scene();
+        float[] newMeshLoc = getbbLoc(meshLoc,getLocation());
 
         Model mesh = new Model();
         mesh.loadVertices(info.getVerts());
         mesh.setDrawingModeTriangles();
-        ColorHolder purple = new ColorHolder(mesh, new float[]{1, 0, 1, 0.01f});
+        ColorHolder purple = new ColorHolder(mesh, new float[]{0.3f, 0.4f, 0.3f, 0.1f});
         Entity entity1 = new Entity();
         entity1.setDrawable(purple);
-        entity1.setPosition(meshLoc[0],-0.04f-meshLoc[1],meshLoc[2]);
+        entity1.setPosition(newMeshLoc[0],-0.04f-newMeshLoc[1],newMeshLoc[2]);
         //entity1.setLatLonAlt(info.getLatlonalt());
-        meshList.add(entity1);
-
-        Log.d(TAG,"XYZ :"+temp[0]+","+temp[1]+","+temp[2]);
-        float[] temp2 = entity1.getPosition();
-        Log.d(TAG,"XYZ :"+temp2[0]+","+temp2[1]+","+temp2[2]);
-
+        //meshList.add(entity1);
 
         Model wireFrame = new Model();
         wireFrame.loadVertices(info.getVerts());
         wireFrame.setDrawingModeLines();
-        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,1f});
+        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,0.5f});
         Entity entity2 = new Entity();
         entity2.setDrawable(black);
-        entity2.setPosition(meshLoc[0],-0.04f-meshLoc[1],meshLoc[2]);
+        entity2.setPosition(newMeshLoc[0],-0.04f-newMeshLoc[1],newMeshLoc[2]);
         //entity2.setLatLonAlt(info.getLatlonalt());
-        meshList.add(entity2);
-        mXYZ = entity1.getPosition();
+        //meshList.add(entity2);
+
+        scene.add(entity1);
+        scene.add(entity2);
     }
     public float[] getbbLoc(float[] bbloc,float[] meshloc){
         float bbx = bbloc[1];
@@ -365,6 +358,7 @@ public class BillboardView_sorting extends SensorARView{
         double x = (Math.abs(mx-0.20)-Math.abs(bbx))/0.002;
         double y = (Math.abs(my+0.20)-Math.abs(bby))/0.002;
         int index = (int) (x+(y*200));
+        Log.d(TAG,index+"");
 
         if(index<vecs.length && index>=0) {
             Vector3 vec = vecs[index];

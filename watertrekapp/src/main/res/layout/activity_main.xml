@@ -193,7 +193,7 @@
                 android:layout_marginEnd="4dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
-                android:onClick="toggleMountain"
+                android:onClick="meshDemo"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/mtn_res_ico_clr" />
         </LinearLayout>
