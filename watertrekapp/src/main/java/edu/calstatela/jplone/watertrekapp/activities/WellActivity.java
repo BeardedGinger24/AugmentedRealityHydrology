@@ -61,6 +61,7 @@ public class WellActivity extends AppCompatActivity{
         marker.setTitle("Well: LatLon("+lat+","+lon+")");
         map.getOverlays().add(marker);
 
+        // AKA HISTORYGO
         Button goHist = (Button) findViewById(R.id.go2hist);
 
 

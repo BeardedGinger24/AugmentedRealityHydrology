@@ -84,6 +84,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
          isSoilNull = SoilMoistureID == null;
         // Check to see which POI data where looking at
 
+        // Button with text as Show History and onClick set to displayHistoryList
         Button searchButt = findViewById(R.id.Search);
 
 
@@ -93,6 +94,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
         // used to format dates
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
+
 
         // generate Dates
         calendar = Calendar.getInstance();
@@ -104,23 +106,26 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
         graph = (GraphView) findViewById(R.id.graph);
 
-//         populate series with DataPoints
-        series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(d1, 100),
-                new DataPoint(d2, 150),
-                new DataPoint(d3, 230)
-        });
+        DataPoint[] dp = new DataPoint[]{ new DataPoint(d1, 5), new DataPoint(d2, 10), new DataPoint(d3, 15)};
 
+//         populate series with DataPoints
+        series = new LineGraphSeries<>(dp
+        );
+
+        Log.i("Date-1", String.valueOf(d1));
 
         // set manual X bounds
         graph.getViewport().setXAxisBoundsManual(true);
+//        graph.getViewport().setMinX(d1.getTime());
+//        graph.getViewport().setMaxX(d3.getTime());
         graph.getViewport().setMinX(d1.getTime());
         graph.getViewport().setMaxX(d3.getTime());
+
 
         // set manual Y bounds
         graph.getViewport().setYAxisBoundsManual(true);
         graph.getViewport().setMinY(0);
-        graph.getViewport().setMaxY(300);
+        graph.getViewport().setMaxY(20);
 
         // enable scaling and scrolling
         graph.getViewport().setScalable(false); // enables horizontal zooming and scrolling
@@ -356,6 +361,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
         }
     }
+
     // METHOD that populates recyclerView
     //*****************************WELL RecylerView Starts ******************************************
     NetworkTask.NetworkCallback wellNetworkCallback = new NetworkTask.NetworkCallback() {
@@ -366,7 +372,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             }
-            else
+            else {
                 // clears old list so it doesnt double stack / repeat Data twice
                 dbgsUList.clear();
                 for (int i = 0; i < dbgsunitList.size(); i++) {
@@ -378,36 +384,34 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                         String[] value = dbu.split("\t");
                         xValue.add(date[0]);
                         yValue.add(value[1]);
-                        Log.i("x-value", xValue.get(i-1));
-                        Log.i("y-value", yValue.get(i-1));
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
                     }
                 }
-            calendar = Calendar.getInstance();
-            Date d1 = calendar.getTime();
-            calendar.add(Calendar.DATE, 1);
-            Date d2 = calendar.getTime();
-            calendar.add(Calendar.DATE, 1);
-            Date d3 = calendar.getTime();
-                series.resetData(new DataPoint[] { new DataPoint(d1,100), new DataPoint(d2, 150), new DataPoint(d3, 200)});
+
+                DataPoint[] dataPoints = new DataPoint[xValue.size()];
+                DataPoint dataPoint;
+                for (int i = 0; i < xValue.size(); i++) {
+                    dataPoint = new DataPoint(i, i*2);
+                    dataPoints[i] = dataPoint;
+                }
+
+                for (int i = 0; i < xValue.size(); i++) {
+                    Log.i("Datapoint", String.valueOf(dataPoints[i]));
+                }
 
 
-//                for (String dbu : dbgsunitList) {
-//                    dbgsUList.add(dbu);
-//                    Log.i("Well-Data", dbu);
-//                    if (i > 0) {
-//                        String[] temp = dbu.split("T");
-//                        String[] temp2 = dbu.split(" ");
-//                        String[] temp3 = temp2[1].split("f");
-//                        xValue.add(temp[0]);
-//                        yValue.add(temp3[0]);
-////                        Log.i("x-value", xValue.get(i));
-//////                        Log.i("y-value", yValue.get(i));
-//                        Log.i("Armenian", "Test");
-//                    }
-////                    Log.i("Armenian", "Test");
-//                    i++;
-//
-//                }
+                calendar = Calendar.getInstance();
+                Date d1 = calendar.getTime();
+                calendar.add(Calendar.DATE, 1);
+                Date d2 = calendar.getTime();
+                calendar.add(Calendar.DATE, 1);
+                Date d3 = calendar.getTime();
+//                series.resetData(new DataPoint[] {new DataPoint(d1,50), new DataPoint(d2, 100), new DataPoint(d3, 150)});
+                series.resetData(dataPoints);
+
+            }
+
             }
 
     };
@@ -440,13 +444,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 //    "https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/09331850/discharge/from/1981-01-01T00:00:00/through/1990-01-01T00:00:00"
    // String riverurl = "https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/09331850/discharge/from/1981-01-01T00%3A00%3A00/through/1990-01-01T00%3A00%3A00";
 
-
-
-
-
     // [ass firstDate && LastDate into a method that will retrieve data and make recylrerview
     // need to make a method to make sure that firstDate Or lastDate are NOT NULL
     // Need to fix issue on Double clicking in order to get the date to display
+    // displayHistoryList is linked to button where id="Search"
     public void displayHistoryList(View v)
     {
 //        Log.d("wwwid" , WELLID);
@@ -476,11 +477,4 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 //        Log.d("tv",x); //example 11/1/2018
 
     }
-
-
-
-
-
-
-
 }
