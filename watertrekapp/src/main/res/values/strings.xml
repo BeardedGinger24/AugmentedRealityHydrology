@@ -14,4 +14,5 @@
     <string name="submit_button">Submit</string>
     <string name="title_activity_demo">DemoActivity</string>
     <string name="title_activity_mesh_demo">MeshDemoActivity</string>
+    <string name="demurl">http://ec2-50-18-69-218.us-west-1.compute.amazonaws.com/arcgis/rest/services/earth/srtm_conUS_merge_30m_v1/ImageServer/exportImage?</string>
 </resources>

@@ -2,6 +2,7 @@ package edu.calstatela.jplone.watertrekapp.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -43,6 +45,10 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
+import it.beppi.balloonpopuplibrary.BalloonPopup;
+
+import com.bvapp.arcmenulibrary.ArcMenu;
+import com.bvapp.arcmenulibrary.widget.FloatingActionButton;
 
 
 
@@ -87,6 +93,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     NetworkTask task;
     private boolean isLoggedIn = false;
+
+    //Arc menu items
+    private static final int[] ITEM_DRAWABLES = { R.drawable.mtn_res_ico_clr, R.drawable.reservoir_bb_icon, R.drawable.soil_bb_icon,
+            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr, R.drawable.eye24 };
+    private String[] str = {"mountain","reservoir","soil","well", "river", "eye"};
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Activity Lifecycle
@@ -164,6 +175,25 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainLayout.addView(arview);
 
         mountainList.loadMountains();
+
+        //Floating arc menu
+        ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);
+        arcMenu.setToolTipTextSize(14);
+
+        arcMenu.setToolTipSide(ArcMenu.TOOLTIP_LEFT);
+        arcMenu.setToolTipTextColor(Color.WHITE);
+        arcMenu.setToolTipBackColor(Color.parseColor("#88000000"));
+        arcMenu.setToolTipCorner(2);
+        arcMenu.setToolTipPadding(8);
+        arcMenu.setColorNormal(getResources().getColor(R.color.white));
+        arcMenu.showTooltip(false);
+        arcMenu.setDuration(ArcMenu.ArcMenuDuration.LENGTH_LONG);
+        arcMenu.setAnim(500,500, ArcMenu.ANIM_MIDDLE_TO_DOWN, ArcMenu.ANIM_MIDDLE_TO_RIGHT,
+                ArcMenu.ANIM_INTERPOLATOR_ANTICIPATE, ArcMenu.ANIM_INTERPOLATOR_ANTICIPATE);
+        initArcMenu(arcMenu, str, ITEM_DRAWABLES, ITEM_DRAWABLES.length);
+
+
+
     }
 
     @Override
@@ -187,7 +217,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void onMenuButtonClicked(View view) {
-        mainDrawerLayout.openDrawer(drawerContentsLayout);
+//        mainDrawerLayout.openDrawer(drawerContentsLayout);
+
+
+
+
     }
     // When Obstruction View button is clicked or called
     public void obstructionClicked(View view){
@@ -205,6 +239,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         Double currlat =  Double.parseDouble(laty);
         Double currlong =  Double.parseDouble(longy);
         ElevationObstructionService.getObstruction(obstructNetworkCallback,currlat,currlong,roll,pitch);
+
+        //popup view for elevation
+        BalloonPopup bp = BalloonPopup.Builder(getApplicationContext(), view)
+                .text("Pitch: " + pitch + " Roll: " + roll)
+                .shape(BalloonPopup.BalloonShape.rounded_square)
+                .timeToLive(4000)
+                .positionOffset(-30,-80)
+                .show();
 
     }
 
@@ -617,6 +659,69 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+
+
+    /* Arc Menu Functions */
+    private void initArcMenu(final ArcMenu menu, final String[] str, int[] itemDrawables, int count) {
+        for (int i = 0; i < count; i++) {
+            FloatingActionButton item = getChildItem(itemDrawables[i]);
+            menu.setChildSize(item.getIntrinsicHeight());
+
+            final int position = i;
+
+            menu.addItem(item, str[i], new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    switch(str[position]){
+                        case "mountain":
+                            toggleMountain = (Switch)findViewById(R.id.switch12);
+                            toggleMountain(toggleMountain);
+                            break;
+                        case "reservoir":
+                            toggleReservoir = (Switch)findViewById(R.id.switch12);
+                            toggleReservoir(toggleReservoir);
+                            break;
+                        case "soil":
+                            toggleSoil = (Switch)findViewById(R.id.switch12);
+                            toggleSoil(toggleSoil);
+                            break;
+                        case "well":
+                            toggleWell = (Switch)findViewById(R.id.switch9);
+                            toggleWell(toggleWell);
+                            break;
+                        case "river":
+                            toggleRiver = (Switch)findViewById(R.id.switch10);
+                            toggleRiver(toggleRiver);
+                            break;
+                        case "eye":
+                            ImageView popupThing = (ImageView)findViewById(R.id.imageView);
+                            obstructionClicked(popupThing);
+                            break;
+
+                        default:
+                    }
+                }
+            });
+        }
+    }
+
+    View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(MainActivity.this, "Github",
+                    Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private FloatingActionButton getChildItem(int drawable){
+        FloatingActionButton item = new FloatingActionButton(this);
+        item.setSize(FloatingActionButton.SIZE_MINI);
+        item.setIcon(drawable);
+        item.setBackgroundColor(getResources().getColor(R.color.white));
+        return item;
     }
 
 
