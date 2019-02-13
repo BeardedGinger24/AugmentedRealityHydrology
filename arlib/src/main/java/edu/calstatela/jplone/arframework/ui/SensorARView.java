@@ -144,18 +144,6 @@ public class SensorARView extends ARView {
 //            getGX(Gx);
 //            getGY(Gy);
 //            getGZ(Gz);
-
-        Log.d("sensory-GX: " , GX);
-        Log.d("sensory-GY: " , GY);
-        Log.d("sensory-GZ: " , GZ);
-            // this one is used
-//            Log.d("sensory","Rotation- Gx on the x-axis: " + Float.toString(currentOrientation[0]));
-//            Log.d("sensory","Rotation-Gy on the y-axis: " + Float.toString(currentOrientation[1]));
-//            Log.d("sensory", "Rotation-Gz on the z-axis: " +Float.toString(currentOrientation[2]));
-
-
-
-
         }
     };
 

@@ -202,21 +202,22 @@ public class BillboardView_sorting extends SensorARView{
                 mRemoveList.clear();
             }
         }
-//        //Update Entities to be properly rotated and scaled
-//        if(getLocation() != null) {
-//            float[] loc = getLocation();
-//            float[] xyz = GeoMath.latLonAltToXYZ(loc);
-//            for (Entity e : mEntityList) {
-//                //float[] bbloc = getbbloc();
-//                float[] pos = e.getPosition();
-//                e.setPosition(pos[0],pos[1],pos[2]);
-//                //e.setLookAtWithScale(pos[0], 0, pos[2], xyz[0], xyz[1], xyz[2], 0, 1, 0, 0.01f);
-//            }
-//            for(Entity e : meshList){
-//                float[] pos = e.getPosition();
-//                e.setPosition(pos[0],pos[1],pos[2]);
-//            }
-//        }
+        //
+        //Update Entities to be properly rotated and scaled
+        if(getLocation() != null) {
+            float[] loc = getLocation();
+            float[] xyz = GeoMath.latLonAltToXYZ(loc);
+            for (Entity e : mEntityList) {
+                //float[] bbloc = getbbloc();
+                float[] pos = e.getPosition();
+                //e.setPosition(pos[0],pos[1],pos[2]);
+                e.setLookAtWithScale(pos[0], 0, pos[2], xyz[0], xyz[1], xyz[2], 0, 1, 0, 1f);
+            }
+            for(Entity e : meshList){
+                float[] pos = e.getPosition();
+                e.setPosition(pos[0],pos[1],pos[2]);
+            }
+        }
 
         // Draw billboards/Meshes
         if(getLocation() != null) {
@@ -231,27 +232,27 @@ public class BillboardView_sorting extends SensorARView{
             }
         }
 
+        //
+        //Maintain Billboards sorted based on distance from location
+        if(getLocation() != null) {
+            float[] loc = getLocation();
+            float[] xyz = GeoMath.latLonAltToXYZ(loc);
 
-//        //Maintain Billboards sorted based on distance from location
-//        if(getLocation() != null) {
-//            float[] loc = getLocation();
-//            float[] xyz = GeoMath.latLonAltToXYZ(loc);
-//
-//            float prevDistance = 0;
-//            for (int i = 0; i < mEntityList.size(); i++) {
-//                Entity e = mEntityList.get(i);
-//                float[] pos = e.getPosition();
-//                float distance = VectorMath.distance(xyz, pos);
-//                if(distance > prevDistance && i > 0){
-//                    mEntityList.set(i, mEntityList.get(i-1));
-//                    mEntityList.set(i-1, e);
-//                    BillboardInfo temp = mCurrentInfos.get(i);
-//                    mCurrentInfos.set(i, mCurrentInfos.get(i-1));
-//                    mCurrentInfos.set(i-1, temp);
-//                }
-//                prevDistance = distance;
-//            }
-//        }
+            float prevDistance = 0;
+            for (int i = 0; i < mEntityList.size(); i++) {
+                Entity e = mEntityList.get(i);
+                float[] pos = e.getPosition();
+                float distance = VectorMath.distance(xyz, pos);
+                if(distance > prevDistance && i > 0){
+                    mEntityList.set(i, mEntityList.get(i-1));
+                    mEntityList.set(i-1, e);
+                    BillboardInfo temp = mCurrentInfos.get(i);
+                    mCurrentInfos.set(i, mCurrentInfos.get(i-1));
+                    mCurrentInfos.set(i-1, temp);
+                }
+                prevDistance = distance;
+            }
+        }
 
 
     }
@@ -314,10 +315,11 @@ public class BillboardView_sorting extends SensorARView{
         ScaleObject sbb = new ScaleObject(bb, 0.02f, 0.01f, 0.01f);
         Entity e = new Entity();
         e.setDrawable(sbb);
-        float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},meshLoc);
-        e.setPosition(bbLoc[0],-0.03f-bbLoc[1],bbLoc[2]);
-        e.yaw(45);
-        Log.d(TAG,"BBXYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
+        e.setLatLonAlt(new float[]{info.lat,info.lon});
+        //float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},meshLoc);
+        //e.setPosition(bbLoc[0],-0.03f-bbLoc[1],bbLoc[2]);
+        //e.yaw(45);
+        //Log.d(TAG,"BBXYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
         mEntityList.add(e);
         //scene.add(e);
     }

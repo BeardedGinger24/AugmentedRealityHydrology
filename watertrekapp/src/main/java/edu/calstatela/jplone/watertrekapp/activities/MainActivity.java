@@ -187,8 +187,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         mountainList.loadMountains();
 
-        arview.setMeshStatus(false);
-        meshInfo = getMeshInfo("terrain");
+        //arview.setMeshStatus(false);
+        //meshInfo = getMeshInfo("terrain");
     }
 
     @Override
@@ -490,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addMountains(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            //arview.addMesh(getMeshInfo("terrain"));
         }
         for(int i = 0; i < mountainList.size(); i++){
             Landmark l = mountainList.get(i);
@@ -513,7 +513,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addWells(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            //arview.addMesh(getMeshInfo("terrain"));
         }
         float[] loc = arview.getLocation();
         WellService.getWells(wellNetworkCallback, loc[0], loc[1], radius);
@@ -567,7 +567,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addReservoirs(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            //arview.addMesh(getMeshInfo("terrain"));
         }
         ReservoirService.getAllStorageValues(reservoirNetworkCallback);
     }
@@ -626,7 +626,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addSoilPatches(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            //arview.addMesh(getMeshInfo("terrain"));
         }
         //retrieves all soil patches
         SoilMoistureService.getSoilMoistures(soilmoistureNetworkCallback);
@@ -692,7 +692,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addRiverz(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            //arview.addMesh(getMeshInfo("terrain"));
         }
         // Retrieves curr location
         float[] loc = arview.getLocation();
@@ -756,7 +756,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     public void addSnotelPillows(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            //arview.addMesh(getMeshInfo("terrain"));
         }
     }
 

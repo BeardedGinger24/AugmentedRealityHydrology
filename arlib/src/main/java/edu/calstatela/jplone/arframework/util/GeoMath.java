@@ -32,7 +32,7 @@ public class GeoMath {
     public static float[] latLonAltToXYZ(float[] latLonAlt){
         float[] xyz = new float[3];
         xyz[0] = (latLonAlt[1] - referenceLLA[1]); //* metersPerDegreeLon;
-        float tempY = (latLonAlt[2] - referenceLLA[2])/10;
+//        float tempY = (latLonAlt[2] - referenceLLA[2])/10;
 //        if(tempY>0){
 //            tempY=(-1*tempY);
 //            while(tempY<0 && tempY>(-0.001)){

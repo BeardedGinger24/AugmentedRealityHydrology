@@ -115,26 +115,26 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
                 Intent i = new Intent(context, MainActivity.class);
                 String baseurl = getString(R.string.demurl);
 
-                asyncTask= new MeshService.getDEM();
-                asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl);
-                try {
-                    meshData = asyncTask.get();
-                    meshData.setFilenameTerrain("terrain");
-                    meshData.setFilenameTerrainVecs("meshvecs");
-                    meshData.setDir(context.getFilesDir()+"");
-
-                    helper = new DatabaseHelper(context);
-                    db = helper.getWritableDatabase();
-                    helper.addMeshData(db,meshData);
-
-
-                    //Write meshdata to file
-                    genVerts(meshData);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+//                asyncTask= new MeshService.getDEM();
+//                asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl);
+//                try {
+//                    meshData = asyncTask.get();
+//                    meshData.setFilenameTerrain("terrain");
+//                    meshData.setFilenameTerrainVecs("meshvecs");
+//                    meshData.setDir(context.getFilesDir()+"");
+//
+//                    helper = new DatabaseHelper(context);
+//                    db = helper.getWritableDatabase();
+//                    helper.addMeshData(db,meshData);
+//
+//
+//                    //Write meshdata to file
+//                    genVerts(meshData);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                }
                 // start the main activity
                 startActivity(i);
             }
