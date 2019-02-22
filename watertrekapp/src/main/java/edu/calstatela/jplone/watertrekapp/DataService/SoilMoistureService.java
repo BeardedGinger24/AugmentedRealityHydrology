@@ -7,6 +7,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 
@@ -27,6 +28,16 @@ public class SoilMoistureService {
         //404 error. Sponsor changed url? Check after 3/5/18
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno/"+id +"/at/"+depth+"cm";
         NetworkTask nt = new NetworkTask(callback, SoilMoisture.ADDTL_ID);
+        nt.execute(url);
+    }
+    public static void getSoilDepthThruTime(NetworkTask.NetworkCallback callback, String startDate , String endDate, String masterSiteId){
+//        int masterSiteId = 91133; example ID
+//        String masterId = masterSiteId;
+//        yr/month/day
+        // returns  history of depth below ground surface  DBGS
+        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno/"+masterSiteId+"/at/5/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
+        Log.d("soily" , url);
+        NetworkTask nt = new NetworkTask(callback, SoilMoisture.SOIL_MOIST_DEPTH);
         nt.execute(url);
     }
 
@@ -89,7 +100,7 @@ public class SoilMoistureService {
             double longy =  Double.parseDouble(smList.getLon());
             // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
             // if less than or equal to range (100) add reserNear to List and return it back
-            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius)
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius*40)
             {
                 soilNear.add(smList);
                 Log.d("soiledDistance",smList.getWbanno() + " soil within range ");
@@ -121,6 +132,26 @@ public class SoilMoistureService {
         List<SoilMoisture> soilList = new ArrayList<>();
         String[] lines = line.split("\n");
         for(int i=1; i<lines.length; i++) soilList.add(parseSoilMoisture(lines[i]));
+        return soilList;
+
+    }
+
+    public static List parseindySoil(String line){
+        Log.d("soily" , line);
+        List<String> soilList = new ArrayList();
+        String[] rowEntry = line.split("\n");
+        if (rowEntry[1].equals("null")){
+            return soilList ;
+        }
+        if (rowEntry[1] == null){
+            return soilList ;
+        }
+
+        for(int i=0; i<rowEntry.length;i++){
+            soilList.add(rowEntry[i]);
+        }
+
+        Log.d("soily", "END");
         return soilList;
 
     }

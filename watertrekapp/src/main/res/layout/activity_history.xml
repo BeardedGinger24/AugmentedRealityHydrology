@@ -72,6 +72,15 @@
             android:layout_alignParentRight="true"
             android:text="Set End Date: " />
     </LinearLayout>
+    <!--<ProgressBar-->
+        <!--android:id="@+id/progressBarHistory"-->
+        <!--style="?android:attr/progressBarStyle"-->
+        <!--android:layout_width="133dp"-->
+        <!--android:layout_height="116dp"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:visibility="invisible"-->
+        <!--tools:layout_editor_absoluteX="126dp"-->
+        <!--tools:layout_editor_absoluteY="306dp" />-->
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -98,7 +107,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show History"
-        android:onClick="displayHistoryList"/>
+        android:onClick="displayHistoryList"
+        />
 
     <ListView
         android:id="@+id/historyList"

@@ -8,6 +8,7 @@ public class SoilMoisture {
     private String wbanno, lon, lat, max, min, info;
     public static final int TYPE_ID = 7;
     public static final int ADDTL_ID = 8;
+    public static final int SOIL_MOIST_DEPTH = 333;
 
     SoilMoisture(){
 

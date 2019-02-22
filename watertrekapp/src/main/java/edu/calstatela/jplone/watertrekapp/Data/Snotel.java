@@ -75,10 +75,10 @@ public class Snotel {
 
     public String toString() {
         String ret = "";
-        ret += "type:            Snotel\n";
+        ret += "type:  Snotel\n";
         ret += "stationId:    " + stationId + "\n";
-        ret += "lat:             " + lat + "\n";
-        ret += "lon:             " + lon + "\n";
+        ret += "lat:     " + lat + "\n";
+        ret += "lon:   " + lon + "\n";
 
         return ret;
     }

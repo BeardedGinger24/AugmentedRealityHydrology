@@ -19,6 +19,7 @@ public class Reservoir {
 
     public static final int TYPE_ID = 9;
     public static final int ADDTL_ID = 10;
+    public static final int STORAGE_UNITS = 222;
 
     List<String> storageValues;
 

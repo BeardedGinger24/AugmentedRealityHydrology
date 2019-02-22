@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
+import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 
 
@@ -32,6 +33,19 @@ public class ReservoirService {
         //Log.d("getSTRG", "In REST CALL");
         nt.execute(url);
     }
+
+    public static void getStorage(NetworkTask.NetworkCallback callback, String startDate , String endDate, String masterSiteId){
+//        int masterSiteId = 91133; example ID
+        String masterId = masterSiteId;
+//        yr/month/day
+        // returns  history of depth below ground surface  DBGS
+
+        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no/"+masterSiteId+"/storage/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
+        Log.d("reservs" , url);
+        NetworkTask nt = new NetworkTask(callback, Reservoir.STORAGE_UNITS);
+        nt.execute(url);
+    }
+
 
     //////////////////////////HAVERSINE FORMULA//////////////added by leo from stackoverflow XD *************
     public static double getDistanceFromLatLonInKm(double userLat,double userLon, double dataLat, double dataLon) {
@@ -77,7 +91,7 @@ public class ReservoirService {
             double longy =  Double.parseDouble(rnm.getLon());
             // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
             // if less than or equal to range (100) add reserNear to List and return it back
-            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius)
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius*40)
             {
                 reservoirNear.add(rnm);
                 Log.d("Reser",rnm.getSiteNo() + " rerservior within range ");
@@ -109,5 +123,27 @@ public class ReservoirService {
 
         }
         return storageList;
+    }
+
+    public static List parseIndyStorage(String line){
+
+
+        Log.d("reserves" , line);
+        List<String> storagevaluesList = new ArrayList();
+        String[] rowEntry = line.split("\n");
+        if (rowEntry[1].equals("null")){
+            return storagevaluesList ;
+        }
+        if (rowEntry[1] == null){
+            return storagevaluesList ;
+        }
+
+        for(int i=0; i<rowEntry.length;i++){
+            storagevaluesList.add(rowEntry[i]);
+        }
+
+        Log.d("reserves", "END");
+        return storagevaluesList;
+
     }
 }

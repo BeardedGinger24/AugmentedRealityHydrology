@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +26,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
+import edu.calstatela.jplone.watertrekapp.DataService.SnotelService;
+import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -41,10 +45,16 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
     private TextView mDisplaydate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
+//    private ProgressBar pb;
     //DELETE TESTERLIST
     // Various arrayList for various POI
+    //WELLS , RESERVOIR , RIVERS , SOIL , SNOTEL
     private ArrayList<String> dbgsUList = new ArrayList<>();
+    private ArrayList<String> resStorageList = new ArrayList<>();
     private ArrayList<String> dischargeList = new ArrayList<>();
+    private ArrayList<String> soilDepthList = new ArrayList<>();
+    private ArrayList<String> sweSnotelList = new ArrayList<>();
+
     // Wells Dbgs
     // Rivers Discharge
     // Buttons for start Data and End Date
@@ -54,11 +64,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     String RiverID;
     String ReservoirID;
     String SoilMoistureID;
+    String SnotelID;
     // checks to see if id was passed thru
     Boolean isWellNull;
     Boolean isRiverNull;
     Boolean isReservoirNull;
     Boolean isSoilNull;
+    Boolean isSnotelNull;
 
 
 //need to change dialog from calender to scroller
@@ -69,17 +81,18 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         RiverID = getIntent().getStringExtra("RiverID");
         ReservoirID = getIntent().getStringExtra("ReservoirID");
         SoilMoistureID = getIntent().getStringExtra("SoilID");
-//        Log.d("isnull?", "WELL: " + WELLID);
-//        Log.d("isnull?", "River: " + RiverID);
-//        Log.d("isnull?", "Reservoir: " + ReservoirID);
-//        Log.d("isnull?", "Soil: " + SoilMoistureID);
+        SnotelID = getIntent().getStringExtra("SnotelID");
+
+
         isWellNull = WELLID == null;
         isRiverNull = RiverID == null;
         isReservoirNull = ReservoirID == null;
         isSoilNull = SoilMoistureID == null;
+        isSnotelNull = SnotelID == null;
         // Check to see which POI data where looking at
 
         Button searchButt = findViewById(R.id.Search);
+//        pb = findViewById(R.id.progressBarHistory);
 
 
 
@@ -175,7 +188,29 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 dialogpicker.show(getSupportFragmentManager(),"end_date_chosen");
             }
         });
-
+    // android:onClick="displayHistoryList"
+//        Button searchButton = (Button)findViewById(R.id.Search);
+//        searchButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                //        Log.d("wwwid" , WELLID);
+//                if(isWellNull == false){
+//                    addWells(WELLID);
+//                    ListView lv = findViewById(R.id.historyList);
+////        testerarraylist
+//                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
+//                    lv.setAdapter(adapter);
+//                }
+//                if (isRiverNull == false){
+//                    addRivers(RiverID);
+//                    Log.d("discharge", "ADDED RIVERS ");
+//                    ListView lv = findViewById(R.id.historyList);
+////        testerarraylist
+//                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dischargeList);
+//                    lv.setAdapter(adapter);
+//                }
+//            }
+//        });
     }
 
 
@@ -269,87 +304,82 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     }
 
 
-    // retrieve data from url  NEED to Fix to pass mastersiteID of the well
-    public Boolean dateVerifier(){
-        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$DATE VERIFICATION$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        Log.d("checkDate" , firstDate);
-        Log.d("checkDate" , lastDate);
-        String[] sparts = firstDate.split("-");
-        Log.d("checkDate",sparts[0]);
-        Log.d("checkDate",sparts[1]);
-        Log.d("checkDate",sparts[2]);
+    public  Boolean dateVerifier(){
         // Example of Date format: 2017-05-06 yr/month/day
-        int yearStartDate = Integer.parseInt(sparts[0]);
-        int monthStartdate = Integer.parseInt(sparts[1]);
-        int dayStartDate = Integer.parseInt(sparts[2]);
+        String[] sparts = firstDate.split("-");
+        String yStartDate = sparts[0];
+        String mStartDate = sparts[1];
+        String dStartDate = sparts[2];
+        String parsedStartDate = yStartDate + mStartDate + dStartDate;
+        int startDate = Integer.parseInt(parsedStartDate);
+
         String[] eparts = lastDate.split("-");
-        Log.d("checkDate",eparts[0]);
-        Log.d("checkDate",eparts[1]);
-        Log.d("checkDate",eparts[2]);
-        int yearEndDate = Integer.parseInt(eparts[0]);
-        int monthEnddate = Integer.parseInt(eparts[1]);
-        int dayEndDate = Integer.parseInt(eparts[2]);
-        // wrong year input
-        if ((yearStartDate == yearEndDate) && (monthStartdate == monthEnddate) && (dayStartDate == dayEndDate) ){
-            Log.d("checkDate","Dates cannot be the same");
-            Toast.makeText(getApplicationContext(), " Start Date cannot be the same as EndDate", Toast.LENGTH_LONG).show();
+        String yEndDate = eparts[0];
+        String mEndDate = eparts[1];
+        String dEndDate = eparts[2];
+        String parsedEndDate = yEndDate + mEndDate + dEndDate;
+        int EndDate = Integer.parseInt(parsedEndDate);
+
+        if (startDate < EndDate) {
+            //correct output
+            Toast.makeText(getApplicationContext(), " Searching...", Toast.LENGTH_LONG).show();
+            return true;
+
+        }
+        else if (startDate > EndDate)
+        {
+            //Start Date Cannot Preceed EndDate
+            Toast.makeText(getApplicationContext(), "Start Date Cannot Preceed EndDate", Toast.LENGTH_LONG).show();
             return false;
-        }
 
-        else if (yearStartDate > yearEndDate){
-            Log.d("checkDate","yearstartdate is Wrong cannot search backwards!!!");
-            Toast.makeText(getApplicationContext(), "End Date cannot Preceed Start Date", Toast.LENGTH_LONG).show();
+
+        }
+        else
+        {
+            //Date Cannot be the Same
+            Toast.makeText(getApplicationContext(), "Start Date Cannot EQUAL  EndDate", Toast.LENGTH_LONG).show();
             return false;
+
         }
-        //correct year input
-        else if  (yearStartDate <= yearEndDate){
-//            Toast.makeText(getApplicationContext(), "Searching ...", Toast.LENGTH_LONG).show();
-            Log.d("checkDate","yearstartdate is correct");
-
-            //wrong month input
-            if ((monthStartdate > monthEnddate) && (yearStartDate == yearEndDate)){
-                Log.d("checkDate","monthstartdate is Wrong cannot search backwards!!!");
-                Toast.makeText(getApplicationContext(), "End Date cannot Preceed Start Date", Toast.LENGTH_LONG).show();
-                return false;
-
-            }
-            // correct month input
-            else if (monthStartdate <= monthEnddate)
-            {
-                Log.d("checkDate","monthstartdate is correct");
-                //wong day input
-                if (dayStartDate > dayEndDate){
-                    Log.d("checkDate","daystartdate is Wrong cannot search backwards!!!");
-                    Toast.makeText(getApplicationContext(), "End Date cannot Preceed Start Date", Toast.LENGTH_LONG).show();
-                    return false;
-
-                }
-                //rihgt day input
-                else if (dayStartDate <= dayEndDate){
-                    Log.d("checkDate","daystartdate is correct");
-                    Toast.makeText(getApplicationContext(), "Searching ...", Toast.LENGTH_LONG).show();
-                    return true;
-                }
-
-            }
-        }
-        // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$DATE VERIFICATION$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        return true;
     }
 
     private void addWells(String WELLID){
 
         if (dateVerifier() != false){
+//            pb.setVisibility(View.VISIBLE);
             WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate,WELLID);
         }
 //        RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
     }
 
+    private void addReservoirs (String ReservoirID)
+    {
+        if(dateVerifier() !=false){
+            Log.d("reserves", "Calling ALL RESERVOIRS");
+            ReservoirService.getStorage(reservoirNetworkCallback,firstDate, lastDate,ReservoirID);
+        }
+    }
+
     private void addRivers(String RiverID){
-//        dateVerifier();
         if (dateVerifier() != false){
+//            pb.setVisibility(View.VISIBLE);
             Log.d("discharge", "Calling rivernetworkcallback");
             RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
+        }
+    }
+    private void addSoils(String soilMoistureID){
+        if (dateVerifier() != false){
+//            pb.setVisibility(View.VISIBLE);
+            Log.d("soily", "Calling SOILnetworkcallback");
+            SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback,firstDate, lastDate,SoilMoistureID);
+        }
+    }
+
+    private void addSnotel(String snotID){
+        if (dateVerifier() != false){
+//            pb.setVisibility(View.VISIBLE);
+            Log.d("snow", "Calling snotelnetworkcallback");
+            SnotelService.getSnotelTimeSeriesStartThruFinish(snowtelNetworkCallback,firstDate, lastDate,snotID);
         }
     }
     // METHOD that populates recyclerView
@@ -359,12 +389,15 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         public void onResult(int type, String result) {
             List<String> dbgsunitList = WellService.parseDBGSunits(result);
             if (dbgsunitList.size() < 1){
+//                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             }
             else
                 // clears old list so it doesnt double stack / repeat Data twice
+//                pb.setVisibility(View.INVISIBLE);
                 dbgsUList.clear();
+
             for(String dbu : dbgsunitList){
                 dbgsUList.add(dbu);
 
@@ -373,24 +406,49 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     };
 
     //*****************************WELL RecylerView Ends ******************************************
+    //**********************Reservoir Recycler View Starts*****************************************
+    NetworkTask.NetworkCallback reservoirNetworkCallback = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            List<String> resList = ReservoirService.parseIndyStorage(result);
+            if (resList.size() < 1){
+//                pb.setVisibility(View.INVISIBLE);
+                Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else
+                // clears old list so it doesnt double stack / repeat Data twice
+//                pb.setVisibility(View.INVISIBLE);
+                resStorageList.clear();
+
+            for(String dbu : resList){
+                resStorageList.add(dbu);
+
+            }
+        }
+    };
+
+    //**********************Reservoir Recycler View ENDS*****************************************
 
     //*****************************RIVER/STREAMGAUGES RecylerView Starts ******************************************
     NetworkTask.NetworkCallback riverNetworkCallback = new NetworkTask.NetworkCallback() {
         @Override
         public void onResult(int type, String result) {
             Log.d("discharge", "before parsingdischarges");
-            List<String> dischargeList = RiverService.parseDischarges(result);
+            List<String> disList = RiverService.parseDischarges(result);
             Log.d("discharge", "after parsingdischarges");
-            if (dischargeList.size() < 1){
+            if (disList.size() < 1){
+//                pb.setVisibility(View.INVISIBLE);
                 Log.d("discharge", "No information has been recorded thus far");
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             }
             else {
                 // clears old list so it doesnt double stack / repeat Data twice
-                // dischargeList.clear();
-                for (String dsl : dischargeList) {
-                    Log.d("discharge", dsl);
+//                pb.setVisibility(View.INVISIBLE);
+                 dischargeList.clear();
+                for (String dsl : disList) {
+//                    Log.d("discharge", dsl);
                     dischargeList.add(dsl);
 
                 }
@@ -399,6 +457,74 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     };
 
     //*****************************RIVER/STREAMGAUGES RecylerView Ends ******************************************
+
+    //*********************Soil Moisture RecyclerView Starts**********************
+
+    NetworkTask.NetworkCallback soilNetworkCallback = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            Log.d("soil", "before parsingdischarges");
+            List<String> soilyList = SoilMoistureService.parseindySoil(result);
+            Log.d("soil", "after parsingdischarges");
+            if (soilyList.size() < 1){
+//                pb.setVisibility(View.INVISIBLE);
+                Log.d("soil", "No information has been recorded thus far");
+                Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else {
+                // clears old list so it doesnt double stack / repeat Data twice
+//                pb.setVisibility(View.INVISIBLE);
+                soilDepthList.clear();
+                for (String swe : soilyList) {
+//                    Log.d("discharge", dsl);
+                    soilDepthList.add(swe);
+
+                }
+            }
+        }
+    };
+
+
+
+    //*********************Soil Moisture RecyclerView ENDS**********************
+
+
+    //*********************SNOWTEL RecyclerView Starts**********************
+    NetworkTask.NetworkCallback snowtelNetworkCallback = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+
+            List<String> snowyList = SnotelService.parseTimes(result);
+
+            if (snowyList.size() < 1){
+//                pb.setVisibility(View.INVISIBLE);
+                Log.d("snow", "No information has been recorded thus far");
+                Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else {
+                // clears old list so it doesnt double stack / repeat Data twice
+//                pb.setVisibility(View.INVISIBLE);
+                sweSnotelList.clear();
+                for (String snot : snowyList) {
+                    sweSnotelList.add(snot);
+
+                }
+            }
+        }
+    };
+
+
+
+
+    //*********************SNOWTELRecyclerView ENDS**********************
+
+
+
+
+
+
 
     // for river discharge  parse using xml
 
@@ -416,18 +542,39 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     {
 //        Log.d("wwwid" , WELLID);
         if(isWellNull == false){
-//            addWells(WELLID);
-//            ListView lv = findViewById(R.id.historyList);
-////        testerarraylist
-//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
-//            lv.setAdapter(adapter);
+            ListView lv = findViewById(R.id.historyList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
+            lv.setAdapter(adapter);
+            addWells(WELLID);
+
+        }
+        if(isReservoirNull == false){
+            Log.d("reserves", "ADDED RESERVOIRS ");
+            ListView lv = findViewById(R.id.historyList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,resStorageList);
+            lv.setAdapter(adapter);
+            addReservoirs(ReservoirID);
+
         }
         if (isRiverNull == false){
-            addRivers(RiverID);
-            Log.d("discharge", "ADDED RIVERES ");
+            Log.d("discharge", "ADDED RIVERS ");
             ListView lv = findViewById(R.id.historyList);
-//        testerarraylist
+            addRivers(RiverID);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dischargeList);
+            lv.setAdapter(adapter);
+        }
+        if (isSoilNull == false){
+            Log.d("soily", "ADDED SOIL MOISTURE ");
+            ListView lv = findViewById(R.id.historyList);
+            addSoils(SoilMoistureID);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,soilDepthList);
+            lv.setAdapter(adapter);
+        }
+        if (isSnotelNull == false){
+            Log.d("snow", "ADDED Snotels ");
+            ListView lv = findViewById(R.id.historyList);
+            addSnotel(SnotelID);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,sweSnotelList);
             lv.setAdapter(adapter);
         }
 

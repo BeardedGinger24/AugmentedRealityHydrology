@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -45,6 +46,7 @@ import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
+import edu.calstatela.jplone.watertrekapp.DataService.SnotelService;
 import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.Helpers.CSVReader;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private BillboardView_sorting arview;
     private SensorARView rpy;
     private SeekBar radiusSeekBar;
+//    private ProgressBar pb;
 
     private boolean tMountain = false;
     private boolean tReservoir = false;
@@ -151,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         radiusSeekBar = findViewById(R.id.seekBar);
         radiusSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+//        pb = findViewById(R.id.progressBarMain);
 
         //mesh demo btn
         mesh_demo = findViewById(R.id.mesh_demo);
@@ -516,6 +520,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             //arview.addMesh(getMeshInfo("terrain"));
         }
         float[] loc = arview.getLocation();
+//         pb.setVisibility(View.VISIBLE);
         WellService.getWells(wellNetworkCallback, loc[0], loc[1], radius);
     }
 
@@ -548,9 +553,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                         Log.d(TAG,e.toString());
                     }
                 }
+//                pb.setVisibility(View.INVISIBLE);
             }
             else
             {
+//                pb.setVisibility(View.INVISIBLE);
                 Log.d("Well","There are currently no wells within range ");
                 Toast.makeText(getApplicationContext(), "There are currently no Wells within range",
                         Toast.LENGTH_LONG).show();
@@ -569,6 +576,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(arview.meshNull()){
             //arview.addMesh(getMeshInfo("terrain"));
         }
+//        pb.setVisibility(View.VISIBLE);
         ReservoirService.getAllStorageValues(reservoirNetworkCallback);
     }
     private void removeReservoirs(){
@@ -607,10 +615,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
 
                 }
+//                pb.setVisibility(View.INVISIBLE);
             }
 
             else
             {
+//                pb.setVisibility(View.INVISIBLE);
                 Log.d("Reser","There are currently no reservoir  within range ");
                 Toast.makeText(getApplicationContext(), "There are currently no Reservoirs within range",
                         Toast.LENGTH_LONG).show();
@@ -629,6 +639,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             //arview.addMesh(getMeshInfo("terrain"));
         }
         //retrieves all soil patches
+//        pb.setVisibility(View.VISIBLE);
         SoilMoistureService.getSoilMoistures(soilmoistureNetworkCallback);
     }
     private void removeSoilPatches(){
@@ -669,9 +680,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                     }
 
                 }
+//                        pb.setVisibility(View.INVISIBLE);
+
             }
             else
             {
+//                        pb.setVisibility(View.INVISIBLE);
                 Log.d("soiledDistance", " There are currently no Soil Moistures within range ");
                 Toast.makeText(getApplicationContext(), "There are currently no Soil Moistures within range",
                         Toast.LENGTH_LONG).show();
@@ -706,6 +720,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         //retrieves all Rivers/ Stream Gauges
 
 //        RiverService.getRivers(currlat,currlong,radius);
+//        pb.setVisibility(View.VISIBLE);
         RiverService.getRivers(RiverNetworkCallback,currlat,currlong,radius);
     }
     private void removeRiverz(){
@@ -738,9 +753,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
                     }
                 }
+//                pb.setVisibility(View.INVISIBLE);
             }
             else
             {
+//                pb.setVisibility(View.INVISIBLE);
                 Log.d("River","There are currently no Streams/Rivers within range ");
                 Toast.makeText(getApplicationContext(), "There are currently no Streams/Rivers within range",
                         Toast.LENGTH_LONG).show();
@@ -758,12 +775,66 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(arview.meshNull()){
             //arview.addMesh(getMeshInfo("terrain"));
         }
+        // Retrieves curr location
+        float[] loc = arview.getLocation();
+        //Longitude
+        String longy = Float.toString(loc[1]);
+        //Lattitude
+        String laty = Float.toString(loc[0]);
+
+        Double currlat =  Double.parseDouble(laty);
+        Double currlong =  Double.parseDouble(longy);
+        //retrieves all Rivers/ Stream Gauges
+
+//        RiverService.getRivers(currlat,currlong,radius);
+//        pb.setVisibility(View.VISIBLE);
+        SnotelService.getAllSnotel(SnotelNetworkCallback);
     }
 
 
     public void removeSnotelPillows(){
+        for(Snotel snowyy : snotelList){
+            //Removes Soil Moisture  based on there unique ID or Wbanno
+            int id = Integer.parseInt(snowyy.getStationId());
+            arview.removeBillboard(id);
+        }
+        snotelList.clear();
 
     }
+
+    NetworkTask.NetworkCallback SnotelNetworkCallback = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            float[] loc = arview.getLocation();     // added by  leo
+            List<Snotel> lSnotelList = SnotelService.parseAllSnowtels(result, loc[0] , loc[1],radius);
+            // Check to see if GET call is empty if so display message to user else continue
+            if (lSnotelList.size() >=1){
+                for(Snotel snt :lSnotelList){
+                    try{
+                        int id = Integer.parseInt(snt.getStationId());
+                        snotelList.add(snt);
+                        arview.addBillboard(id,
+                                R.drawable.snotel_res_ico,
+                                "Snotel # "+ snt.getStationId(),
+                                "(" + snt.getLat() + "," + snt.getLon() + ")",
+                                Float.parseFloat(snt.getLat()), Float.parseFloat(snt.getLon()),0
+                        );
+                    }catch(NumberFormatException e){
+
+                    }
+                }
+//                pb.setVisibility(View.INVISIBLE);
+            }
+            else
+            {
+//                pb.setVisibility(View.INVISIBLE);
+                Log.d("snow","There are currently no Snotel Pillows within your  range ");
+                Toast.makeText(getApplicationContext(), "There are currently no Snotel Pillows within range",
+                        Toast.LENGTH_LONG).show();
+            }
+
+        }
+    };
 
 
 
@@ -847,6 +918,22 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             return;
         }
         //Snotel
+        Snotel  sntel = null;
+        for(Snotel s : snotelList){
+//            Log.d("LaunchSnoteldetails OT",s.getStationId());
+//            Log.d("NOOOOOOOO", "whyyyyyy");
+            int snId = Integer.parseInt(s.getStationId());
+            if(snId == id) {
+                sntel = s;
+                break;
+            }
+        }
+        if(sntel != null) {
+            Log.d("snow" , sntel.getStationId());
+            SnotelActivity.launchDetailsActivity(this, sntel);
+//            Log.d("LaunchSoildetails","going now...");
+            return;
+        }
 
         //Rapids/ Rivers
         River  rivL = null;

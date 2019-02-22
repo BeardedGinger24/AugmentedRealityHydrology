@@ -30,6 +30,7 @@ public class RiverService {
         NetworkTask nt = new NetworkTask(callback, River.DISCHARGE_UNITS);
         nt.execute(url);
     }
+    //RIVER CALL NOT STREAMGAUGE
     public static void avgFlux(NetworkTask.NetworkCallback callback, String startDate , String endDate, String comid){
         String comID = comid;
         String url =  " https://watertrek.jpl.nasa.gov/hydrology/rest/river/comid/1176550/avg/2016-01-28T00:00:00/2019-01-28T00:00:00";
@@ -154,6 +155,12 @@ public class RiverService {
         Log.d("discharge" , line);
         List<String> unitdisList = new ArrayList();
         String[] rowEntry = line.split("\n");
+        //**************possibly delete this **********
+        if (rowEntry.length == 1){
+            return unitdisList ;
+        }
+
+        //****************
         if (rowEntry[1].equals("null")){
             return unitdisList ;
         }

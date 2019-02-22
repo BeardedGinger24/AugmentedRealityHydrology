@@ -204,6 +204,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <ProgressBar
+            android:id="@+id/progressBarMain"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="133dp"
+            android:layout_height="116dp"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            tools:layout_editor_absoluteX="126dp"
+            tools:layout_editor_absoluteY="306dp" />
+
     </android.support.constraint.ConstraintLayout>
 
     <!-- Left Drawer -->
