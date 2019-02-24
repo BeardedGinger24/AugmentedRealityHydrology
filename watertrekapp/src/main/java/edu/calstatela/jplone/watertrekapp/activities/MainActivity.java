@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -26,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Orientation;
+import edu.calstatela.jplone.arframework.util.Permissions;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
@@ -71,8 +74,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private RelativeLayout drawerContentsLayout;
     private DrawerLayout mainDrawerLayout;
+    FrameLayout mainLayout;
+
     private BillboardView_sorting arview;
-    private SensorARView rpy;
     private SeekBar radiusSeekBar;
 
     private boolean tMountain = false;
@@ -82,20 +86,13 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private boolean tSoil = false;
     private boolean tSnotel = false;
 
-    private Switch toggleSoil;
-    private Switch toggleRiver;
-    private Switch toggleMountain;
-    private Switch toggleWell;
-    private Switch toggleReservoir;
-    private Switch toggleSnotel;
-
     private ImageButton ibWell, ibRiver, ibReservoir, ibSoilMoisture, ibMtn, ibSnotel;
     MeshInfo meshInfo;
     private int radius = 20;
-    Button mesh_demo;
     Button obstruct_button;
     Button login_button;
     Button logout_button;
+    Switch cameraToggle;
 
     private ArrayList<Well> wellList = new ArrayList<>();
     private ArrayList<Reservoir> reservoirList = new ArrayList<>(); ///////////////////////////////////////added by Leo***
@@ -126,34 +123,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             Toast.makeText(this, "Problem With Sensors", Toast.LENGTH_LONG).show();
         }
 
-        //$$$$$$$$$$$$$$$$$$$$$$$$
+        drawerContentsLayout = (RelativeLayout) findViewById(R.id.whatYouWantInLeftDrawer);
+        mainDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        // Check to see if the user is already logged in
-        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
-        String userName = credentialsTest.getUsername();
-        String passWord = credentialsTest.getPassword();
-        if(!userName.isEmpty() && !passWord.isEmpty()){
-            Log.d("USERNAME", "username: " + userName);
-            Log.d("PASSWORD", "password: " + passWord);
-
-            isLoggedIn = true;
-        }
-
-        if(!isLoggedIn){
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
-        }else {
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
-        }
-
-        drawerContentsLayout = (RelativeLayout)findViewById(R.id.whatYouWantInLeftDrawer);
-        mainDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         radiusSeekBar = findViewById(R.id.seekBar);
         radiusSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
-
-        //mesh demo btn
-        mesh_demo = findViewById(R.id.mesh_demo);
 
         ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
         ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
@@ -171,18 +145,43 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
-        toggleMountain = (Switch)findViewById(R.id.switch8);
-        toggleReservoir = (Switch)findViewById(R.id.switch11);
-        toggleWell = (Switch)findViewById(R.id.switch9);
-        toggleRiver = (Switch)findViewById(R.id.switch10);
-        toggleSoil = (Switch)findViewById(R.id.switch12);
-        toggleSnotel = (Switch) findViewById(R.id.switch13);
 
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
 
-        FrameLayout mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
+        // Check to see if the user is already logged in
+        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
+        String userName = credentialsTest.getUsername();
+        String passWord = credentialsTest.getPassword();
+        if(!userName.isEmpty() && !passWord.isEmpty()){
+            Log.d("USERNAME", "username: " + userName);
+            Log.d("PASSWORD", "password: " + passWord);
+
+            isLoggedIn = true;
+        }
+
+        if(!isLoggedIn){
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
+            logout_button.setVisibility(View.GONE);
+            login_button.setVisibility(View.VISIBLE);
+        }else {
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+            logout_button.setVisibility(View.VISIBLE);
+            login_button.setVisibility(View.GONE);
+        }
+
+        cameraToggle = (Switch)findViewById(R.id.cameraToggle);
+        if(Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
+            cameraToggle.setChecked(true);
+        }else{
+            cameraToggle.setChecked(true);
+        }
+        arview.changeBGC(cameraToggle.isChecked());
+
+        mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
         mainLayout.addView(arview);
 
         mountainList.loadMountains();
@@ -214,6 +213,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     public void onMenuButtonClicked(View view) {
         mainDrawerLayout.openDrawer(drawerContentsLayout);
     }
+    public void toggleCamera(View view){
+        if(Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)) {
+            arview.changeBGC(cameraToggle.isChecked());
+        }
+    }
+
     // When Obstruction View button is clicked or called
     public void obstructionClicked(View view){
         String pitch =  String.valueOf(((TextView)findViewById(R.id.bearingL)).getText());
@@ -275,11 +280,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addMountains();
             ibMtn.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibMtn.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleMountain.setChecked(true);
         } else{
             removeMountains();
             ibMtn.setBackgroundTintMode(null);
-            toggleMountain.setChecked(false);
         }
 
     }
@@ -294,11 +297,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addReservoirs();
             ibReservoir.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibReservoir.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleReservoir.setChecked(true);
         } else {
             removeReservoirs();
             ibReservoir.setBackgroundTintMode(null);
-            toggleReservoir.setChecked(false);
         }
     }
 
@@ -312,11 +313,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addWells();
             ibWell.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibWell.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleWell.setChecked(true);
         } else {
             removeWells();
             ibWell.setBackgroundTintMode(null);
-            toggleWell.setChecked(false);
         }
     }
 
@@ -330,16 +329,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addRiverz();
             ibRiver.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibRiver.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleRiver.setChecked(true);
         } else {
             removeRiverz();
             ibRiver.setBackgroundTintMode(null);
-            toggleRiver.setChecked(false);
         }
 
     }
-
-
 
     public void toggleSoil(View v) {
         if(isLoggedIn) {
@@ -351,11 +346,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addSoilPatches();
             ibSoilMoisture.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibSoilMoisture.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleSoil.setChecked(true);
         } else {
             removeSoilPatches();
             ibSoilMoisture.setBackgroundTintMode(null);
-            toggleSoil.setChecked(false);
         }
     }
 
@@ -370,11 +363,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addSnotelPillows();
             ibSnotel.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibSnotel.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleSnotel.setChecked(true);
         } else {
             removeSnotelPillows();
             ibSnotel.setBackgroundTintMode(null);
-            toggleSnotel.setChecked(false);
         }
     }
 
@@ -392,8 +383,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             ibMtn.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibMtn.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
         }
-//        Intent intent = new Intent(this, DisplayMeshActivity.class);
-//        startActivity(intent);
     }
     public MeshInfo getMeshInfo(String type){
         File file1 = new File(getFilesDir(),"meshvecs");
@@ -423,34 +412,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleSoil(v);
         toggleRiver(v);
         toggleSnotel(v);
-
-        toggleRiver.setChecked(false);
-        toggleSoil.setChecked(false);
-        toggleWell.setChecked(false);
-        toggleMountain.setChecked(false);
-        toggleReservoir.setChecked(false);
-        toggleSnotel.setChecked(false);
-
-        toggleSwitches();
     }
     public void login (View v){
         WatertrekCredentials credentials = new WatertrekCredentials(this);
         CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
-//        login_button.setVisibility(v.GONE);
-//        logout_button.setVisibility(v.VISIBLE);
-//        isLoggedIn = true;
-//        toggleSwitches();
-
     }
 
-    public void toggleSwitches(){
-        toggleReservoir.setClickable(isLoggedIn);
-        toggleRiver.setClickable(isLoggedIn);
-        toggleWell.setClickable(isLoggedIn);
-        toggleMountain.setClickable(isLoggedIn);
-        toggleSoil.setClickable(isLoggedIn);
-        toggleSnotel.setClickable(isLoggedIn);
-    }
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Credentials Methods
@@ -476,9 +443,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                 login_button.setVisibility(View.GONE);
                 logout_button.setVisibility(View.VISIBLE);
                 isLoggedIn = true;
-                toggleSwitches();
-
-
         }
     }
 
@@ -938,14 +902,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
-
-
-
-
-
-
-    //*********
-
 }
 
 

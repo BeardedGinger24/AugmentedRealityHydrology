@@ -87,17 +87,18 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
 
         boolean havePermissions = true;
         if(!Permissions.havePermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION)){
-            //Permissions.requestPermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION);
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            Permissions.requestPermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION,REQUEST_LOCATION);
+            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
             havePermissions = false;
         }
         if(!Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+            Permissions.requestPermission(this, Permissions.PERMISSION_CAMERA,REQUEST_CAMERA);
+            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
             havePermissions = false;
         }
         if(!Permissions.havePermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE)){
-            //Permissions.requestPermission(this, Permissions.PERMISSION_CAMERA);
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE);
+            Permissions.requestPermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE,REQUEST_STORAGE);
+            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE);
             havePermissions = false;
         }
         if(!havePermissions)

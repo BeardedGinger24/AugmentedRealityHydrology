@@ -47,7 +47,8 @@ public class BillboardView_sorting extends SensorARView{
     Scene scene;
     float[] meshLoc;
     Vector3[] vecs;
-    private Camera3D mCamera;
+    public Camera3D mCamera;
+    float[] color;
 
     boolean drawMesh;
     public BillboardView_sorting(Context context){
@@ -129,9 +130,8 @@ public class BillboardView_sorting extends SensorARView{
         Billboard.init();
 
         mCamera = new Camera3D();
-        mCamera.setClearColor(0, 0, 0, 0);
         mCamera.setDepthTestEnabled(false);
-
+        color = new float[]{0, 0, 0, 0};
         mEntityList = new ArrayList<>();
         meshList = new ArrayList<>();
 
@@ -149,6 +149,7 @@ public class BillboardView_sorting extends SensorARView{
     @Override
     public void GLDraw() {
         super.GLDraw();
+        mCamera.setClearColor(color[0],color[1],color[2],color[3]);
         mCamera.clear();
 
         // update camera
@@ -368,5 +369,12 @@ public class BillboardView_sorting extends SensorARView{
             return result;
         }
         return new float[]{0,0,0};
+    }
+    public void changeBGC(boolean b){
+        if(!b){
+            color = new float[]{0,0,0,255};
+        }else {
+            color = new float[]{0, 0, 0, 0};
+        }
     }
 }

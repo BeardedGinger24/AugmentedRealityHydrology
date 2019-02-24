@@ -15,14 +15,12 @@ public class Permissions {
     public static final String PERMISSION_INTERNET = Manifest.permission.INTERNET;
     // More permission types should be added as needed
 
-    private static final int DEFAULT_REQUEST_CODE = 2349803;
 
     public static boolean havePermission(Context context, String permissionType){
         return ContextCompat.checkSelfPermission(context, permissionType) == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static void requestPermission(Activity activity, String permissionType){
-        int requestCode = DEFAULT_REQUEST_CODE;
+    public static void requestPermission(Activity activity, String permissionType,int requestCode){
         ActivityCompat.requestPermissions(activity, new String[]{permissionType}, requestCode);
     }
 }
