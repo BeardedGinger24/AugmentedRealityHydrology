@@ -153,6 +153,79 @@
                 arc:menuType="normal"></com.bvapp.arcmenulibrary.ArcMenu>>
         </FrameLayout>
 
+        <!-- sensor views -->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="25dp"
+                android:layout_height="145dp"
+                android:id="@+id/Azimuth_RecyclerView"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dp"
+                android:background="#AA4f4e4d"
+                />
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="25dp"
+                android:layout_height="145dp"
+                android:id="@+id/Pitch_RecyclerView"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:background="#AA4f4e4d">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Azimuth"
+                android:textColor="@android:color/white"
+                android:layout_above="@+id/Azimuth_RecyclerView"
+                android:paddingBottom="2dp"
+                android:layout_marginLeft="5dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pitch"
+                android:textColor="@android:color/white"
+                android:layout_above="@+id/Pitch_RecyclerView"
+                android:layout_alignParentRight="true"
+                android:paddingBottom="2dp"
+                android:layout_marginRight="11dp"
+                />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/AzimuthNum"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:text="0.0"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:layout_toRightOf="@+id/Azimuth_RecyclerView"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/PitchNum"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:layout_toLeftOf="@+id/Pitch_RecyclerView"
+                android:text="0.0"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+
+        </RelativeLayout>
+
 
         <LinearLayout
             android:id="@+id/constraintLayout"
