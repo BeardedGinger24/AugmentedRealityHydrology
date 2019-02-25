@@ -1,6 +1,7 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -36,6 +38,8 @@ import edu.calstatela.jplone.watertrekapp.R;
 
 //FragmentActivity
 public class HistoryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+
+    Context context;
 
     TextView starttext;
     TextView endtext ;
@@ -79,6 +83,8 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        context = this;
+
         WELLID = getIntent().getStringExtra("wellID");
         RiverID = getIntent().getStringExtra("RiverID");
         ReservoirID = getIntent().getStringExtra("ReservoirID");
@@ -169,7 +175,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
         // enable scaling and scrolling
         graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-        graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+        graph.getViewport().setScalableY(false); // enables vertical zooming and scrolling
 
         // add a new series to the graph
         graph.addSeries(series);
@@ -178,7 +184,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         // Make Case Statement to set Graph Title  depending on Selected POI
         graph.setTitle("DBGS (ft) vs. Time (YYYY-MM-DD)");
 
-        // custom label formatter to show feet "ft" and date
+        // custom label formatter to show feet "ft" and date; DefaultLabelFormatter()
         graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
             @Override
             public String formatLabel(double value, boolean isValueX) {
@@ -186,7 +192,6 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                     // show date for x values
                     return simpleDateFormat.format(new Date((long)value));
                 } else {
-                    // show feet for y values
                     return super.formatLabel(value, isValueX);
                 }
             }
@@ -199,6 +204,9 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         graph.getGridLabelRenderer().setNumHorizontalLabels(dp.length);
         // Fixes issue where more than three digits would be cutoff on the y axis.
         graph.getGridLabelRenderer().setPadding(40);
+
+        // ?
+
 
 
         Button startButton = (Button)findViewById(R.id.sdate);
@@ -408,7 +416,12 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
     //Method to find max value of an arraylist of strings
     private double findMaxDouble(ArrayList<String> arrayList) {
-        double maxValue = Double.parseDouble(arrayList.get(0));
+        double maxValue = 0;
+        try {
+             maxValue = Double.parseDouble(arrayList.get(0));
+        } catch (Exception e) {
+            Log.i("Out of bounds", String.valueOf(maxValue));
+        }
         for (int i = 1; i < arrayList.size(); i++) {
             double currentValue = Double.parseDouble(arrayList.get(i));
             if (maxValue < currentValue) {
@@ -419,7 +432,12 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     }
     //Method to find min value of an arraylist of strings
     private double findMinDouble(ArrayList<String> arrayList) {
-        double minValue = Double.parseDouble(arrayList.get(0));
+        double minValue = 0;
+        try {
+            minValue = Double.parseDouble(arrayList.get(0));
+        } catch (Exception e) {
+            Log.i("Out of bounds", String.valueOf(minValue));
+        }
         for (int i = 1; i < arrayList.size(); i++) {
             double currentValue = Double.parseDouble(arrayList.get(i));
             if (minValue > currentValue) {
@@ -430,6 +448,11 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     }
 
     //Method to order dates.
+//    private ArrayList<String> orderXValues(ArrayList<String> xList) {
+//
+//
+//        return xList;
+//    }
 
     // METHOD that populates recyclerView
     //*****************************WELL RecylerView Starts ******************************************
@@ -490,9 +513,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 DataPoint[] dataPoints = new DataPoint[xValue.size()];
                 DataPoint dataPoint;
                 for (int i = 0; i < dateList.size(); i++) {
-                    if (yValue.get(i) != null) {
-                        dataPoint = new DataPoint(dateList.get(i), Double.parseDouble(yValue.get(i)));
-                        dataPoints[i] = dataPoint;
+                    try {
+                        if (yValue.get(i) != null) {
+                            dataPoint = new DataPoint(dateList.get(i), Double.parseDouble(yValue.get(i)));
+                            dataPoints[i] = dataPoint;
+                        }
+                    } catch (Exception e) {
+                        Log.i("Dunno", "dunno");
                     }
                 }
 
@@ -511,7 +538,6 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 graph.getViewport().setMinY(minY);
                 graph.getViewport().setMaxY(maxY);
 
-                graph.getGridLabelRenderer().setNumHorizontalLabels(dataPoints.length);
 
 
 //                for (int i = 0; i < xValue.size(); i++) {
@@ -520,17 +546,14 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 for (int i = 0; i < dataPoints.length; i++) {
                     Log.i("Datapoint", String.valueOf(dataPoints[i]));
                 }
+//                graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(context));
 
+                graph.getViewport().setXAxisBoundsManual(true);
+                graph.getGridLabelRenderer().setHumanRounding(false);
                 graph.getGridLabelRenderer().setNumHorizontalLabels(dataPoints.length);
 
 
-                calendar = Calendar.getInstance();
-                Date d1 = calendar.getTime();
-                calendar.add(Calendar.DATE, 1);
-                Date d2 = calendar.getTime();
-                calendar.add(Calendar.DATE, 1);
-                Date d3 = calendar.getTime();
-//                series.resetData(new DataPoint[] {new DataPoint(d1,50), new DataPoint(d2, 100), new DataPoint(d3, 150)});
+
                 series.resetData(dataPoints);
 
             }
