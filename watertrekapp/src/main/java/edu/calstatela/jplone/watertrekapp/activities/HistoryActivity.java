@@ -15,10 +15,13 @@ import android.widget.Toast;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,10 +43,16 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     LineGraphSeries<DataPoint> series;
     public String firstDate;
     public String lastDate;
+    // xValue ArrayList stores the values of the x-axis in the graph.
     public ArrayList<String> xValue = new ArrayList<>();
+    // yValue ArrayList stores the values of the y-axis in the graph.
     public ArrayList<String> yValue = new ArrayList<>();
+    // dateList ArrayList is used to create a List of Dates from xValue;
+    public ArrayList<Date> dateList = new ArrayList<>();
+
 
     Calendar calendar;
+    SimpleDateFormat simpleDateFormat;
 
     private TextView mDisplaydate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
@@ -93,24 +102,55 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         setContentView(R.layout.activity_history);
 
         // used to format dates
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd");
+       simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 
-        // generate Dates
+        // Generate Dates.
+        // Calender.getInstance() sets the calender to current date and time.
         calendar = Calendar.getInstance();
+        // calender.getTime() returns a Date object representing the calenders.
         Date d1 = calendar.getTime();
+        // calender.add() takes in two arugments which consist of a Calender value. Calender.DATE for the day of the month. The second argument being an integer have that will add a value to that specified date/time.
         calendar.add(Calendar.DATE, 1);
         Date d2 = calendar.getTime();
         calendar.add(Calendar.DATE, 1);
         Date d3 = calendar.getTime();
+        calendar.add(Calendar.DATE, 1);
+        Date d4 = calendar.getTime();
+//        calendar.set(1991, 10, 31);
+//        Date d5 = calendar.getTime();
+
+        // Create a string array of sample dates.
+        String[] sampleDates = {"1991-10-31", "2013-03-20", "2013-04-20"};
+
+        // Used to test parsing of strings to dates with simpleDateFormat.parse method.
+//        Date d5 = new Date();
+//        try {
+//            d5 = simpleDateFormat.parse(sampleDates[0]);
+//
+//            Log.i("Date example", d5.toString());
+//
+//        } catch (ParseException e) {
+//        }
+
+
+        Log.i("Calendar", calendar.getTime().toString());
 
         graph = (GraphView) findViewById(R.id.graph);
 
-        DataPoint[] dp = new DataPoint[]{ new DataPoint(d1, 5), new DataPoint(d2, 10), new DataPoint(d3, 15)};
+
+//        DataPoint[] dp = new DataPoint[]{ new DataPoint(d1, 5), new DataPoint(d2, 10), new DataPoint(d3, 15), new DataPoint(d4, 5), new DataPoint(d5,15)};
+        DataPoint[] dp = new DataPoint[]{ new DataPoint(d1, 5), new DataPoint(d2, 10), new DataPoint(d3, 15), new DataPoint(d4, 5)};
+
 
 //         populate series with DataPoints
         series = new LineGraphSeries<>(dp
         );
+
+        series.setDrawDataPoints(true);
+
+        // sets angle for label on x axis.
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(110);
 
         Log.i("Date-1", String.valueOf(d1));
 
@@ -119,7 +159,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 //        graph.getViewport().setMinX(d1.getTime());
 //        graph.getViewport().setMaxX(d3.getTime());
         graph.getViewport().setMinX(d1.getTime());
-        graph.getViewport().setMaxX(d3.getTime());
+        graph.getViewport().setMaxX(d4.getTime());
 
 
         // set manual Y bounds
@@ -128,15 +168,15 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         graph.getViewport().setMaxY(20);
 
         // enable scaling and scrolling
-        graph.getViewport().setScalable(false); // enables horizontal zooming and scrolling
-        graph.getViewport().setScalableY(false); // enables vertical zooming and scrolling
+        graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+        graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
 
         // add a new series to the graph
         graph.addSeries(series);
 
         // set title
         // Make Case Statement to set Graph Title  depending on Selected POI
-        graph.setTitle("DBGS vs. Time");
+        graph.setTitle("DBGS (ft) vs. Time (YYYY-MM-DD)");
 
         // custom label formatter to show feet "ft" and date
         graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
@@ -147,7 +187,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                     return simpleDateFormat.format(new Date((long)value));
                 } else {
                     // show feet for y values
-                    return super.formatLabel(value, isValueX) + " ft";
+                    return super.formatLabel(value, isValueX);
                 }
             }
         });
@@ -155,9 +195,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         // as we use dates as labels, the human rounding to nice readable numbers
         graph.getGridLabelRenderer().setHumanRounding(false);
         // count of the horizontal labels, that will be shown at one time
-        graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+        // the number of x-axis values shown
+        graph.getGridLabelRenderer().setNumHorizontalLabels(dp.length);
+        // Fixes issue where more than three digits would be cutoff on the y axis.
+        graph.getGridLabelRenderer().setPadding(40);
 
-    Button startButton = (Button)findViewById(R.id.sdate);
+
+        Button startButton = (Button)findViewById(R.id.sdate);
     startButton.setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View view)
@@ -362,6 +406,31 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         }
     }
 
+    //Method to find max value of an arraylist of strings
+    private double findMaxDouble(ArrayList<String> arrayList) {
+        double maxValue = Double.parseDouble(arrayList.get(0));
+        for (int i = 1; i < arrayList.size(); i++) {
+            double currentValue = Double.parseDouble(arrayList.get(i));
+            if (maxValue < currentValue) {
+                maxValue = currentValue;
+            }
+        }
+        return maxValue;
+    }
+    //Method to find min value of an arraylist of strings
+    private double findMinDouble(ArrayList<String> arrayList) {
+        double minValue = Double.parseDouble(arrayList.get(0));
+        for (int i = 1; i < arrayList.size(); i++) {
+            double currentValue = Double.parseDouble(arrayList.get(i));
+            if (minValue > currentValue) {
+                minValue = currentValue;
+            }
+        }
+        return minValue;
+    }
+
+    //Method to order dates.
+
     // METHOD that populates recyclerView
     //*****************************WELL RecylerView Starts ******************************************
     NetworkTask.NetworkCallback wellNetworkCallback = new NetworkTask.NetworkCallback() {
@@ -375,6 +444,8 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             else {
                 // clears old list so it doesnt double stack / repeat Data twice
                 dbgsUList.clear();
+                yValue.clear();
+                xValue.clear();
                 for (int i = 0; i < dbgsunitList.size(); i++) {
                     String dbu = dbgsunitList.get(i);
                     dbgsUList.add(dbu);
@@ -389,16 +460,68 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                     }
                 }
 
-                DataPoint[] dataPoints = new DataPoint[xValue.size()];
-                DataPoint dataPoint;
+                Date earliestDate = new Date();
+                Date latestDate = new Date();
                 for (int i = 0; i < xValue.size(); i++) {
-                    dataPoint = new DataPoint(i, i*2);
-                    dataPoints[i] = dataPoint;
+                    Date date = new Date();
+                    if (i == 0) {
+                        try {
+                            earliestDate = simpleDateFormat.parse(xValue.get(0));
+
+
+                        } catch (ParseException e) {
+                        }
+                    }
+                    if (i == xValue.size() -1) {
+                        try {
+                            latestDate = simpleDateFormat.parse(xValue.get(xValue.size() - 1));
+
+                        } catch (ParseException e) {
+                        }
+                    }
+                    try {
+                        date = simpleDateFormat.parse(xValue.get(i));
+                        dateList.add(date);
+
+                    } catch (ParseException e) {
+                    }
                 }
 
-                for (int i = 0; i < xValue.size(); i++) {
+                DataPoint[] dataPoints = new DataPoint[xValue.size()];
+                DataPoint dataPoint;
+                for (int i = 0; i < dateList.size(); i++) {
+                    if (yValue.get(i) != null) {
+                        dataPoint = new DataPoint(dateList.get(i), Double.parseDouble(yValue.get(i)));
+                        dataPoints[i] = dataPoint;
+                    }
+                }
+
+                //Set Min and Max for x-axis values
+                graph.getViewport().setMinX(earliestDate.getTime());
+                graph.getViewport().setMaxX(latestDate.getTime());
+
+                Log.i("Earliest Date", earliestDate.toString());
+                Log.i("Earliest Date", latestDate.toString());
+
+                double maxY = findMaxDouble(yValue);
+                Log.i("MaxY", String.valueOf(maxY));
+                double minY = findMinDouble(yValue);
+                Log.i("MinY", String.valueOf(minY));
+                //Set Min and Max for y-axis values
+                graph.getViewport().setMinY(minY);
+                graph.getViewport().setMaxY(maxY);
+
+                graph.getGridLabelRenderer().setNumHorizontalLabels(dataPoints.length);
+
+
+//                for (int i = 0; i < xValue.size(); i++) {
+//                    Log.i("Datapoint", String.valueOf(dataPoints[i]));
+//                }
+                for (int i = 0; i < dataPoints.length; i++) {
                     Log.i("Datapoint", String.valueOf(dataPoints[i]));
                 }
+
+                graph.getGridLabelRenderer().setNumHorizontalLabels(dataPoints.length);
 
 
                 calendar = Calendar.getInstance();
