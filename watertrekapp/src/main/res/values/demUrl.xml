@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="demurl">http://ec2-50-18-69-218.us-west-1.compute.amazonaws.com/arcgis/rest/services/earth/srtm_conUS_merge_30m_v1/ImageServer/exportImage?</string></resources>
+<resources><string name="demurl">https://watertrek.jpl.nasa.gov/arcgis/rest/services/earth/srtm_conUS_merge_30m_v1/ImageServer/exportImage?</string></resources>
