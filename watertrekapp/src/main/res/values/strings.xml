@@ -3,6 +3,7 @@
     <string name="showResources">Show Resources</string>
     <string name="settings">Settings</string>
     <string name="range">Range (km)</string>
+    <string name="camera">Camera View</string>
     <string name="mountains">Mountains</string>
     <string name="wells">Wells</string>
     <string name="credentials">WaterTrek Credentials</string>

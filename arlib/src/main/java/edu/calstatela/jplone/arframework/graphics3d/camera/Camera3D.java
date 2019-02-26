@@ -16,7 +16,6 @@ public class Camera3D extends ViewMatrix {
 
     public Camera3D(){
         setDepthTestEnabled(true);
-        setClearColor(0, 0, 0, 0);
     }
 
     public void setPositionLatLonAlt(float[] latLonAlt){

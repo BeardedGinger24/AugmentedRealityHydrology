@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.calstatela.jplone.watertrekapp">
+
+
+    package="edu.calstatela.jplone.watertrekapp"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -14,6 +17,7 @@
         android:hardwareAccelerated="true"
         android:largeHeap="true"
         android:allowBackup="false"
+        tools:replace="allowBackup"
         android:icon="@mipmap/app_ico_round"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/app_ico_round"

@@ -42,4 +42,12 @@ dependencies {
     implementation project(path: ':arlib')
 
 
+    //For floating arc menu
+    implementation 'com.github.BrotherV:Floating-ArcMenu:1.1.0.2'
+    implementation 'com.android.support:design:26.1.0'
+
+    //Balloon Popup
+    implementation 'com.github.BeppiMenozzi:BalloonPopup:0.2.8'
+
+
 }
