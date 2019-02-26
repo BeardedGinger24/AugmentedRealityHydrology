@@ -118,7 +118,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private ArrayList<String> horizontalTicks = new ArrayList<>();
 
     //Arc menu items
-    private static final int[] ITEM_DRAWABLES = { R.drawable.mtn_res_ico_clr, R.drawable.reservoir_bb_icon, R.drawable.soil_bb_icon,
+    ArcMenu arcMenu;
+    private static int[] ITEM_DRAWABLES = { R.drawable.mtn_res_ico_clr, R.drawable.reservoir_bb_icon, R.drawable.soil_bb_icon,
             R.drawable.well_bb_icon, R.drawable.river_res_ico_clr, R.drawable.snotel_res_ico, R.drawable.eye24 };
     private String[] str = {"mountain","reservoir","soil","well", "river", "snotel", "eye"};
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,14 +205,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         mountainList.loadMountains();
 
-        //arview.setMeshStatus(false);
-        //meshInfo = getMeshInfo("terrain");
+//        arview.setMeshStatus(false);
+//        meshInfo = getMeshInfo("terrain");
 
         initSensorRecyclerViews();
 
 
         //Floating arc menu
-        ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);
+        arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);
         arcMenu.setToolTipTextSize(14);
 
         arcMenu.setToolTipSide(ArcMenu.TOOLTIP_LEFT);
@@ -306,25 +307,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     };
 
-    public void toggleMountain(View v) {
-        if(isLoggedIn) {
-            tMountain = !tMountain;
-        }else{
-            tMountain = false;
-        }
-
-        if(tMountain){
-            addMountains();
-            ibMtn.setBackgroundTintMode(PorterDuff.Mode.SRC);
-            ibMtn.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-        } else{
-            removeMountains();
-            ibMtn.setBackgroundTintMode(null);
-        }
-
-    }
-
     public void toggleReservoir(View v) {
+        int i = 1;
         if(isLoggedIn) {
             tReservoir = !tReservoir;
         }else{
@@ -332,15 +316,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(tReservoir) {
             addReservoirs();
-            ibReservoir.setBackgroundTintMode(PorterDuff.Mode.SRC);
-            ibReservoir.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
         } else {
             removeReservoirs();
-            ibReservoir.setBackgroundTintMode(null);
         }
+        updateArcMenuDrawables(i,tReservoir);
     }
 
     public void toggleWell(View v) {
+        int i = 3;
         if(isLoggedIn) {
             tWell = !tWell;
         }else{
@@ -348,15 +331,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(tWell) {
             addWells();
-            ibWell.setBackgroundTintMode(PorterDuff.Mode.SRC);
-            ibWell.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
         } else {
             removeWells();
-            ibWell.setBackgroundTintMode(null);
         }
+        updateArcMenuDrawables(i,tWell);
     }
 
     public void toggleRiver(View v) {
+        int i = 4;
         if(isLoggedIn) {
             tRiver = !tRiver;
         }else{
@@ -364,16 +346,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(tRiver) {
             addRiverz();
-            ibRiver.setBackgroundTintMode(PorterDuff.Mode.SRC);
-            ibRiver.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
         } else {
             removeRiverz();
-            ibRiver.setBackgroundTintMode(null);
         }
-
+        updateArcMenuDrawables(i,tRiver);
     }
 
     public void toggleSoil(View v) {
+        int i = 2;
         if(isLoggedIn) {
             tSoil = !tSoil;
         }else{
@@ -381,16 +361,15 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(tSoil) {
             addSoilPatches();
-            ibSoilMoisture.setBackgroundTintMode(PorterDuff.Mode.SRC);
-            ibSoilMoisture.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
         } else {
             removeSoilPatches();
-            ibSoilMoisture.setBackgroundTintMode(null);
         }
+        updateArcMenuDrawables(i,tSoil);
     }
 
 
     public void toggleSnotel(View v) {
+        int i = 5;
         if(isLoggedIn) {
             tSnotel = !tSnotel;
         }else{
@@ -398,28 +377,32 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(tSnotel) {
             addSnotelPillows();
-            ibSnotel.setBackgroundTintMode(PorterDuff.Mode.SRC);
-            ibSnotel.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+
         } else {
             removeSnotelPillows();
-            ibSnotel.setBackgroundTintMode(null);
         }
+        updateArcMenuDrawables(i,tSnotel);
     }
 
 
     //MESHDEMO
     public void meshDemo(View view){
-        if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
-        }
-        if(arview.getMeshStatus()){
-            arview.setMeshStatus(false);
-            ibMtn.setBackgroundTintMode(null);
+        int i = 0;
+        if(isLoggedIn){
+            tMountain = !tMountain;
         }else{
-            arview.setMeshStatus(true);
-            ibMtn.setBackgroundTintMode(PorterDuff.Mode.SRC);
-            ibMtn.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
+            tMountain = false;
         }
+
+        if(tMountain) {
+            if (arview.meshNull()) {
+                arview.addMesh(getMeshInfo("terrain"));
+                arview.setMeshStatus(true);
+            }
+        }else{
+            arview.setMeshStatus(false);
+        }
+        updateArcMenuDrawables(i,tMountain);
     }
     public MeshInfo getMeshInfo(String type){
         File file1 = new File(getFilesDir(),"meshvecs");
@@ -444,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         logout_button.setVisibility(v.GONE);
 
         toggleReservoir(v);
-        toggleMountain(v);
+        meshDemo(v);
         toggleWell(v);
         toggleSoil(v);
         toggleRiver(v);
@@ -980,7 +963,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                     switch(str[position]){
                         case "mountain":
                             ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
-                            toggleMountain(ibMtn);
+                            meshDemo(ibMtn);
                             break;
                         case "reservoir":
                             ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
@@ -1021,7 +1004,47 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         item.setBackgroundColor(getResources().getColor(R.color.white));
         return item;
     }
+    public void updateArcMenuDrawables(final int index, boolean b){
+        FloatingActionButton item = getChildItem(ITEM_DRAWABLES[index]);
+        if(b){
+            item.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        }else{
+            item.setBackgroundColor(getResources().getColor(R.color.white));
+        }
+        arcMenu.replaceChildAt(item,str[index],index,new View.OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+                switch(str[index]){
+                    case "mountain":
+                        ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
+                        meshDemo(ibMtn);
+                        break;
+                    case "reservoir":
+                        ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
+                        toggleReservoir(ibReservoir);
+                        break;
+                    case "soil":
+                        ibSoilMoisture = (ImageButton) findViewById(R.id.imageButton_Soil_Moisture);
+                        toggleSoil(ibSoilMoisture);
+                        break;
+                    case "well":
+                        ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
+                        toggleWell(ibWell);
+                        break;
+                    case "river":
+                        ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
+                        toggleRiver(ibRiver);
+                        break;
+                    case "snotel":
+                        ibSnotel  = (ImageButton)findViewById(R.id.imageButton_Snotel);
+                        toggleSnotel(ibSnotel);
+                        break;
+                    default:
+                }
+            }
+        });
+    }
 }
 
 
