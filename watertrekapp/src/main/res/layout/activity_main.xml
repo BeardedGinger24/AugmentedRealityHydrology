@@ -28,6 +28,7 @@
 
         <ImageButton
             android:id="@+id/menu_button"
+            android:visibility="gone"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentStart="true"
@@ -41,46 +42,47 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/gear_settings" />
 
-        <TextView
-            android:id="@+id/bearingR"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/menu_button"
-            android:layout_centerHorizontal="true"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:shadowColor="#000000"
-            android:shadowRadius="3"
-            android:text="BEARING-LEFT"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <!--<TextView-->
+            <!--android:id="@+id/bearingR"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignTop="@+id/menu_button"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_marginStart="8dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:shadowColor="#000000"-->
+            <!--android:shadowRadius="3"-->
+            <!--android:text="BEARING-LEFT"-->
+            <!--android:textColor="@android:color/holo_red_light"-->
+            <!--android:textSize="16sp"-->
+            <!--android:textStyle="bold"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-        <TextView
-            android:id="@+id/bearingL"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:shadowColor="#000000"
-            android:shadowRadius="3"
-            android:text="BEARING-RIGHT"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <!--<TextView-->
+            <!--android:id="@+id/bearingL"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:shadowColor="#000000"-->
+            <!--android:shadowRadius="3"-->
+            <!--android:text="BEARING-RIGHT"-->
+            <!--android:textColor="@android:color/holo_red_light"-->
+            <!--android:textSize="16sp"-->
+            <!--android:textStyle="bold"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
 
         <Button
             android:id="@+id/obstruction_view_button"
+            android:visibility="gone"
             android:layout_width="58dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -106,11 +108,44 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_add_black_24dp" />
 
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:arc="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/activity_second"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:id="@+id/popup"
+                android:layout_gravity="center"/>
+
+            <com.bvapp.arcmenulibrary.ArcMenu
+                android:id="@+id/arcMenuX"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:visibility="visible"
+                arc:menuChildAnim="false"
+                arc:menuChildSize="48dp"
+                arc:menuClickAnim="true"
+                arc:menuGravity="Bottom_Right"
+                arc:menuImage="@drawable/gear_settings"
+                arc:menuNormalColor="@color/colorPrimary"
+                arc:menuShadowElevation="true"
+                arc:menuType="normal"></com.bvapp.arcmenulibrary.ArcMenu>>
+        </FrameLayout>
+
 
         <LinearLayout
             android:id="@+id/constraintLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
@@ -195,6 +230,78 @@
             android:layout_height="wrap_content" />
 
     </android.support.constraint.ConstraintLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="145dp"
+            android:layout_height="25dp"
+            android:id="@+id/Azimuth_RecyclerView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="35dp"
+            android:background="#AA4f4e4d"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="25dp"
+            android:layout_height="145dp"
+            android:id="@+id/Pitch_RecyclerView"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:background="#AA4f4e4d">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Azimuth"
+            android:textColor="@android:color/white"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pitch"
+            android:textColor="@android:color/white"
+            android:layout_above="@+id/Pitch_RecyclerView"
+            android:layout_alignParentRight="true"
+            android:paddingBottom="2dp"
+            android:layout_marginRight="11dp"
+            />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bearingR"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:text="0"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:gravity="bottom"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bearingL"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/Pitch_RecyclerView"
+            android:text="0"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
 
     <!-- Left Drawer -->
     <RelativeLayout

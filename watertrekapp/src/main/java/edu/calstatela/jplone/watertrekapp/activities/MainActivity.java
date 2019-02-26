@@ -3,6 +3,7 @@ package edu.calstatela.jplone.watertrekapp.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,17 +13,24 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bvapp.arcmenulibrary.ArcMenu;
+import com.bvapp.arcmenulibrary.widget.FloatingActionButton;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,6 +64,8 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
+import edu.calstatela.jplone.watertrekapp.adapters.Azimuth_RecyclerViewAdapter;
+import edu.calstatela.jplone.watertrekapp.adapters.Pitch_RecyclerViewAdapter;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 
@@ -103,6 +113,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     int mountainPrefix = 2000000000;
 
     private boolean isLoggedIn = false;
+
+    private ArrayList<String> verticalTicks = new ArrayList<>();
+    private ArrayList<String> horizontalTicks = new ArrayList<>();
+
+    //Arc menu items
+    private static final int[] ITEM_DRAWABLES = { R.drawable.mtn_res_ico_clr, R.drawable.reservoir_bb_icon, R.drawable.soil_bb_icon,
+            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr, R.drawable.snotel_res_ico, R.drawable.eye24 };
+    private String[] str = {"mountain","reservoir","soil","well", "river", "snotel", "eye"};
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Activity Lifecycle
@@ -188,6 +206,25 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         //arview.setMeshStatus(false);
         //meshInfo = getMeshInfo("terrain");
+
+        initSensorRecyclerViews();
+
+
+        //Floating arc menu
+        ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);
+        arcMenu.setToolTipTextSize(14);
+
+        arcMenu.setToolTipSide(ArcMenu.TOOLTIP_LEFT);
+        arcMenu.setToolTipTextColor(Color.WHITE);
+        arcMenu.setToolTipBackColor(Color.parseColor("#88000000"));
+        arcMenu.setToolTipCorner(2);
+        arcMenu.setToolTipPadding(8);
+        arcMenu.setColorNormal(getResources().getColor(R.color.white));
+        arcMenu.showTooltip(false);
+        arcMenu.setDuration(ArcMenu.ArcMenuDuration.LENGTH_LONG);
+        arcMenu.setAnim(500,500, ArcMenu.ANIM_MIDDLE_TO_DOWN, ArcMenu.ANIM_MIDDLE_TO_RIGHT,
+                ArcMenu.ANIM_INTERPOLATOR_ANTICIPATE, ArcMenu.ANIM_INTERPOLATOR_ANTICIPATE);
+        initArcMenu(arcMenu, str, ITEM_DRAWABLES, ITEM_DRAWABLES.length);
     }
 
     @Override
@@ -902,6 +939,89 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
+
+    private void initSensorRecyclerViews(){
+        RecyclerView AzimuthView = findViewById(R.id.Azimuth_RecyclerView);
+        RecyclerView PitchView = findViewById(R.id.Pitch_RecyclerView);
+
+
+
+
+        Azimuth_RecyclerViewAdapter AzimuthSensorAdapter = new Azimuth_RecyclerViewAdapter(verticalTicks, this);
+
+        //Initialize for Azimuth
+        AzimuthView.setAdapter(AzimuthSensorAdapter);
+        AzimuthView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+
+
+        Pitch_RecyclerViewAdapter pitchSensorAdapter = new Pitch_RecyclerViewAdapter(horizontalTicks, this);
+
+        //Initialize for Pitch
+        PitchView.setAdapter(pitchSensorAdapter);
+        PitchView.setLayoutManager(new LinearLayoutManager(this));
+
+    }
+
+
+    /* Arc Menu Functions */
+    private void initArcMenu(final ArcMenu menu, final String[] str, int[] itemDrawables, int count) {
+        for (int i = 0; i < count; i++) {
+            FloatingActionButton item = getChildItem(itemDrawables[i]);
+            menu.setChildSize(item.getIntrinsicHeight());
+
+            final int position = i;
+
+            menu.addItem(item, str[i], new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    switch(str[position]){
+                        case "mountain":
+                            ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
+                            toggleMountain(ibMtn);
+                            break;
+                        case "reservoir":
+                            ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
+                            toggleReservoir(ibReservoir);
+                            break;
+                        case "soil":
+                            ibSoilMoisture = (ImageButton) findViewById(R.id.imageButton_Soil_Moisture);
+                            toggleSoil(ibSoilMoisture);
+                            break;
+                        case "well":
+                            ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
+                            toggleWell(ibWell);
+                            break;
+                        case "river":
+                            ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
+                            toggleRiver(ibRiver);
+                            break;
+                        case "snotel":
+                            ibSnotel  = (ImageButton)findViewById(R.id.imageButton_Snotel);
+                            toggleSnotel(ibSnotel);
+                            break;
+                        case "eye":
+                            ImageView obstruction = (ImageView)findViewById(R.id.imageView);
+                            obstructionClicked(obstruction);
+                            break;
+
+                        default:
+                    }
+                }
+            });
+        }
+    }
+
+    private FloatingActionButton getChildItem(int drawable){
+        FloatingActionButton item = new FloatingActionButton(this);
+        item.setSize(FloatingActionButton.SIZE_MINI);
+        item.setIcon(drawable);
+        item.setBackgroundColor(getResources().getColor(R.color.white));
+        return item;
+    }
+
 }
 
 
