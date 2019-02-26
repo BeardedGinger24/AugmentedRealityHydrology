@@ -3,6 +3,7 @@ package edu.calstatela.jplone.watertrekapp.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,20 +13,29 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bvapp.arcmenulibrary.ArcMenu;
+import com.bvapp.arcmenulibrary.widget.FloatingActionButton;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +44,7 @@ import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Orientation;
+import edu.calstatela.jplone.arframework.util.Permissions;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
@@ -53,6 +64,8 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
+import edu.calstatela.jplone.watertrekapp.adapters.Azimuth_RecyclerViewAdapter;
+import edu.calstatela.jplone.watertrekapp.adapters.Pitch_RecyclerViewAdapter;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 
@@ -71,8 +84,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private RelativeLayout drawerContentsLayout;
     private DrawerLayout mainDrawerLayout;
+    FrameLayout mainLayout;
+
     private BillboardView_sorting arview;
-    private SensorARView rpy;
     private SeekBar radiusSeekBar;
 
     private boolean tMountain = false;
@@ -82,20 +96,13 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private boolean tSoil = false;
     private boolean tSnotel = false;
 
-    private Switch toggleSoil;
-    private Switch toggleRiver;
-    private Switch toggleMountain;
-    private Switch toggleWell;
-    private Switch toggleReservoir;
-    private Switch toggleSnotel;
-
     private ImageButton ibWell, ibRiver, ibReservoir, ibSoilMoisture, ibMtn, ibSnotel;
     MeshInfo meshInfo;
     private int radius = 20;
-    Button mesh_demo;
     Button obstruct_button;
     Button login_button;
     Button logout_button;
+    Switch cameraToggle;
 
     private ArrayList<Well> wellList = new ArrayList<>();
     private ArrayList<Reservoir> reservoirList = new ArrayList<>(); ///////////////////////////////////////added by Leo***
@@ -106,6 +113,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     int mountainPrefix = 2000000000;
 
     private boolean isLoggedIn = false;
+
+    private ArrayList<String> verticalTicks = new ArrayList<>();
+    private ArrayList<String> horizontalTicks = new ArrayList<>();
+
+    //Arc menu items
+    private static final int[] ITEM_DRAWABLES = { R.drawable.mtn_res_ico_clr, R.drawable.reservoir_bb_icon, R.drawable.soil_bb_icon,
+            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr, R.drawable.snotel_res_ico, R.drawable.eye24 };
+    private String[] str = {"mountain","reservoir","soil","well", "river", "snotel", "eye"};
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Activity Lifecycle
@@ -126,34 +141,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             Toast.makeText(this, "Problem With Sensors", Toast.LENGTH_LONG).show();
         }
 
-        //$$$$$$$$$$$$$$$$$$$$$$$$
+        drawerContentsLayout = (RelativeLayout) findViewById(R.id.whatYouWantInLeftDrawer);
+        mainDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        // Check to see if the user is already logged in
-        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
-        String userName = credentialsTest.getUsername();
-        String passWord = credentialsTest.getPassword();
-        if(!userName.isEmpty() && !passWord.isEmpty()){
-            Log.d("USERNAME", "username: " + userName);
-            Log.d("PASSWORD", "password: " + passWord);
-
-            isLoggedIn = true;
-        }
-
-        if(!isLoggedIn){
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
-        }else {
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
-        }
-
-        drawerContentsLayout = (RelativeLayout)findViewById(R.id.whatYouWantInLeftDrawer);
-        mainDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         radiusSeekBar = findViewById(R.id.seekBar);
         radiusSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
-
-        //mesh demo btn
-        mesh_demo = findViewById(R.id.mesh_demo);
 
         ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
         ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
@@ -171,24 +163,68 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
-        toggleMountain = (Switch)findViewById(R.id.switch8);
-        toggleReservoir = (Switch)findViewById(R.id.switch11);
-        toggleWell = (Switch)findViewById(R.id.switch9);
-        toggleRiver = (Switch)findViewById(R.id.switch10);
-        toggleSoil = (Switch)findViewById(R.id.switch12);
-        toggleSnotel = (Switch) findViewById(R.id.switch13);
 
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
 
-        FrameLayout mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
+        // Check to see if the user is already logged in
+        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
+        String userName = credentialsTest.getUsername();
+        String passWord = credentialsTest.getPassword();
+        if(!userName.isEmpty() && !passWord.isEmpty()){
+            Log.d("USERNAME", "username: " + userName);
+            Log.d("PASSWORD", "password: " + passWord);
+
+            isLoggedIn = true;
+        }
+
+        if(!isLoggedIn){
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
+            logout_button.setVisibility(View.GONE);
+            login_button.setVisibility(View.VISIBLE);
+        }else {
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+            logout_button.setVisibility(View.VISIBLE);
+            login_button.setVisibility(View.GONE);
+        }
+
+        cameraToggle = (Switch)findViewById(R.id.cameraToggle);
+        if(Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
+            cameraToggle.setChecked(true);
+        }else{
+            cameraToggle.setChecked(true);
+        }
+        arview.changeBGC(cameraToggle.isChecked());
+
+        mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
         mainLayout.addView(arview);
 
         mountainList.loadMountains();
 
         //arview.setMeshStatus(false);
         //meshInfo = getMeshInfo("terrain");
+
+        initSensorRecyclerViews();
+
+
+        //Floating arc menu
+        ArcMenu arcMenu = (ArcMenu) findViewById(R.id.arcMenuX);
+        arcMenu.setToolTipTextSize(14);
+
+        arcMenu.setToolTipSide(ArcMenu.TOOLTIP_LEFT);
+        arcMenu.setToolTipTextColor(Color.WHITE);
+        arcMenu.setToolTipBackColor(Color.parseColor("#88000000"));
+        arcMenu.setToolTipCorner(2);
+        arcMenu.setToolTipPadding(8);
+        arcMenu.setColorNormal(getResources().getColor(R.color.white));
+        arcMenu.showTooltip(false);
+        arcMenu.setDuration(ArcMenu.ArcMenuDuration.LENGTH_LONG);
+        arcMenu.setAnim(500,500, ArcMenu.ANIM_MIDDLE_TO_DOWN, ArcMenu.ANIM_MIDDLE_TO_RIGHT,
+                ArcMenu.ANIM_INTERPOLATOR_ANTICIPATE, ArcMenu.ANIM_INTERPOLATOR_ANTICIPATE);
+        initArcMenu(arcMenu, str, ITEM_DRAWABLES, ITEM_DRAWABLES.length);
     }
 
     @Override
@@ -214,6 +250,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     public void onMenuButtonClicked(View view) {
         mainDrawerLayout.openDrawer(drawerContentsLayout);
     }
+    public void toggleCamera(View view){
+        if(Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)) {
+            arview.changeBGC(cameraToggle.isChecked());
+        }
+    }
+
     // When Obstruction View button is clicked or called
     public void obstructionClicked(View view){
         String pitch =  String.valueOf(((TextView)findViewById(R.id.bearingL)).getText());
@@ -275,11 +317,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addMountains();
             ibMtn.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibMtn.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleMountain.setChecked(true);
         } else{
             removeMountains();
             ibMtn.setBackgroundTintMode(null);
-            toggleMountain.setChecked(false);
         }
 
     }
@@ -294,11 +334,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addReservoirs();
             ibReservoir.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibReservoir.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleReservoir.setChecked(true);
         } else {
             removeReservoirs();
             ibReservoir.setBackgroundTintMode(null);
-            toggleReservoir.setChecked(false);
         }
     }
 
@@ -312,11 +350,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addWells();
             ibWell.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibWell.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleWell.setChecked(true);
         } else {
             removeWells();
             ibWell.setBackgroundTintMode(null);
-            toggleWell.setChecked(false);
         }
     }
 
@@ -330,16 +366,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addRiverz();
             ibRiver.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibRiver.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleRiver.setChecked(true);
         } else {
             removeRiverz();
             ibRiver.setBackgroundTintMode(null);
-            toggleRiver.setChecked(false);
         }
 
     }
-
-
 
     public void toggleSoil(View v) {
         if(isLoggedIn) {
@@ -351,11 +383,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addSoilPatches();
             ibSoilMoisture.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibSoilMoisture.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleSoil.setChecked(true);
         } else {
             removeSoilPatches();
             ibSoilMoisture.setBackgroundTintMode(null);
-            toggleSoil.setChecked(false);
         }
     }
 
@@ -370,11 +400,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             addSnotelPillows();
             ibSnotel.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibSnotel.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
-            toggleSnotel.setChecked(true);
         } else {
             removeSnotelPillows();
             ibSnotel.setBackgroundTintMode(null);
-            toggleSnotel.setChecked(false);
         }
     }
 
@@ -392,8 +420,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             ibMtn.setBackgroundTintMode(PorterDuff.Mode.SRC);
             ibMtn.setBackgroundTintList(ContextCompat.getColorStateList(MainActivity.this, R.color.colorAccent));
         }
-//        Intent intent = new Intent(this, DisplayMeshActivity.class);
-//        startActivity(intent);
     }
     public MeshInfo getMeshInfo(String type){
         File file1 = new File(getFilesDir(),"meshvecs");
@@ -423,34 +449,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleSoil(v);
         toggleRiver(v);
         toggleSnotel(v);
-
-        toggleRiver.setChecked(false);
-        toggleSoil.setChecked(false);
-        toggleWell.setChecked(false);
-        toggleMountain.setChecked(false);
-        toggleReservoir.setChecked(false);
-        toggleSnotel.setChecked(false);
-
-        toggleSwitches();
     }
     public void login (View v){
         WatertrekCredentials credentials = new WatertrekCredentials(this);
         CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
-//        login_button.setVisibility(v.GONE);
-//        logout_button.setVisibility(v.VISIBLE);
-//        isLoggedIn = true;
-//        toggleSwitches();
-
     }
 
-    public void toggleSwitches(){
-        toggleReservoir.setClickable(isLoggedIn);
-        toggleRiver.setClickable(isLoggedIn);
-        toggleWell.setClickable(isLoggedIn);
-        toggleMountain.setClickable(isLoggedIn);
-        toggleSoil.setClickable(isLoggedIn);
-        toggleSnotel.setClickable(isLoggedIn);
-    }
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Credentials Methods
@@ -467,18 +471,15 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(requestCode == CREDENTIALS_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
             String newUsername = data.getStringExtra("username");
             String newPassword = data.getStringExtra("password");
-                WatertrekCredentials credentials = new WatertrekCredentials(this);
-                credentials.setUsername(newUsername);
-                credentials.setPassword(newPassword);
-                NetworkTask.updateWatertrekCredentials(newUsername, newPassword);
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            credentials.setUsername(newUsername);
+            credentials.setPassword(newPassword);
+            NetworkTask.updateWatertrekCredentials(newUsername, newPassword);
 
-                LoginService.checkLoginStatus(logincallback);
-                login_button.setVisibility(View.GONE);
-                logout_button.setVisibility(View.VISIBLE);
-                isLoggedIn = true;
-                toggleSwitches();
-
-
+            LoginService.checkLoginStatus(logincallback);
+            login_button.setVisibility(View.GONE);
+            logout_button.setVisibility(View.VISIBLE);
+            isLoggedIn = true;
         }
     }
 
@@ -940,11 +941,86 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
 
+    private void initSensorRecyclerViews(){
+        RecyclerView AzimuthView = findViewById(R.id.Azimuth_RecyclerView);
+        RecyclerView PitchView = findViewById(R.id.Pitch_RecyclerView);
 
 
 
 
-    //*********
+        Azimuth_RecyclerViewAdapter AzimuthSensorAdapter = new Azimuth_RecyclerViewAdapter(verticalTicks, this);
+
+        //Initialize for Azimuth
+        AzimuthView.setAdapter(AzimuthSensorAdapter);
+        AzimuthView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+
+
+        Pitch_RecyclerViewAdapter pitchSensorAdapter = new Pitch_RecyclerViewAdapter(horizontalTicks, this);
+
+        //Initialize for Pitch
+        PitchView.setAdapter(pitchSensorAdapter);
+        PitchView.setLayoutManager(new LinearLayoutManager(this));
+
+    }
+
+
+    /* Arc Menu Functions */
+    private void initArcMenu(final ArcMenu menu, final String[] str, int[] itemDrawables, int count) {
+        for (int i = 0; i < count; i++) {
+            FloatingActionButton item = getChildItem(itemDrawables[i]);
+            menu.setChildSize(item.getIntrinsicHeight());
+
+            final int position = i;
+
+            menu.addItem(item, str[i], new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    switch(str[position]){
+                        case "mountain":
+                            ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
+                            toggleMountain(ibMtn);
+                            break;
+                        case "reservoir":
+                            ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
+                            toggleReservoir(ibReservoir);
+                            break;
+                        case "soil":
+                            ibSoilMoisture = (ImageButton) findViewById(R.id.imageButton_Soil_Moisture);
+                            toggleSoil(ibSoilMoisture);
+                            break;
+                        case "well":
+                            ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
+                            toggleWell(ibWell);
+                            break;
+                        case "river":
+                            ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
+                            toggleRiver(ibRiver);
+                            break;
+                        case "snotel":
+                            ibSnotel  = (ImageButton)findViewById(R.id.imageButton_Snotel);
+                            toggleSnotel(ibSnotel);
+                            break;
+                        case "eye":
+                            ImageView obstruction = (ImageView)findViewById(R.id.imageView);
+                            obstructionClicked(obstruction);
+                            break;
+
+                        default:
+                    }
+                }
+            });
+        }
+    }
+
+    private FloatingActionButton getChildItem(int drawable){
+        FloatingActionButton item = new FloatingActionButton(this);
+        item.setSize(FloatingActionButton.SIZE_MINI);
+        item.setIcon(drawable);
+        item.setBackgroundColor(getResources().getColor(R.color.white));
+        return item;
+    }
 
 }
 
