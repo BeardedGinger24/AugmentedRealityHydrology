@@ -130,7 +130,7 @@ public class SnotelService {
             double longy =  Double.parseDouble(sntl.getLon());
             // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
             // if less than or equal to range (100) add reserNear to List and return it back
-            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius*40)
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius)
             {
                 SnotelNear.add(sntl);
                 Log.d("snow",sntl.getStationId() + " snotel within range ");

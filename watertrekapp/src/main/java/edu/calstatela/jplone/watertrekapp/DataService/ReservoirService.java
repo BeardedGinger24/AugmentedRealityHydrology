@@ -91,7 +91,7 @@ public class ReservoirService {
             double longy =  Double.parseDouble(rnm.getLon());
             // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
             // if less than or equal to range (100) add reserNear to List and return it back
-            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius*40)
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius)
             {
                 reservoirNear.add(rnm);
                 Log.d("Reser",rnm.getSiteNo() + " rerservior within range ");
