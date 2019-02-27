@@ -16,7 +16,7 @@ public class ElevationObstructionService {
 //        http://54.237.80.7:8080/LOSService/ws/los/earthLOS/firstViewObs?origin=[-118.20177021,34.12922031]&bearing=29&pitch=5
 
         //Double Check int Value
-        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/firstViewObs?origin=["+longitude+","+latitude+"]&bearing="+bearing+"&pitch="+pitch);
+        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/firstViewObs?origin=["+longitude+","+latitude+"]&bearing="+bearing+"&pitch="+pitch+"&height=1.997");
         Log.d("oop", url);
 //        URL theurl = new URL(SERVER_URL);
 //        BufferedReader reader = new BufferedReader(new InputStreamReader(theurl));

@@ -35,7 +35,7 @@ public class SoilMoistureService {
 //        String masterId = masterSiteId;
 //        yr/month/day
         // returns  history of depth below ground surface  DBGS
-        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno/"+masterSiteId+"/at/5/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
+        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno/"+masterSiteId+"/at/5cm/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
         Log.d("soily" , url);
         NetworkTask nt = new NetworkTask(callback, SoilMoisture.SOIL_MOIST_DEPTH);
         nt.execute(url);
@@ -100,7 +100,7 @@ public class SoilMoistureService {
             double longy =  Double.parseDouble(smList.getLon());
             // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
             // if less than or equal to range (100) add reserNear to List and return it back
-            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius*40)
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius)
             {
                 soilNear.add(smList);
                 Log.d("soiledDistance",smList.getWbanno() + " soil within range ");

@@ -19,8 +19,10 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -39,13 +41,29 @@ import edu.calstatela.jplone.watertrekapp.R;
 public class HistoryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     TextView starttext;
-    TextView endtext ;
+    TextView endtext;
+
+    GraphView graph;
+    LineGraphSeries<DataPoint> series;
+
     public String firstDate;
     public String lastDate;
+    private ProgressBar pb;
+
+    // xValue ArrayList stores the values of the x-axis in the graph.
+    public ArrayList<String> xValue = new ArrayList<>();
+    // yValue ArrayList stores the values of the y-axis in the graph.
+    public ArrayList<String> yValue = new ArrayList<>();
+    // dateList ArrayList is used to create a List of Dates from xValue;
+    public ArrayList<Date> dateList = new ArrayList<>();
+
+    Calendar calendar;
+    SimpleDateFormat simpleDateFormat;
+
 
     private TextView mDisplaydate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
-//    private ProgressBar pb;
+    //    private ProgressBar pb;
     //DELETE TESTERLIST
     // Various arrayList for various POI
     //WELLS , RESERVOIR , RIVERS , SOIL , SNOTEL
@@ -58,7 +76,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     // Wells Dbgs
     // Rivers Discharge
     // Buttons for start Data and End Date
-    public int startBclick,endBclick;
+    public int startBclick, endBclick;
     //Unique ID for that specific chosen POI
     String WELLID;
     String RiverID;
@@ -95,51 +113,85 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 //        pb = findViewById(R.id.progressBarHistory);
 
 
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
+        pb = findViewById(R.id.historyLoad);
+        pb.setVisibility(View.INVISIBLE);
         // used to format dates
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("M-dd-yyyy");
+        simpleDateFormat = new SimpleDateFormat("M-dd-yyyy");
 
-        // generate Dates
-        Calendar calendar = Calendar.getInstance();
+        // Generate Dates.
+        // Calender.getInstance() sets the calender to current date and time.
+        calendar = Calendar.getInstance();
+        // calender.getTime() returns a Date object representing the calenders.
         Date d1 = calendar.getTime();
+        // calender.add() takes in two arugments which consist of a Calender value. Calender.DATE for the day of the month. The second argument being an integer have that will add a value to that specified date/time.
         calendar.add(Calendar.DATE, 1);
         Date d2 = calendar.getTime();
         calendar.add(Calendar.DATE, 1);
         Date d3 = calendar.getTime();
+        calendar.add(Calendar.DATE, 1);
+        Date d4 = calendar.getTime();
+//        calendar.set(1991, 10, 31);
+//        Date d5 = calendar.getTime();
 
-        GraphView graph = (GraphView) findViewById(R.id.graph);
+        // Create a string array of sample dates.
+        String[] sampleDates = {"1991-10-31", "2013-03-20", "2013-04-20"};
+
+        // Used to test parsing of strings to dates with simpleDateFormat.parse method.
+//        Date d5 = new Date();
+//        try {
+//            d5 = simpleDateFormat.parse(sampleDates[0]);
+//
+//            Log.i("Date example", d5.toString());
+//
+//        } catch (ParseException e) {
+//        }
+
+
+        Log.i("Calendar", calendar.getTime().toString());
+
+
+        graph = (GraphView) findViewById(R.id.graph);
+
+
+        //        DataPoint[] dp = new DataPoint[]{ new DataPoint(d1, 5), new DataPoint(d2, 10), new DataPoint(d3, 15), new DataPoint(d4, 5), new DataPoint(d5,15)};
+        DataPoint[] dp = new DataPoint[]{new DataPoint(d1, 5), new DataPoint(d2, 10), new DataPoint(d3, 15), new DataPoint(d4, 5)};
+
 
         // populate series with DataPoints
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[] {
-                new DataPoint(d1, 100),
-                new DataPoint(d2, 150),
-                new DataPoint(d3, 230)
-        });
+        series = new LineGraphSeries<>(dp);
+
+        // Sets markers on the line graph.
+        series.setDrawDataPoints(true);
+
+        // Sets angle for label on x axis.
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(110);
+
+        Log.i("Date-1", String.valueOf(d1));
 
 
         // set manual X bounds
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(d1.getTime());
-        graph.getViewport().setMaxX(d3.getTime());
+        graph.getViewport().setMaxX(d4.getTime());
 
         // set manual Y bounds
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(100);
-        graph.getViewport().setMaxY(200);
+        graph.getViewport().setMinY(0);
+        graph.getViewport().setMaxY(20);
 
         // enable scaling and scrolling
         graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-        graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+        graph.getViewport().setScalableY(false); // enables vertical zooming and scrolling
 
         // add a new series to the graph
         graph.addSeries(series);
 
         // set title
         // Make Case Statement to set Graph Title  depending on Selected POI
-        graph.setTitle("DBGS vs. Time");
+        graph.setTitle("DBGS (ft) vs. Time (YYYY-MM-DD)");
 
         // custom label formatter to show feet "ft" and date
         graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
@@ -147,48 +199,48 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             public String formatLabel(double value, boolean isValueX) {
                 if (isValueX) {
                     // show date for x values
-                    return simpleDateFormat.format(new Date((long)value));
+                    return simpleDateFormat.format(new Date((long) value));
                 } else {
-                    // show feet for y values
-                    return super.formatLabel(value, isValueX) + " ft";
+                    return super.formatLabel(value, isValueX);
                 }
             }
         });
 
         // as we use dates as labels, the human rounding to nice readable numbers
         graph.getGridLabelRenderer().setHumanRounding(false);
+
         // count of the horizontal labels, that will be shown at one time
-        graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+        graph.getGridLabelRenderer().setNumHorizontalLabels(dp.length);
+
+        // Fixes issue where more than three digits would be cutoff on the y axis.
+        graph.getGridLabelRenderer().setPadding(40);
 
 
-
-        Button startButton = (Button)findViewById(R.id.sdate);
-        startButton.setOnClickListener(new View.OnClickListener(){
+        Button startButton = (Button) findViewById(R.id.sdate);
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
 
                 startBclick = 1;
-                endBclick =2;
+                endBclick = 2;
                 DialogFragment dp = new DatePickerFragment();
-                dp.show(getSupportFragmentManager(),"start_date_chosen");
+                dp.show(getSupportFragmentManager(), "start_date_chosen");
             }
         });
 
-        Button endButton = (Button)findViewById(R.id.edate);
-        endButton.setOnClickListener(new View.OnClickListener(){
+        Button endButton = (Button) findViewById(R.id.edate);
+        endButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 endBclick = 1;
                 startBclick = 2;
 
 
                 DialogFragment dialogpicker = new DatePickerFragment();
-                dialogpicker.show(getSupportFragmentManager(),"end_date_chosen");
+                dialogpicker.show(getSupportFragmentManager(), "end_date_chosen");
             }
         });
-    // android:onClick="displayHistoryList"
+        // android:onClick="displayHistoryList"
 //        Button searchButton = (Button)findViewById(R.id.Search);
 //        searchButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -217,94 +269,79 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
         // Example of date format ?? /2017-05-06 yr/month/day
-        Calendar calendar = new GregorianCalendar(year,month,dayOfMonth);
+        Calendar calendar = new GregorianCalendar(year, month, dayOfMonth);
 //        Calendar calendar = GregorianCalendar.getInstance();
 //        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR,year);
-        calendar.set(Calendar.MONTH,month);
-        calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
-        month = month+1;
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        month = month + 1;
         String smonth = Integer.toString(month);
-        String sdayOfMonth =  Integer.toString(dayOfMonth);
+        String sdayOfMonth = Integer.toString(dayOfMonth);
 
         String fixeddayOfMonth = "0" + dayOfMonth;
         String fixedmonth = "0" + month;
         // both month and day need to append a zero
         // if else statements just for now  Need to find a way to Verify End Date is not Before Start Date ????
         // This can be done by concatenating dates and converting to int and then checking which int is bigger Remember to Implement?????
-        if ((smonth.length() == 1) && (sdayOfMonth.length() == 1))
-        {
-            String datechosen = (year+ "-" + fixedmonth +"-" + fixeddayOfMonth);
-            if(startBclick == 1)
-            {
-                starttext =(TextView) findViewById(R.id.startView);
+        if ((smonth.length() == 1) && (sdayOfMonth.length() == 1)) {
+            String datechosen = (year + "-" + fixedmonth + "-" + fixeddayOfMonth);
+            if (startBclick == 1) {
+                starttext = (TextView) findViewById(R.id.startView);
                 starttext.setText(datechosen);
                 firstDate = datechosen;
             }
-            if(endBclick == 1)
-            {
+            if (endBclick == 1) {
                 endtext = (TextView) findViewById(R.id.endView);
                 endtext.setText(datechosen);
                 lastDate = datechosen;
             }
-        }
-        else if  ((smonth.length() == 1) && (sdayOfMonth.length() != 1))
-        {
+        } else if ((smonth.length() == 1) && (sdayOfMonth.length() != 1)) {
 
-            String datechosen = (year+ "-" + fixedmonth +"-" + dayOfMonth);
-            if(startBclick == 1)
-            {
-                starttext =(TextView) findViewById(R.id.startView);
+            String datechosen = (year + "-" + fixedmonth + "-" + dayOfMonth);
+            if (startBclick == 1) {
+                starttext = (TextView) findViewById(R.id.startView);
                 starttext.setText(datechosen);
                 firstDate = datechosen;
             }
-            if(endBclick == 1)
-            {
+            if (endBclick == 1) {
                 endtext = (TextView) findViewById(R.id.endView);
                 endtext.setText(datechosen);
                 lastDate = datechosen;
             }
-        }
-        else if  ((smonth.length() != 1) && (sdayOfMonth.length() == 1))
-        {
-            String datechosen = (year+ "-" + month +"-" + fixeddayOfMonth);
-            if(startBclick == 1)
-            {
-                starttext =(TextView) findViewById(R.id.startView);
+        } else if ((smonth.length() != 1) && (sdayOfMonth.length() == 1)) {
+            String datechosen = (year + "-" + month + "-" + fixeddayOfMonth);
+            if (startBclick == 1) {
+                starttext = (TextView) findViewById(R.id.startView);
                 starttext.setText(datechosen);
                 firstDate = datechosen;
             }
-            if(endBclick == 1)
-            {
+            if (endBclick == 1) {
                 endtext = (TextView) findViewById(R.id.endView);
                 endtext.setText(datechosen);
                 lastDate = datechosen;
             }
-        }
-        else {
+        } else {
 
             String datechosen = (year + "-" + month + "-" + dayOfMonth);
-            if(startBclick == 1)
-            {
-                starttext =(TextView) findViewById(R.id.startView);
+            if (startBclick == 1) {
+                starttext = (TextView) findViewById(R.id.startView);
                 starttext.setText(datechosen);
                 firstDate = datechosen;
             }
-            if(endBclick == 1)
-            {
+            if (endBclick == 1) {
                 endtext = (TextView) findViewById(R.id.endView);
                 endtext.setText(datechosen);
                 lastDate = datechosen;
             }
 
         }
-
 
 
     }
 
 
-    public  Boolean dateVerifier(){
+    public Boolean dateVerifier() {
         // Example of Date format: 2017-05-06 yr/month/day
         String[] sparts = firstDate.split("-");
         String yStartDate = sparts[0];
@@ -325,17 +362,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             Toast.makeText(getApplicationContext(), " Searching...", Toast.LENGTH_LONG).show();
             return true;
 
-        }
-        else if (startDate > EndDate)
-        {
+        } else if (startDate > EndDate) {
             //Start Date Cannot Preceed EndDate
             Toast.makeText(getApplicationContext(), "Start Date Cannot Preceed EndDate", Toast.LENGTH_LONG).show();
             return false;
 
 
-        }
-        else
-        {
+        } else {
             //Date Cannot be the Same
             Toast.makeText(getApplicationContext(), "Start Date Cannot EQUAL  EndDate", Toast.LENGTH_LONG).show();
             return false;
@@ -343,66 +376,260 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         }
     }
 
-    private void addWells(String WELLID){
+    private void addWells(String WELLID) {
+
 
         if (dateVerifier() != false){
-//            pb.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.VISIBLE);
             WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate,WELLID);
+//            pb.setVisibility(View.INVISIBLE);
+
         }
 //        RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
     }
 
+
     private void addReservoirs (String ReservoirID)
     {
         if(dateVerifier() !=false){
+            pb.setVisibility(View.VISIBLE);
             Log.d("reserves", "Calling ALL RESERVOIRS");
-            ReservoirService.getStorage(reservoirNetworkCallback,firstDate, lastDate,ReservoirID);
+            ReservoirService.getStorage(reservoirNetworkCallback, firstDate, lastDate, ReservoirID);
         }
     }
+
 
     private void addRivers(String RiverID){
         if (dateVerifier() != false){
-//            pb.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.VISIBLE);
             Log.d("discharge", "Calling rivernetworkcallback");
-            RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
-        }
-    }
-    private void addSoils(String soilMoistureID){
-        if (dateVerifier() != false){
-//            pb.setVisibility(View.VISIBLE);
-            Log.d("soily", "Calling SOILnetworkcallback");
-            SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback,firstDate, lastDate,SoilMoistureID);
+            RiverService.getDischarge(riverNetworkCallback, firstDate, lastDate, RiverID);
         }
     }
 
-    private void addSnotel(String snotID){
+    private void addSoils(String soilMoistureID){
         if (dateVerifier() != false){
-//            pb.setVisibility(View.VISIBLE);
-            Log.d("snow", "Calling snotelnetworkcallback");
-            SnotelService.getSnotelTimeSeriesStartThruFinish(snowtelNetworkCallback,firstDate, lastDate,snotID);
+            pb.setVisibility(View.VISIBLE);
+            Log.d("soily", "Calling SOILnetworkcallback");
+            SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback, firstDate, lastDate, SoilMoistureID);
         }
     }
+
+
+    private void addSnotel(String snotID){
+        if (dateVerifier() != false){
+            pb.setVisibility(View.VISIBLE);
+            Log.d("snow", "Calling snotelnetworkcallback");
+            SnotelService.getSnotelTimeSeriesStartThruFinish(snowtelNetworkCallback, firstDate, lastDate, snotID);
+        }
+    }
+
+    //Method to find max value of an arraylist of strings
+    private double findMaxDouble(ArrayList<String> arrayList) {
+        double maxValue = 0;
+        try {
+            maxValue = Double.parseDouble(arrayList.get(0));
+        } catch (Exception e) {
+            Log.i("Out of bounds", String.valueOf(maxValue));
+        }
+        for (int i = 1; i < arrayList.size(); i++) {
+
+            double currentValue = 0;
+            try {
+                currentValue = Double.parseDouble(arrayList.get(i));
+                if (maxValue < currentValue) {
+                    maxValue = currentValue;
+                }
+
+            } catch (Exception e) {
+                Log.i("Null value detected.", "");
+            }
+
+        }
+        return maxValue;
+    }
+
+    //Method to find min value of an arraylist of strings
+    private double findMinDouble(ArrayList<String> arrayList) {
+        double minValue = 0;
+        try {
+            minValue = Double.parseDouble(arrayList.get(0));
+        } catch (Exception e) {
+            Log.i("Out of bounds", String.valueOf(minValue));
+        }
+        for (int i = 1; i < arrayList.size(); i++) {
+            double currentValue = 0;
+            try {
+                currentValue = Double.parseDouble(arrayList.get(i));
+                if (minValue > currentValue) {
+                    minValue = currentValue;
+                }
+
+            } catch (Exception e) {
+                Log.i("Null value detected.", "");
+            }
+        }
+        return minValue;
+    }
+
+    private DataPoint[] bubbleSortDates(DataPoint[] dataPoints) {
+        int n = dataPoints.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                double x1 = 0;
+                double x2 = 0;
+                try {
+                     x1 = dataPoints[j].getX();
+                     x2 = dataPoints[j + 1].getX();
+                } catch (Exception e) {
+                    Log.i("Not able to getX" , "");
+                }
+
+                if (x1 > x2) {
+                    // swap arr[j+1] and arr[i]
+                    DataPoint temp = dataPoints[j];
+                    dataPoints[j] = dataPoints[j + 1];
+                    dataPoints[j + 1] = temp;
+                }
+            }
+        }
+        return dataPoints;
+    }
+
+
+    //Method to order dates in ascending order.
+    private DataPoint[] ascendingDates(DataPoint[] dataPoints) {
+        DataPoint[] dp = new DataPoint[dataPoints.length];
+        Arrays.sort(dataPoints);
+
+        return dp;
+    }
+
     // METHOD that populates recyclerView
     //*****************************WELL RecylerView Starts ******************************************
     NetworkTask.NetworkCallback wellNetworkCallback = new NetworkTask.NetworkCallback() {
         @Override
         public void onResult(int type, String result) {
+//            pb.setVisibility(View.VISIBLE);
             List<String> dbgsunitList = WellService.parseDBGSunits(result);
-            if (dbgsunitList.size() < 1){
+            if (dbgsunitList.size() < 1) {
 //                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
-            }
-            else
-                // clears old list so it doesnt double stack / repeat Data twice
-//                pb.setVisibility(View.INVISIBLE);
+            } else {
+// clears old list so it doesnt double stack / repeat Data twice
                 dbgsUList.clear();
+                yValue.clear();
+                xValue.clear();
+                for (int i = 0; i < dbgsunitList.size(); i++) {
+                    String dbu = dbgsunitList.get(i);
+                    dbgsUList.add(dbu);
+                    if (i > 0) {
+                        String[] date = dbu.split("T");
+                        // values are seperated by tabs not spaces.
+                        String[] value = dbu.split("\t");
+                        xValue.add(date[0]);
+                        yValue.add(value[1]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
+                }
 
-            for(String dbu : dbgsunitList){
-                dbgsUList.add(dbu);
+                Date earliestDate = new Date();
+                Date latestDate = new Date();
+                for (int i = 0; i < xValue.size(); i++) {
+                    Date date = new Date();
+                    if (i == 0) {
+                        try {
+                            earliestDate = simpleDateFormat.parse(xValue.get(0));
+
+
+                        } catch (ParseException e) {
+                        }
+                    }
+                    if (i == xValue.size() - 1) {
+                        try {
+                            latestDate = simpleDateFormat.parse(xValue.get(xValue.size() - 1));
+
+                        } catch (ParseException e) {
+                        }
+                    }
+                    try {
+                        date = simpleDateFormat.parse(xValue.get(i));
+                        dateList.add(date);
+
+                    } catch (ParseException e) {
+                    }
+                }
+
+                DataPoint[] dataPoints = new DataPoint[xValue.size()];
+                DataPoint dataPoint;
+                for (int i = 0; i < dateList.size(); i++) {
+                    try {
+                        if (yValue.get(i) != null && dateList.get(i) != null) {
+                            dataPoint = new DataPoint(dateList.get(i), Double.parseDouble(yValue.get(i)));
+                            String isNull = "null";
+                            double datapointX = dataPoint.getX();
+                            String stringDatapointX = Double.toString(datapointX);
+                            Log.i("SringDataPointX", stringDatapointX);
+                            double datapointY = dataPoint.getY();
+                            String stringDatapointY = Double.toString(datapointY);
+                            Log.i("SringDataPointY", stringDatapointY);
+                            dataPoints[i] = dataPoint;
+                        }
+                    } catch (Exception e) {
+                        calendar = Calendar.getInstance();
+                        // calender.getTime() returns a Date object representing the calenders.
+                        Date d1 = calendar.getTime();
+                        dataPoint = new DataPoint( d1, 250);
+                        if (i != dateList.size() - 1)
+                            dataPoints[i] = dataPoint;
+                        Log.i("Dunno", "dunno");
+                    }
+                }
+
+                //Set Min and Max for x-axis values
+                graph.getViewport().setMinX(earliestDate.getTime());
+                graph.getViewport().setMaxX(latestDate.getTime());
+
+                Log.i("Earliest Date", earliestDate.toString());
+                Log.i("Earliest Date", latestDate.toString());
+
+                double maxY = findMaxDouble(yValue);
+                Log.i("MaxY", String.valueOf(maxY));
+                double minY = findMinDouble(yValue);
+                Log.i("MinY", String.valueOf(minY));
+                //Set Min and Max for y-axis values
+                graph.getViewport().setMinY(minY);
+                graph.getViewport().setMaxY(maxY);
+
+
+//                for (int i = 0; i < xValue.size(); i++) {
+//                    Log.i("Datapoint", String.valueOf(dataPoints[i]));
+//                }
+                for (int i = 0; i < dataPoints.length; i++) {
+                    try {
+                        Log.i("Datapoint", String.valueOf(dataPoints[i]));
+                    } catch (Exception e) {
+                        Log.i("nullPointException", "");
+                    }
+                }
+//                graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(context));
+
+                graph.getViewport().setXAxisBoundsManual(true);
+                graph.getGridLabelRenderer().setHumanRounding(false);
+                graph.getGridLabelRenderer().setNumHorizontalLabels(dataPoints.length);
+
+
+                dataPoints = bubbleSortDates(dataPoints);
+
+                series.resetData(dataPoints);
+
 
             }
+
         }
+
     };
 
     //*****************************WELL RecylerView Ends ******************************************
@@ -411,20 +638,21 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         @Override
         public void onResult(int type, String result) {
             List<String> resList = ReservoirService.parseIndyStorage(result);
-            if (resList.size() < 1){
+            if (resList.size() < 1) {
 //                pb.setVisibility(View.INVISIBLE);
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
-            }
-            else
+            } else
                 // clears old list so it doesnt double stack / repeat Data twice
 //                pb.setVisibility(View.INVISIBLE);
                 resStorageList.clear();
 
-            for(String dbu : resList){
+            for (String dbu : resList) {
                 resStorageList.add(dbu);
 
             }
+            pb.setVisibility(View.INVISIBLE);
         }
     };
 
@@ -437,22 +665,24 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             Log.d("discharge", "before parsingdischarges");
             List<String> disList = RiverService.parseDischarges(result);
             Log.d("discharge", "after parsingdischarges");
-            if (disList.size() < 1){
+            if (disList.size() < 1) {
 //                pb.setVisibility(View.INVISIBLE);
                 Log.d("discharge", "No information has been recorded thus far");
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
+
                 return;
-            }
-            else {
+            } else {
                 // clears old list so it doesnt double stack / repeat Data twice
 //                pb.setVisibility(View.INVISIBLE);
-                 dischargeList.clear();
+                dischargeList.clear();
                 for (String dsl : disList) {
 //                    Log.d("discharge", dsl);
                     dischargeList.add(dsl);
 
                 }
             }
+            pb.setVisibility(View.INVISIBLE);
         }
     };
 
@@ -466,13 +696,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             Log.d("soil", "before parsingdischarges");
             List<String> soilyList = SoilMoistureService.parseindySoil(result);
             Log.d("soil", "after parsingdischarges");
-            if (soilyList.size() < 1){
+            if (soilyList.size() < 1) {
 //                pb.setVisibility(View.INVISIBLE);
                 Log.d("soil", "No information has been recorded thus far");
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
-            }
-            else {
+            } else {
                 // clears old list so it doesnt double stack / repeat Data twice
 //                pb.setVisibility(View.INVISIBLE);
                 soilDepthList.clear();
@@ -482,9 +712,9 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 }
             }
+            pb.setVisibility(View.INVISIBLE);
         }
     };
-
 
 
     //*********************Soil Moisture RecyclerView ENDS**********************
@@ -497,13 +727,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
             List<String> snowyList = SnotelService.parseTimes(result);
 
-            if (snowyList.size() < 1){
+            if (snowyList.size() < 1) {
 //                pb.setVisibility(View.INVISIBLE);
                 Log.d("snow", "No information has been recorded thus far");
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
-            }
-            else {
+            } else {
                 // clears old list so it doesnt double stack / repeat Data twice
 //                pb.setVisibility(View.INVISIBLE);
                 sweSnotelList.clear();
@@ -512,18 +742,12 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 }
             }
+            pb.setVisibility(View.INVISIBLE);
         }
     };
 
 
-
-
     //*********************SNOWTELRecyclerView ENDS**********************
-
-
-
-
-
 
 
     // for river discharge  parse using xml
@@ -532,49 +756,48 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     // String riverurl = "https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/09331850/discharge/from/1981-01-01T00%3A00%3A00/through/1990-01-01T00%3A00%3A00";
 
 
-
-
-
     // [ass firstDate && LastDate into a method that will retrieve data and make recylrerview
     // need to make a method to make sure that firstDate Or lastDate are NOT NULL
     // Need to fix issue on Double clicking in order to get the date to display
+
     public void displayHistoryList(View v)
     {
+//        pb.setVisibility(View.VISIBLE);
 //        Log.d("wwwid" , WELLID);
-        if(isWellNull == false){
+        if (isWellNull == false) {
             ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dbgsUList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dbgsUList);
             lv.setAdapter(adapter);
             addWells(WELLID);
 
         }
-        if(isReservoirNull == false){
+        if (isReservoirNull == false) {
             Log.d("reserves", "ADDED RESERVOIRS ");
             ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,resStorageList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, resStorageList);
             lv.setAdapter(adapter);
             addReservoirs(ReservoirID);
 
         }
-        if (isRiverNull == false){
+        if (isRiverNull == false) {
             Log.d("discharge", "ADDED RIVERS ");
             ListView lv = findViewById(R.id.historyList);
             addRivers(RiverID);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,dischargeList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
             lv.setAdapter(adapter);
         }
-        if (isSoilNull == false){
+        if (isSoilNull == false) {
             Log.d("soily", "ADDED SOIL MOISTURE ");
             ListView lv = findViewById(R.id.historyList);
             addSoils(SoilMoistureID);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,soilDepthList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
             lv.setAdapter(adapter);
         }
-        if (isSnotelNull == false){
+        if (isSnotelNull == false) {
             Log.d("snow", "ADDED Snotels ");
             ListView lv = findViewById(R.id.historyList);
             addSnotel(SnotelID);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this,android.R.layout.simple_list_item_1,sweSnotelList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
             lv.setAdapter(adapter);
         }
 
@@ -588,13 +811,4 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 //        Log.d("tv",x); //example 11/1/2018
 
     }
-
-
-
-
-
-
-
-
-
 }
