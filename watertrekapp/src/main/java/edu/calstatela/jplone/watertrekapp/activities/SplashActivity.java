@@ -44,10 +44,14 @@ import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
 import edu.calstatela.jplone.watertrekapp.Data.Vector3;
 import edu.calstatela.jplone.watertrekapp.DataService.MeshService;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
+import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 public class SplashActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
+    private static final int CREDENTIALS_ACTIVITY_REQUEST_CODE = 5;
+
     static String TAG = "splash";
     private TextView tv;
     private TextView loadingText;
@@ -69,6 +73,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     private static final int REQUEST_STORAGE = 2;
 
     Thread t1;
+    boolean isLoggedIn = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +113,23 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         loadingText.setVisibility(View.INVISIBLE);
         startBtn.setVisibility(View.VISIBLE);
 
+        // Check to see if the user is already logged in
+        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
+        String userName = credentialsTest.getUsername();
+        String passWord = credentialsTest.getPassword();
+        if(!userName.isEmpty() && !passWord.isEmpty()){
+            Log.d("USERNAME", "username: " + userName);
+            Log.d("PASSWORD", "password: " + passWord);
+            isLoggedIn = true;
+        }
+
+        if(!isLoggedIn){
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
+        }else {
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+        }
         t1 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -116,27 +138,29 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
                 Intent i = new Intent(context, MainActivity.class);
                 String baseurl = getString(R.string.demurl);
 
-//                asyncTask= new MeshService.getDEM();
-//                asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl);
-//                try {
-//                    meshData = asyncTask.get();
-//                    meshData.setFilenameTerrain("terrain");
-//                    meshData.setFilenameTerrainVecs("meshvecs");
-//                    meshData.setDir(context.getFilesDir()+"");
-//
-//                    helper = new DatabaseHelper(context);
-//                    db = helper.getWritableDatabase();
-//                    helper.addMeshData(db,meshData);
-//
-//
-//                    //Write meshdata to file
-//                    genVerts(meshData);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                } catch (ExecutionException e) {
-//                    e.printStackTrace();
-//                }
-//                //start the main activity
+                String[] cred = NetworkTask.getCredentials();
+                Log.d(TAG,cred[0]+","+cred[1]);
+                asyncTask= new MeshService.getDEM();
+                asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl,cred[0],cred[1]);
+                try {
+                    meshData = asyncTask.get();
+                    meshData.setFilenameTerrain("terrain");
+                    meshData.setFilenameTerrainVecs("meshvecs");
+                    meshData.setDir(context.getFilesDir()+"");
+
+                    helper = new DatabaseHelper(context);
+                    db = helper.getWritableDatabase();
+                    helper.addMeshData(db,meshData);
+
+
+                    //Write meshdata to file
+                    genVerts(meshData);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                //start the main activity
                 startActivity(i);
             }
         });
@@ -208,6 +232,12 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         loadingText.setText("Loading Data ...");
         t1.start();
     }
+    NetworkTask.NetworkCallback demCallback = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+
+        }
+    };
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 

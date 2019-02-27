@@ -5,11 +5,17 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
 import edu.calstatela.jplone.watertrekapp.Data.Vector3;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
+import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import mil.nga.tiff.FileDirectory;
 import mil.nga.tiff.Rasters;
 import mil.nga.tiff.TIFFImage;
@@ -35,14 +41,34 @@ public class MeshService {
             float lat = 0;
             float lon = 0;
             float alt = 0;
+
             try {
                 lat = Float.parseFloat(strings[0]);
                 lon = Float.parseFloat(strings[1]);
                 alt = Float.parseFloat(strings[2]);
+
+                final String user = strings[4];
+                final String pw = strings[5];
+                Log.d(TAG,user+","+pw);
                 String base = strings[3];
-                String url = getURL(lat,lon,base);
-                Log.d(TAG,url);
-                inputStream = new URL(url).openStream();
+                URL url = new URL(getURL(lat,lon,base));
+                Log.d(TAG,url+"");
+
+                HttpsURLConnection urlConnection =
+                        (HttpsURLConnection) url.openConnection();
+                Log.d(TAG,"after openconnection()");
+                Authenticator.setDefault(new Authenticator(){
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(user,pw.toCharArray());
+                    }
+                });
+                Log.d(TAG,"after authenticator");
+                urlConnection.connect();
+                Log.d(TAG,"after connect()");
+                //String response = urlConnection.getResponseMessage();
+                //Log.d(TAG,response);
+                inputStream = urlConnection.getInputStream();
+                Log.d(TAG,"after getInputStream");
                 tiffImage = TiffReader.readTiff(inputStream);
                 directories = tiffImage.getFileDirectories();
                 directory = directories.get(0);

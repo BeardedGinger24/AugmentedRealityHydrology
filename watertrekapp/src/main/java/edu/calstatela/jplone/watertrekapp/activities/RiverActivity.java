@@ -50,7 +50,7 @@ public class RiverActivity extends AppCompatActivity {
         Marker marker = new Marker(map);
         marker.setPosition(defaultLocation);
         marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
-        marker.setIcon(this.getDrawable(R.drawable.river_bb_icon));
+        marker.setIcon(this.getDrawable(R.drawable.river_res_ico_clr));
         marker.setTitle("River: LatLon("+lat+","+lon+")");
         map.getOverlays().add(marker);
 

@@ -50,7 +50,7 @@ public class SoilMoistureActivity extends AppCompatActivity {
         Marker marker = new Marker(map);
         marker.setPosition(defaultLocation);
         marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
-        marker.setIcon(this.getDrawable(R.drawable.soil_bb_icon));
+        marker.setIcon(this.getDrawable(R.drawable.soil_res_ico_clr));
         marker.setTitle("Soil Moisture: LatLon("+lat+","+lon+")");
         map.getOverlays().add(marker);
 

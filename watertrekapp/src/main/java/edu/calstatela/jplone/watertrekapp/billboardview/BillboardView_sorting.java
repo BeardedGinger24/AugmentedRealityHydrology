@@ -211,8 +211,8 @@ public class BillboardView_sorting extends SensorARView{
             for (Entity e : mEntityList) {
                 //float[] bbloc = getbbloc();
                 float[] pos = e.getPosition();
-                //e.setPosition(pos[0],pos[1],pos[2]);
-                e.setLookAtWithScale(pos[0], 0, pos[2], xyz[0], xyz[1], xyz[2], 0, 1, 0, 1f);
+                e.setPosition(pos[0],pos[1],pos[2]);
+                //e.setLookAtWithScale(pos[0], 0, pos[2], xyz[0], xyz[1], xyz[2], 0, 1, 0, 1f);
             }
             for(Entity e : meshList){
                 float[] pos = e.getPosition();
@@ -316,11 +316,11 @@ public class BillboardView_sorting extends SensorARView{
         ScaleObject sbb = new ScaleObject(bb, 0.02f, 0.01f, 0.01f);
         Entity e = new Entity();
         e.setDrawable(sbb);
-        e.setLatLonAlt(new float[]{info.lat,info.lon});
-        //float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},meshLoc);
-        //e.setPosition(bbLoc[0],-0.03f-bbLoc[1],bbLoc[2]);
-        //e.yaw(45);
-        //Log.d(TAG,"BBXYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
+        //e.setLatLonAlt(new float[]{info.lat,info.lon});
+        float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},meshLoc);
+        e.setPosition(bbLoc[0],-0.03f-bbLoc[1],bbLoc[2]);
+        e.yaw(45);
+        Log.d(TAG,"BBXYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
         mEntityList.add(e);
         //scene.add(e);
     }

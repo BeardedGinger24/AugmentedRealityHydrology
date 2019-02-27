@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private ArrayList<Snotel> snotelList = new ArrayList<>();
     int mountainPrefix = 2000000000;
 
-    private boolean isLoggedIn = false;
+    private boolean isLoggedIn = true;
 
     private ArrayList<String> verticalTicks = new ArrayList<>();
     private ArrayList<String> horizontalTicks = new ArrayList<>();
@@ -169,28 +169,28 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
 
-        // Check to see if the user is already logged in
-        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
-        String userName = credentialsTest.getUsername();
-        String passWord = credentialsTest.getPassword();
-        if(!userName.isEmpty() && !passWord.isEmpty()){
-            Log.d("USERNAME", "username: " + userName);
-            Log.d("PASSWORD", "password: " + passWord);
-
-            isLoggedIn = true;
-        }
-
-        if(!isLoggedIn){
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
-            logout_button.setVisibility(View.GONE);
-            login_button.setVisibility(View.VISIBLE);
-        }else {
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
-            logout_button.setVisibility(View.VISIBLE);
-            login_button.setVisibility(View.GONE);
-        }
+//        // Check to see if the user is already logged in
+//        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
+//        String userName = credentialsTest.getUsername();
+//        String passWord = credentialsTest.getPassword();
+//        if(!userName.isEmpty() && !passWord.isEmpty()){
+//            Log.d("USERNAME", "username: " + userName);
+//            Log.d("PASSWORD", "password: " + passWord);
+//
+//            isLoggedIn = true;
+//        }
+//
+//        if(!isLoggedIn){
+//            WatertrekCredentials credentials = new WatertrekCredentials(this);
+//            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
+//            logout_button.setVisibility(View.GONE);
+//            login_button.setVisibility(View.VISIBLE);
+//        }else {
+//            WatertrekCredentials credentials = new WatertrekCredentials(this);
+//            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+//            logout_button.setVisibility(View.VISIBLE);
+//            login_button.setVisibility(View.GONE);
+//        }
 
         cameraToggle = (Switch)findViewById(R.id.cameraToggle);
         if(Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
@@ -205,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         mountainList.loadMountains();
 
-//        arview.setMeshStatus(false);
-//        meshInfo = getMeshInfo("terrain");
+        arview.setMeshStatus(false);
+        meshInfo = getMeshInfo("terrain");
 
         initSensorRecyclerViews();
 
@@ -399,6 +399,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                 arview.addMesh(getMeshInfo("terrain"));
                 arview.setMeshStatus(true);
             }
+            arview.setMeshStatus(true);
         }else{
             arview.setMeshStatus(false);
         }
@@ -497,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addWells(){
         if(arview.meshNull()){
-            //arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(getMeshInfo("terrain"));
         }
         float[] loc = arview.getLocation();
         WellService.getWells(wellNetworkCallback, loc[0], loc[1], radius);
@@ -551,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addReservoirs(){
         if(arview.meshNull()){
-            //arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(getMeshInfo("terrain"));
         }
         ReservoirService.getAllStorageValues(reservoirNetworkCallback);
     }
@@ -610,7 +611,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addSoilPatches(){
         if(arview.meshNull()){
-            //arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(getMeshInfo("terrain"));
         }
         //retrieves all soil patches
         SoilMoistureService.getSoilMoistures(soilmoistureNetworkCallback);
@@ -676,7 +677,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addRiverz(){
         if(arview.meshNull()){
-            //arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(getMeshInfo("terrain"));
         }
         // Retrieves curr location
         float[] loc = arview.getLocation();
@@ -740,7 +741,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     public void addSnotelPillows(){
         if(arview.meshNull()){
-            //arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(getMeshInfo("terrain"));
         }
     }
 

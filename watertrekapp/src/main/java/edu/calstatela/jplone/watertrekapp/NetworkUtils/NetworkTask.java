@@ -100,4 +100,7 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
         watertrekPassword = password;
     }
 
+    public static String[] getCredentials(){
+        return new String[]{watertrekUsername,watertrekPassword};
+    }
 }

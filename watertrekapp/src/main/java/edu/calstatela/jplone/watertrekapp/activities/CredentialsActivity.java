@@ -75,6 +75,7 @@ public class CredentialsActivity extends Activity{
                 intent.putExtra("password", passwordString);
                 setResult(RESULT_OK, intent);
 
+                NetworkTask.updateWatertrekCredentials(usernameString,passwordString);
                 finish();
             }
 
