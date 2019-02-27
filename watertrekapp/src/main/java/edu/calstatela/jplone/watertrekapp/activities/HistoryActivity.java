@@ -42,6 +42,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     TextView endtext ;
     public String firstDate;
     public String lastDate;
+    private ProgressBar pb;
 
     private TextView mDisplaydate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
@@ -99,6 +100,8 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
+        pb = findViewById(R.id.historyLoad);
+        pb.setVisibility(View.INVISIBLE);
         // used to format dates
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("M-dd-yyyy");
 
@@ -346,8 +349,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     private void addWells(String WELLID){
 
         if (dateVerifier() != false){
-//            pb.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.VISIBLE);
             WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate,WELLID);
+//            pb.setVisibility(View.INVISIBLE);
+
         }
 //        RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
     }
@@ -355,6 +360,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     private void addReservoirs (String ReservoirID)
     {
         if(dateVerifier() !=false){
+            pb.setVisibility(View.VISIBLE);
             Log.d("reserves", "Calling ALL RESERVOIRS");
             ReservoirService.getStorage(reservoirNetworkCallback,firstDate, lastDate,ReservoirID);
         }
@@ -362,14 +368,14 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
     private void addRivers(String RiverID){
         if (dateVerifier() != false){
-//            pb.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.VISIBLE);
             Log.d("discharge", "Calling rivernetworkcallback");
             RiverService.getDischarge(riverNetworkCallback,firstDate, lastDate,RiverID);
         }
     }
     private void addSoils(String soilMoistureID){
         if (dateVerifier() != false){
-//            pb.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.VISIBLE);
             Log.d("soily", "Calling SOILnetworkcallback");
             SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback,firstDate, lastDate,SoilMoistureID);
         }
@@ -377,7 +383,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
     private void addSnotel(String snotID){
         if (dateVerifier() != false){
-//            pb.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.VISIBLE);
             Log.d("snow", "Calling snotelnetworkcallback");
             SnotelService.getSnotelTimeSeriesStartThruFinish(snowtelNetworkCallback,firstDate, lastDate,snotID);
         }
@@ -387,6 +393,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     NetworkTask.NetworkCallback wellNetworkCallback = new NetworkTask.NetworkCallback() {
         @Override
         public void onResult(int type, String result) {
+//            pb.setVisibility(View.VISIBLE);
             List<String> dbgsunitList = WellService.parseDBGSunits(result);
             if (dbgsunitList.size() < 1){
 //                pb.setVisibility(View.INVISIBLE);
@@ -402,7 +409,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 dbgsUList.add(dbu);
 
             }
+            pb.setVisibility(View.INVISIBLE);
+
         }
+
     };
 
     //*****************************WELL RecylerView Ends ******************************************
@@ -413,6 +423,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             List<String> resList = ReservoirService.parseIndyStorage(result);
             if (resList.size() < 1){
 //                pb.setVisibility(View.INVISIBLE);
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -425,6 +436,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 resStorageList.add(dbu);
 
             }
+            pb.setVisibility(View.INVISIBLE);
         }
     };
 
@@ -440,7 +452,9 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             if (disList.size() < 1){
 //                pb.setVisibility(View.INVISIBLE);
                 Log.d("discharge", "No information has been recorded thus far");
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
+
                 return;
             }
             else {
@@ -453,6 +467,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 }
             }
+            pb.setVisibility(View.INVISIBLE);
         }
     };
 
@@ -469,6 +484,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             if (soilyList.size() < 1){
 //                pb.setVisibility(View.INVISIBLE);
                 Log.d("soil", "No information has been recorded thus far");
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -482,6 +498,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 }
             }
+            pb.setVisibility(View.INVISIBLE);
         }
     };
 
@@ -500,6 +517,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             if (snowyList.size() < 1){
 //                pb.setVisibility(View.INVISIBLE);
                 Log.d("snow", "No information has been recorded thus far");
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -512,6 +530,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 }
             }
+            pb.setVisibility(View.INVISIBLE);
         }
     };
 
@@ -540,6 +559,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     // Need to fix issue on Double clicking in order to get the date to display
     public void displayHistoryList(View v)
     {
+//        pb.setVisibility(View.VISIBLE);
 //        Log.d("wwwid" , WELLID);
         if(isWellNull == false){
             ListView lv = findViewById(R.id.historyList);

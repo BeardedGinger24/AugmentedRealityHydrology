@@ -100,7 +100,7 @@ public class SoilMoistureService {
             double longy =  Double.parseDouble(smList.getLon());
             // mycurrlong is latitude retrieved using phone while laty is latitude retrieved from get call
             // if less than or equal to range (100) add reserNear to List and return it back
-            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius*40)
+            if (getDistanceFromLatLonInKm (mycurrlong, mycurrLat , laty, longy) <= radius)
             {
                 soilNear.add(smList);
                 Log.d("soiledDistance",smList.getWbanno() + " soil within range ");

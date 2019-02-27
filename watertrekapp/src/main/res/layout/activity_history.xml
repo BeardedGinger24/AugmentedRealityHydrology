@@ -102,6 +102,14 @@
 
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/historyLoad"
+        android:layout_gravity="center"
+        android:layout_height="16dp"
+        android:layout_width="16dp"
+        android:visibility="visible"
+        />
+
     <Button
         android:id="@+id/Search"
         android:layout_width="match_parent"
