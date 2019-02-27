@@ -35,7 +35,7 @@ public class SoilMoistureService {
 //        String masterId = masterSiteId;
 //        yr/month/day
         // returns  history of depth below ground surface  DBGS
-        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno/"+masterSiteId+"/at/5/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
+        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno/"+masterSiteId+"/at/5cm/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
         Log.d("soily" , url);
         NetworkTask nt = new NetworkTask(callback, SoilMoisture.SOIL_MOIST_DEPTH);
         nt.execute(url);
