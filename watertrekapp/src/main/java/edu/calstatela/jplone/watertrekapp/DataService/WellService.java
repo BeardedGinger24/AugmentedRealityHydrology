@@ -159,10 +159,10 @@ public class WellService {
         Log.d("dbgs" , line);
         List<String> unitList = new ArrayList();
         String[] rowEntry = line.split("\n");
-        if (rowEntry[1].equals("null")){
+        if (rowEntry[0].equals("null")){
             return unitList ;
         }
-        if (rowEntry[1] == null){
+        if (rowEntry[0] == null){
             return unitList ;
         }
 
