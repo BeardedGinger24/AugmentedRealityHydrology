@@ -50,7 +50,7 @@ public class SnotelActivity extends AppCompatActivity {
         Marker marker = new Marker(map);
         marker.setPosition(defaultLocation);
         marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
-        marker.setIcon(this.getDrawable(R.drawable.snotel_res_ico));
+        marker.setIcon(this.getDrawable(R.drawable.snotel_ico_clr_marker));
         marker.setTitle("Snotel: LatLon("+lat+","+lon+")");
         map.getOverlays().add(marker);
 

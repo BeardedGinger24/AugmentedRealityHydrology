@@ -985,7 +985,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         ((TextView)findViewById(R.id.bearingL)).setText(Pitch);
 //        Log.d("JSON" , )
         //ROll
-        ((TextView)findViewById(R.id.bearingR)).setText(direction + " " + Roll);
+        // FIX LATER EFFECTS NATALIES CALL
+//        ((TextView)findViewById(R.id.bearingR)).setText(direction + " " + Roll);
+        ((TextView)findViewById(R.id.bearingR)).setText(Roll);
 
     }
 
