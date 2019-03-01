@@ -107,7 +107,6 @@
         android:layout_gravity="center"
         android:layout_height="16dp"
         android:layout_width="16dp"
-        android:visibility="visible"
         />
 
     <Button

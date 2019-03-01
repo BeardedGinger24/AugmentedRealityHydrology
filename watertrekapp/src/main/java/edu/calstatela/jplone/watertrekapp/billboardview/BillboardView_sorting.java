@@ -14,9 +14,11 @@ import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.BillboardInfo;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.BillboardMaker;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.ColorHolder;
+import edu.calstatela.jplone.arframework.graphics3d.drawable.LitModel;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
 import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
+import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
@@ -313,7 +315,7 @@ public class BillboardView_sorting extends SensorARView{
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private void newEntity(BillboardInfo info){
         Billboard bb = new BillboardMaker().make(mContext, info.iconResource);
-        ScaleObject sbb = new ScaleObject(bb, 0.02f, 0.01f, 0.01f);
+        ScaleObject sbb = new ScaleObject(bb, 0.4f, 0.2f, 0.2f);
         Entity e = new Entity();
         e.setDrawable(sbb);
         //e.setLatLonAlt(new float[]{info.lat,info.lon});
@@ -328,28 +330,30 @@ public class BillboardView_sorting extends SensorARView{
         scene = new Scene();
         float[] newMeshLoc = getbbLoc(meshLoc,getLocation());
 
-        Model mesh = new Model();
+        LitModel mesh = new LitModel();
         mesh.loadVertices(info.getVerts());
+        mesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
         mesh.setDrawingModeTriangles();
-        ColorHolder purple = new ColorHolder(mesh, new float[]{0.3f, 0.4f, 0.3f, 0.1f});
+
+        ColorHolder color = new ColorHolder(mesh, new float[]{0.3f, 0.4f, 0.3f, 0.1f});
         Entity entity1 = new Entity();
-        entity1.setDrawable(purple);
-        entity1.setPosition(newMeshLoc[0],-0.04f-newMeshLoc[1],newMeshLoc[2]);
+        entity1.setDrawable(color);
+        entity1.setPosition(newMeshLoc[0],-0.5f-newMeshLoc[1],newMeshLoc[2]);
         //entity1.setLatLonAlt(info.getLatlonalt());
         //meshList.add(entity1);
 
-        Model wireFrame = new Model();
-        wireFrame.loadVertices(info.getVerts());
-        wireFrame.setDrawingModeLines();
-        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,0.5f});
-        Entity entity2 = new Entity();
-        entity2.setDrawable(black);
-        entity2.setPosition(newMeshLoc[0],-0.04f-newMeshLoc[1],newMeshLoc[2]);
+//        Model wireFrame = new Model();
+//        wireFrame.loadVertices(info.getVerts());
+//        wireFrame.setDrawingModeLines();
+//        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,0.5f});
+//        Entity entity2 = new Entity();
+//        entity2.setDrawable(black);
+//        entity2.setPosition(newMeshLoc[0],-0.04f-newMeshLoc[1],newMeshLoc[2]);
         //entity2.setLatLonAlt(info.getLatlonalt());
         //meshList.add(entity2);
 
         scene.add(entity1);
-        scene.add(entity2);
+        //scene.add(entity2);
     }
     public float[] getbbLoc(float[] bbloc,float[] meshloc){
         float bbx = bbloc[1];
@@ -359,7 +363,7 @@ public class BillboardView_sorting extends SensorARView{
         float my = meshloc[0];
 
         double x = (Math.abs(mx-0.20)-Math.abs(bbx))/0.002;
-        double y = (Math.abs(my+0.20)-Math.abs(bby))/0.002;
+        double y = Math.abs((Math.abs(my+0.20)-Math.abs(bby))/0.002);
         int index = (int) (x+(y*200));
         Log.d(TAG,index+"");
 

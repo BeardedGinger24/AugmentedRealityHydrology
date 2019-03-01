@@ -28,7 +28,7 @@
 
         <ImageButton
             android:id="@+id/menu_button"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentStart="true"
@@ -41,60 +41,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/gear_settings" />
-
-        <!--<TextView-->
-            <!--android:id="@+id/bearingR"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignTop="@+id/menu_button"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_marginEnd="8dp"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:layout_marginTop="8dp"-->
-            <!--android:shadowColor="#000000"-->
-            <!--android:shadowRadius="3"-->
-            <!--android:text="BEARING-LEFT"-->
-            <!--android:textColor="@android:color/holo_red_light"-->
-            <!--android:textSize="16sp"-->
-            <!--android:textStyle="bold"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/bearingL"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_marginBottom="8dp"-->
-            <!--android:layout_marginEnd="8dp"-->
-            <!--android:layout_marginTop="8dp"-->
-            <!--android:shadowColor="#000000"-->
-            <!--android:shadowRadius="3"-->
-            <!--android:text="BEARING-RIGHT"-->
-            <!--android:textColor="@android:color/holo_red_light"-->
-            <!--android:textSize="16sp"-->
-            <!--android:textStyle="bold"-->
-            <!--app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <Button
-            android:id="@+id/obstruction_view_button"
-            android:visibility="gone"
-            android:layout_width="58dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/eye24v"
-            android:onClick="obstructionClicked"
-            android:shadowColor="@color/white"
-            android:shadowRadius="6"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
-            app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -134,113 +80,12 @@
                 arc:menuChildSize="48dp"
                 arc:menuClickAnim="true"
                 arc:menuGravity="Bottom_Right"
-                arc:menuImage="@drawable/gear_settings"
                 arc:menuNormalColor="@color/colorPrimary"
                 arc:menuShadowElevation="true"
                 arc:menuType="normal">
 
             </com.bvapp.arcmenulibrary.ArcMenu>
         </FrameLayout>
-
-
-        <LinearLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-
-            <ImageButton
-                android:id="@+id/imageButton_Well"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:onClick="toggleWell"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/well_res_ico_clr" />
-
-            <ImageButton
-                android:id="@+id/imageButton_Reservoir"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:onClick="toggleReservoir"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/reservoir_res_ico_clr" />
-
-            <ImageButton
-                android:id="@+id/imageButton_River"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:onClick="toggleRiver"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/river_res_ico_clr" />
-
-            <ImageButton
-                android:id="@+id/imageButton_Soil_Moisture"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:onClick="toggleSoil"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/soil_bb_icon" />
-
-            <ImageButton
-                android:id="@+id/imageButton_Snotel"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:onClick="toggleSnotel"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/snotel_res_ico" />
-
-            <ImageButton
-                android:id="@+id/imageButton_Mountain"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:onClick="meshDemo"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/mtn_res_ico_clr" />
-        </LinearLayout>
-
-
-        <android.support.constraint.Group
-            android:id="@+id/group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <!--<ProgressBar-->
-            <!--android:id="@+id/progressBarMain"-->
-            <!--style="?android:attr/progressBarStyle"-->
-            <!--android:layout_width="133dp"-->
-            <!--android:layout_height="116dp"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:visibility="invisible"-->
-            <!--tools:layout_editor_absoluteX="126dp"-->
-            <!--tools:layout_editor_absoluteY="306dp" />-->
-
     </android.support.constraint.ConstraintLayout>
 
     <RelativeLayout
@@ -254,8 +99,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="35dp"
-            android:background="#AA4f4e4d"
-            />
+            android:background="#AA4f4e4d" />
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="25dp"
@@ -264,9 +108,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
-            android:background="#AA4f4e4d">
-
-        </android.support.v7.widget.RecyclerView>
+            android:background="#AA4f4e4d"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -275,8 +117,7 @@
             android:textColor="@android:color/white"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"
-            />
+            android:layout_marginLeft="5dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -286,10 +127,7 @@
             android:layout_above="@+id/Pitch_RecyclerView"
             android:layout_alignParentRight="true"
             android:paddingBottom="2dp"
-            android:layout_marginRight="11dp"
-            />
-
-
+            android:layout_marginRight="11dp" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -301,7 +139,6 @@
             android:textColor="@android:color/white"
             android:gravity="bottom"
             />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

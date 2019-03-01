@@ -87,23 +87,7 @@ public class MeshService {
             for(int y = 0; y<(height/baseDownSample); y++) {
                 for (int x = 0; x < (width / baseDownSample); x++) {
                     heightVal = rasters.getPixel(x * baseDownSample, y * baseDownSample)[0].doubleValue();
-                    if (heightVal > maxY) {
-                        if ((x - 1) >= 0) {
-                            left = rasters.getPixel((x - 1) * baseDownSample, y * baseDownSample)[0].doubleValue();
-                        }
-                        if ((x + 1) < (width / baseDownSample)) {
-                            right = rasters.getPixel((x + 1) * baseDownSample, y * baseDownSample)[0].doubleValue();
-                        }
-                        if ((y - 1) >= 0) {
-                            top = rasters.getPixel(x * baseDownSample, (y - 1) * baseDownSample)[0].doubleValue();
-                        }
-                        if ((y + 1) < (height / baseDownSample)) {
-                            bottom = rasters.getPixel(x * baseDownSample, (y + 1) * baseDownSample)[0].doubleValue();
-                        }
 
-                        heightVal = correctHeightVal(maxY,left, right, top, bottom);
-                        vector3s[index] = new Vector3(x, heightVal, y);
-                    }
                     vector3s[index] = new Vector3(x, heightVal, y);
                     if (maxHeight < heightVal) {
                         maxHeight = heightVal;
@@ -117,19 +101,19 @@ public class MeshService {
 
                 double temp_x = v.getX();
                 if(v.getX()<=midpoint_x){
-                    v.setX(-((midpoint_x-temp_x)/midpoint_x));
+                    v.setX(-((midpoint_x-temp_x)/midpoint_x)*100);
                 }else{
-                    v.setX(((temp_x-midpoint_x)/midpoint_x));
+                    v.setX(((temp_x-midpoint_x)/midpoint_x)*100);
                 }
 
                 double temp = v.getY();
-                v.setY(temp/(maxHeight*5));
-
+                v.setY(temp/100);
+                Log.d(TAG,maxHeight+"");
                 double temp_z = v.getZ();
                 if(v.getZ()<=midpoint_z){
-                    v.setZ(-((midpoint_z-temp_z)/midpoint_z));
+                    v.setZ(-((midpoint_z-temp_z)/midpoint_z)*100);
                 }else{
-                    v.setZ(((temp_z-midpoint_z)/midpoint_z));
+                    v.setZ(((temp_z-midpoint_z)/midpoint_z)*100);
                 }
             }
             int[] triangles = generateTriangles(width/baseDownSample,height/baseDownSample);

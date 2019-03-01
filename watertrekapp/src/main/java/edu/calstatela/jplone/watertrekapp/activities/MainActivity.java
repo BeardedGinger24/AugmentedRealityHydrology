@@ -1,6 +1,7 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -100,18 +101,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private ImageButton ibWell, ibRiver, ibReservoir, ibSoilMoisture, ibMtn, ibSnotel;
     MeshInfo meshInfo;
     private int radius = 20;
-    Button obstruct_button;
+
     Button login_button;
     Button logout_button;
     Switch cameraToggle;
 
     private ArrayList<Well> wellList = new ArrayList<>();
-    private ArrayList<Reservoir> reservoirList = new ArrayList<>(); ///////////////////////////////////////added by Leo***
-    private LandmarkTable mountainList = new LandmarkTable();
+    private ArrayList<Reservoir> reservoirList = new ArrayList<>();
     private ArrayList<SoilMoisture> soilList = new ArrayList<>();
     private ArrayList<River> riverList = new ArrayList<>();
     private ArrayList<Snotel> snotelList = new ArrayList<>();
-    int mountainPrefix = 2000000000;
 
     private boolean isLoggedIn = true;
 
@@ -149,49 +148,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         radiusSeekBar = findViewById(R.id.seekBar);
         radiusSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
 
-        ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
-        ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
-        ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
-        ibSoilMoisture = (ImageButton) findViewById(R.id.imageButton_Soil_Moisture);
-        ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
-        ibSnotel = (ImageButton) findViewById(R.id.imageButton_Snotel);
-
-        ibWell.setBackgroundTintMode(null);
-        ibMtn.setBackgroundTintMode(null);
-        ibSoilMoisture.setBackgroundTintMode(null);
-        ibReservoir.setBackgroundTintMode(null);
-        ibRiver.setBackgroundTintMode(null);
-        ibSnotel.setBackgroundTintMode(null);
-
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
 
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
-
-//        // Check to see if the user is already logged in
-//        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
-//        String userName = credentialsTest.getUsername();
-//        String passWord = credentialsTest.getPassword();
-//        if(!userName.isEmpty() && !passWord.isEmpty()){
-//            Log.d("USERNAME", "username: " + userName);
-//            Log.d("PASSWORD", "password: " + passWord);
-//
-//            isLoggedIn = true;
-//        }
-//
-//        if(!isLoggedIn){
-//            WatertrekCredentials credentials = new WatertrekCredentials(this);
-//            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
-//            logout_button.setVisibility(View.GONE);
-//            login_button.setVisibility(View.VISIBLE);
-//        }else {
-//            WatertrekCredentials credentials = new WatertrekCredentials(this);
-//            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
-//            logout_button.setVisibility(View.VISIBLE);
-//            login_button.setVisibility(View.GONE);
-//        }
 
         cameraToggle = (Switch)findViewById(R.id.cameraToggle);
         if(Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
@@ -204,8 +166,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
         mainLayout.addView(arview);
 
-        mountainList.loadMountains();
-
         arview.setMeshStatus(false);
         meshInfo = getMeshInfo("terrain");
 
@@ -217,11 +177,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         arcMenu.setToolTipTextSize(14);
 
         arcMenu.setToolTipSide(ArcMenu.TOOLTIP_LEFT);
-        arcMenu.setToolTipTextColor(Color.WHITE);
-        arcMenu.setToolTipBackColor(Color.parseColor("#88000000"));
         arcMenu.setToolTipCorner(2);
         arcMenu.setToolTipPadding(8);
-        arcMenu.setColorNormal(getResources().getColor(R.color.white));
         arcMenu.showTooltip(false);
         arcMenu.setDuration(ArcMenu.ArcMenuDuration.LENGTH_LONG);
         arcMenu.setAnim(500,500, ArcMenu.ANIM_MIDDLE_TO_DOWN, ArcMenu.ANIM_MIDDLE_TO_RIGHT,
@@ -316,11 +273,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             tReservoir = false;
         }
         if(tReservoir) {
+            updateArcMenuDrawables(i,tReservoir);
             addReservoirs();
         } else {
+            updateArcMenuDrawables(i,tReservoir);
             removeReservoirs();
         }
-        updateArcMenuDrawables(i,tReservoir);
     }
 
     public void toggleWell(View v) {
@@ -331,11 +289,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             tWell = false;
         }
         if(tWell) {
+            updateArcMenuDrawables(i,tWell);
             addWells();
         } else {
+            updateArcMenuDrawables(i,tWell);
             removeWells();
         }
-        updateArcMenuDrawables(i,tWell);
     }
 
     public void toggleRiver(View v) {
@@ -346,11 +305,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             tRiver = false;
         }
         if(tRiver) {
+            updateArcMenuDrawables(i,tRiver);
             addRiverz();
         } else {
+            updateArcMenuDrawables(i,tRiver);
             removeRiverz();
         }
-        updateArcMenuDrawables(i,tRiver);
     }
 
     public void toggleSoil(View v) {
@@ -361,11 +321,12 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             tSoil = false;
         }
         if(tSoil) {
+            updateArcMenuDrawables(i,tSoil);
             addSoilPatches();
         } else {
+            updateArcMenuDrawables(i,tSoil);
             removeSoilPatches();
         }
-        updateArcMenuDrawables(i,tSoil);
     }
 
 
@@ -377,13 +338,15 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             tSnotel = false;
         }
         if(tSnotel) {
+            updateArcMenuDrawables(i,tSnotel);
             addSnotelPillows();
 
         } else {
+            updateArcMenuDrawables(i,tSnotel);
             removeSnotelPillows();
 
         }
-        updateArcMenuDrawables(i,tSnotel);
+
     }
 
 
@@ -397,15 +360,15 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
 
         if(tMountain) {
+            updateArcMenuDrawables(i,tMountain);
             if (arview.meshNull()) {
                 arview.addMesh(getMeshInfo("terrain"));
-                arview.setMeshStatus(true);
             }
             arview.setMeshStatus(true);
         }else{
+            updateArcMenuDrawables(i,tMountain);
             arview.setMeshStatus(false);
         }
-        updateArcMenuDrawables(i,tMountain);
     }
     public MeshInfo getMeshInfo(String type){
         File file1 = new File(getFilesDir(),"meshvecs");
@@ -466,29 +429,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             login_button.setVisibility(View.GONE);
             logout_button.setVisibility(View.VISIBLE);
             isLoggedIn = true;
-        }
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    //      Mountain Data Methods
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    private void addMountains(){
-        if(arview.meshNull()){
-            //arview.addMesh(getMeshInfo("terrain"));
-        }
-        for(int i = 0; i < mountainList.size(); i++){
-            Landmark l = mountainList.get(i);
-            arview.addBillboard(mountainPrefix+i, R.drawable.mtn_res_ico_clr, l.title, l.description, l.latitude, l.longitude, l.altitude);
-        }
-    }
-
-    private void removeMountains(){
-        for(int i = 0; i < mountainList.size(); i++){
-            Landmark l = mountainList.get(i);
-            arview.removeBillboard(mountainPrefix+i);
         }
     }
 
@@ -673,10 +613,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
     private void addRiverz(){
         if(arview.meshNull()){
             arview.addMesh(getMeshInfo("terrain"));
@@ -807,16 +743,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     };
 
 
-
-
-
-
-
-
-
-
-
-
     ////////////////////////////////////////////////////////////////////////////////
     ///
     ///                             SEEKBAR/SLIDER FOR RANGE
@@ -923,18 +849,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             return;
         }
 
-        Landmark landmark = null;
-        for(int i = 0; i < mountainList.size(); i++){
-            Landmark l = mountainList.get(i);
-            if(id == i + mountainPrefix){
-                landmark = l;
-                break;
-            }
-        }
-        if(landmark != null){
-            MountainActivity.launchDetailsActivity(this, landmark);
-        }
-
     }
 
 
@@ -1026,7 +940,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
 
     /* Arc Menu Functions */
-    private void initArcMenu(final ArcMenu menu, final String[] str, int[] itemDrawables, int count) {
+    private void initArcMenu(final ArcMenu menu, final String[] str, final int[] itemDrawables, int count) {
         for (int i = 0; i < count; i++) {
             FloatingActionButton item = getChildItem(itemDrawables[i]);
             menu.setChildSize(item.getIntrinsicHeight());
@@ -1039,27 +953,21 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                 public void onClick(View v) {
                     switch(str[position]){
                         case "mountain":
-                            ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
                             meshDemo(ibMtn);
                             break;
                         case "reservoir":
-                            ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
                             toggleReservoir(ibReservoir);
                             break;
                         case "soil":
-                            ibSoilMoisture = (ImageButton) findViewById(R.id.imageButton_Soil_Moisture);
                             toggleSoil(ibSoilMoisture);
                             break;
                         case "well":
-                            ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
                             toggleWell(ibWell);
                             break;
                         case "river":
-                            ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
                             toggleRiver(ibRiver);
                             break;
                         case "snotel":
-                            ibSnotel  = (ImageButton)findViewById(R.id.imageButton_Snotel);
                             toggleSnotel(ibSnotel);
                             break;
                         case "eye":
@@ -1094,27 +1002,21 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             public void onClick(View v) {
                 switch(str[index]){
                     case "mountain":
-                        ibMtn = (ImageButton) findViewById(R.id.imageButton_Mountain);
                         meshDemo(ibMtn);
                         break;
                     case "reservoir":
-                        ibReservoir = (ImageButton) findViewById(R.id.imageButton_Reservoir);
                         toggleReservoir(ibReservoir);
                         break;
                     case "soil":
-                        ibSoilMoisture = (ImageButton) findViewById(R.id.imageButton_Soil_Moisture);
                         toggleSoil(ibSoilMoisture);
                         break;
                     case "well":
-                        ibWell = (ImageButton) findViewById(R.id.imageButton_Well);
                         toggleWell(ibWell);
                         break;
                     case "river":
-                        ibRiver = (ImageButton) findViewById(R.id.imageButton_River);
                         toggleRiver(ibRiver);
                         break;
                     case "snotel":
-                        ibSnotel  = (ImageButton)findViewById(R.id.imageButton_Snotel);
                         toggleSnotel(ibSnotel);
                         break;
                     default:
