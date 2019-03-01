@@ -15,7 +15,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
@@ -115,7 +114,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         isSnotelNull = SnotelID == null;
         // Check to see which POI data where looking at
 
-        simpleDateFormat = new SimpleDateFormat("M-dd-yyyy");
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         // Generate Dates.
         // Calender.getInstance() sets the calender to current date and time.
         calendar = Calendar.getInstance();
@@ -453,10 +452,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                     }
                 }
 
+                Date earliestDate = new Date();
+                Date latestDate = new Date();
                 for (int i = 0; i < xValue.size(); i++) {
                     Date date = new Date();
                     try {
-                        date = simpleDateFormat.parse(xValue.get(i));
+                        date = simpleDateFormat.parse(simpleDateFormat.format(simpleDateFormat.parse(xValue.get(i))));
+                        Log.d("Date Format",date+"");
                         dateList.add(date);
 
                     } catch (ParseException e) {
@@ -464,7 +466,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 }
 
                 DataPoint[] dataPoints = new DataPoint[xValue.size()];
-                DataPoint dataPoint;
+                DataPoint dataPoint = null;
                 String isNull = "null";
                 for (int i = 0; i < dateList.size(); i++) {
                     try {
@@ -473,13 +475,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                             dataPoints[i] = dataPoint;
                         }
                     } catch (Exception e) {
-                        calendar = Calendar.getInstance();
-                        // calender.getTime() returns a Date object representing the calenders.
-                        Date d1 = calendar.getTime();
-                        dataPoint = new DataPoint( d1, 0);
-                        if (i < dateList.size())
-                            dataPoints[i] = dataPoint;
-                        Log.i("Dunno", "dunno");
+                        dataPoints[i] = dataPoint;
                     }
                 }
 
@@ -494,7 +490,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 dataPoints = bubbleSortDates(dataPoints);
                 for(int i = 0; i<dataPoints.length;i++){
-                    Log.i("dp",dataPoints[i].getX()+","+dataPoints[i].getY());
+                    Log.i("dp",simpleDateFormat.format(new Date((long)dataPoints[i].getX()))+","+dataPoints[i].getY());
                 }
                 Log.i("dp","Min/Max X:"+dataPoints[0].getX()+","+dataPoints[dataPoints.length-1].getX());
                 graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(context));
