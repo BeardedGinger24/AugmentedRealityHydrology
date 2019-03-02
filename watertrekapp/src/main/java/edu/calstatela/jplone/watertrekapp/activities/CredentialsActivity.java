@@ -9,6 +9,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -37,6 +38,7 @@ public class CredentialsActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_credentials);
 
+        Log.d(TAG,"");
         mUsernameEditText = (TextInputEditText) findViewById(R.id.et_username);
         mPasswordEditText = (TextInputEditText) findViewById(R.id.et_password);
 
@@ -76,6 +78,9 @@ public class CredentialsActivity extends Activity{
                 setResult(RESULT_OK, intent);
 
                 NetworkTask.updateWatertrekCredentials(usernameString,passwordString);
+                WatertrekCredentials credentials = new WatertrekCredentials(getApplicationContext());
+                credentials.setUsername(usernameString);
+                credentials.setPassword(passwordString);
                 finish();
             }
 

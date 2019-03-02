@@ -32,4 +32,8 @@ public class Scene {
         return entity;
     }
 
+    public void clearList(){
+        mEntityList.clear();
+    }
+
 }

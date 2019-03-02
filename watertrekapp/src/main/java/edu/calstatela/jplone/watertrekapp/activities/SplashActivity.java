@@ -44,6 +44,7 @@ import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
 import edu.calstatela.jplone.watertrekapp.Data.Vector3;
 import edu.calstatela.jplone.watertrekapp.DataService.MeshService;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.LoginService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
@@ -73,7 +74,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     private static final int REQUEST_STORAGE = 2;
 
     Thread t1;
-    boolean isLoggedIn = false;
+    static boolean isLoggedIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,22 +114,29 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         loadingText.setVisibility(View.INVISIBLE);
         startBtn.setVisibility(View.VISIBLE);
 
-        // Check to see if the user is already logged in
-        WatertrekCredentials credentialsTest = new WatertrekCredentials(this);
-        String userName = credentialsTest.getUsername();
-        String passWord = credentialsTest.getPassword();
-        if(!userName.isEmpty() && !passWord.isEmpty()){
-            Log.d("USERNAME", "username: " + userName);
-            Log.d("PASSWORD", "password: " + passWord);
-            isLoggedIn = true;
-        }
+        Log.d(TAG,"IN ONCREATE");
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorARView.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorARView.onResume();
+        Log.d(TAG,"IN ON RESUME");
+        pb.setVisibility(View.INVISIBLE);
+        loadingText.setVisibility(View.INVISIBLE);
+        startBtn.setVisibility(View.VISIBLE);
+
+        WatertrekCredentials credentials = new WatertrekCredentials(this);
+        String user = credentials.getUsername();
+        String pass = credentials.getPassword();
         if(!isLoggedIn){
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
-        }else {
-            WatertrekCredentials credentials = new WatertrekCredentials(this);
-            NetworkTask.updateWatertrekCredentials(credentials.getUsername(), credentials.getPassword());
+            CredentialsActivity.launch(this,user,pass,5);
         }
         t1 = new Thread(new Runnable() {
             @Override
@@ -167,17 +175,22 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        sensorARView.onPause();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == CREDENTIALS_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
+            String newUsername = data.getStringExtra("username");
+            String newPassword = data.getStringExtra("password");
+            WatertrekCredentials credentials = new WatertrekCredentials(this);
+            credentials.setUsername(newUsername);
+            credentials.setPassword(newPassword);
+
+            NetworkTask.updateWatertrekCredentials(newUsername, newPassword);
+            isLoggedIn = true;
+        }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        sensorARView.onResume();
+    public static void toggleLogin(boolean b){
+        isLoggedIn = b;
     }
-
     public void genVerts(MeshData meshData){
         float[] verts = new float[meshData.Triangles.length*3];
         int index = 0;
