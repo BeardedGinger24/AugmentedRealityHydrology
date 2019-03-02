@@ -1,17 +1,13 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +18,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -36,14 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.calstatela.jplone.arframework.landmark.Landmark;
-import edu.calstatela.jplone.arframework.landmark.LandmarkTable;
-import edu.calstatela.jplone.arframework.ui.SensorARView;
-import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.arframework.util.Permissions;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
@@ -69,8 +58,6 @@ import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import edu.calstatela.jplone.watertrekapp.adapters.Azimuth_RecyclerViewAdapter;
 import edu.calstatela.jplone.watertrekapp.adapters.Pitch_RecyclerViewAdapter;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
-
-
 
 public class MainActivity extends AppCompatActivity implements BillboardView_sorting.TouchCallback, SensorEventListener{
     private SensorManager mSensorManager;
@@ -113,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private ArrayList<Snotel> snotelList = new ArrayList<>();
 
     private boolean isLoggedIn = true;
+    private boolean paused = false;
 
     private ArrayList<String> verticalTicks = new ArrayList<>();
     private ArrayList<String> horizontalTicks = new ArrayList<>();
@@ -151,6 +139,15 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
 
+        paused = false;
+        if(SplashActivity.isLoggedIn){
+            login_button.setVisibility(View.GONE);
+            logout_button.setVisibility(View.VISIBLE);
+        }else{
+            login_button.setVisibility(View.VISIBLE);
+            logout_button.setVisibility(View.GONE);
+        }
+
         arview = new BillboardView_sorting(this);
         arview.setTouchCallback(this);
         arview.setDeviceOrientation(Orientation.getOrientationAngle(this));
@@ -184,13 +181,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         arcMenu.setAnim(500,500, ArcMenu.ANIM_MIDDLE_TO_DOWN, ArcMenu.ANIM_MIDDLE_TO_RIGHT,
                 ArcMenu.ANIM_INTERPOLATOR_ANTICIPATE, ArcMenu.ANIM_INTERPOLATOR_ANTICIPATE);
         initArcMenu(arcMenu, str, ITEM_DRAWABLES, ITEM_DRAWABLES.length);
+        Log.d(TAG,"IN ON CREATE");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        arview.onPause();
+        Log.d(TAG,"IN ON PAUSE");
+        //arview.onPause();
         mSensorManager.unregisterListener(this);
+        paused = true;
     }
 
     @Override
@@ -388,6 +388,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
 
     public void logout(View v){
+        SplashActivity.toggleLogin(false);
+        NetworkTask.updateWatertrekCredentials(null, null);
         isLoggedIn = false;
         login_button.setVisibility(v.VISIBLE);
         logout_button.setVisibility(v.GONE);
@@ -400,6 +402,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         toggleSnotel(v);
     }
     public void login (View v){
+        SplashActivity.toggleLogin(true);
+        isLoggedIn = true;
         WatertrekCredentials credentials = new WatertrekCredentials(this);
         CredentialsActivity.launch(this, credentials.getUsername(), credentials.getPassword(), CREDENTIALS_ACTIVITY_REQUEST_CODE);
     }

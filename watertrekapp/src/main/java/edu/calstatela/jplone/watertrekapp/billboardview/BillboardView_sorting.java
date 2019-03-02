@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import edu.calstatela.jplone.arframework.graphics3d.camera.Camera3D;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
@@ -137,6 +138,7 @@ public class BillboardView_sorting extends SensorARView{
         mEntityList = new ArrayList<>();
         meshList = new ArrayList<>();
 
+        scene = new Scene();
         meshLoc = new float[3];
         drawMesh = false;
     }
@@ -167,6 +169,7 @@ public class BillboardView_sorting extends SensorARView{
             }
         }
         if(meshList.isEmpty() && !meshCurrentInfos.isEmpty() && this.getLocation() != null){
+            scene.clearList();
             for(MeshInfo info : meshCurrentInfos){
                 newMesh(info);
             }
@@ -230,9 +233,13 @@ public class BillboardView_sorting extends SensorARView{
 //                }
                 scene.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix());
             }
-            for (Entity e : mEntityList) {
+            for(Iterator<Entity> iterator = mEntityList.iterator();iterator.hasNext();){
+                Entity e = iterator.next();
                 e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
             }
+//            for (Entity e : mEntityList) {
+//                e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
+//            }
         }
 
         //
@@ -327,7 +334,6 @@ public class BillboardView_sorting extends SensorARView{
         //scene.add(e);
     }
     private void newMesh(MeshInfo info){
-        scene = new Scene();
         float[] newMeshLoc = getbbLoc(meshLoc,getLocation());
 
         LitModel mesh = new LitModel();
@@ -380,5 +386,10 @@ public class BillboardView_sorting extends SensorARView{
         }else {
             color = new float[]{0, 0, 0, 0};
         }
+    }
+
+    public void clearScreen(){
+        mEntityList.clear();
+        scene.clearList();
     }
 }
