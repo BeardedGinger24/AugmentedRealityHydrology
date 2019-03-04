@@ -8,6 +8,7 @@ import java.util.List;
 import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 
 public class RiverService {
 
@@ -56,6 +57,33 @@ public class RiverService {
         NetworkTask nt = new NetworkTask(callback, River.TYPE_ID);
         nt.execute(url);
     }
+    // returns river ID that contains provided Stream gauge ID
+    public static void StreamtoRiverID(NetworkTaskAuth.NetworkCallback callback ,  String StreamID ){
+        // example stream id to test 09424050
+        // correlating riverid 21437781
+        StreamID = "09424050";
+        //gets all  River ID in JSON  FORMAT
+        String url  = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/containing/streamgauge/site_no/" + StreamID+ "?format=json";
+        NetworkTaskAuth nt = new NetworkTaskAuth(callback, River.TYPE_ID);
+        nt.execute(url);
+    }
+
+    //retrieves various river information such as  WKT
+    public static void SpecificRiverInfo(NetworkTaskAuth.NetworkCallback callback ,  String riverID ){
+        // example stream id to test 09424050
+        // correlating riverid 21437781
+        //gets all  River ID in JSON  FORMAT
+        String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/comid/" +riverID+"?format=json";
+//        String url  = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/containing/streamgauge/site_no/" + StreamID+ "?format=json";
+//        NetworkTask nt = new NetworkTask(callback, SoilMoisture.TYPE_ID);
+//        nt.execute(url);
+        NetworkTaskAuth nt = new NetworkTaskAuth(callback, River.TYPE_ID);
+        nt.execute(url);
+    }
+
+
+
+
 
 
     //Depth is from 5 cm to 10 cm.

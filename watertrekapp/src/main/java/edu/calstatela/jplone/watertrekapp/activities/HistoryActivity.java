@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -74,6 +75,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     private ArrayList<String> soilDepthList = new ArrayList<>();
     private ArrayList<String> sweSnotelList = new ArrayList<>();
 
+
     // Wells Dbgs
     // Rivers Discharge
     // Buttons for start Data and End Date
@@ -98,6 +100,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
 
         context = this;
         WELLID = getIntent().getStringExtra("wellID");
@@ -298,7 +301,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         if (dateVerifier() != false){
             pb.setVisibility(View.VISIBLE);
             WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate,WELLID);
-            pb.setVisibility(View.INVISIBLE);
+            pb.setVisibility(View.VISIBLE);
 
         }
     }
@@ -431,6 +434,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         public void onResult(int type, String result) {
             List<String> dbgsunitList = WellService.parseDBGSunits(result);
             if (dbgsunitList.size() < 1) {
+                pb.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else {
@@ -515,6 +519,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 series.resetData(dataPoints);
 
             }
+            pb.setVisibility(View.INVISIBLE);
 
         }
 
@@ -527,8 +532,8 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         public void onResult(int type, String result) {
             List<String> resList = ReservoirService.parseIndyStorage(result);
             if (resList.size() < 1) {
-//                pb.setVisibility(View.INVISIBLE);
                 pb.setVisibility(View.INVISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else
@@ -541,6 +546,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
             }
             pb.setVisibility(View.INVISIBLE);
+            ListView lv = findViewById(R.id.historyList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, resStorageList);
+            lv.setAdapter(adapter);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
     };
 
@@ -554,23 +563,26 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             List<String> disList = RiverService.parseDischarges(result);
             Log.d("discharge", "after parsingdischarges");
             if (disList.size() < 1) {
-//                pb.setVisibility(View.INVISIBLE);
                 Log.d("discharge", "No information has been recorded thus far");
                 pb.setVisibility(View.INVISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
 
                 return;
             } else {
                 // clears old list so it doesnt double stack / repeat Data twice
-//                pb.setVisibility(View.INVISIBLE);
                 dischargeList.clear();
                 for (String dsl : disList) {
 //                    Log.d("discharge", dsl);
                     dischargeList.add(dsl);
-
                 }
             }
             pb.setVisibility(View.INVISIBLE);
+            ListView lv = findViewById(R.id.historyList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+            lv.setAdapter(adapter);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
         }
     };
 
@@ -585,14 +597,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             List<String> soilyList = SoilMoistureService.parseindySoil(result);
             Log.d("soil", "after parsingdischarges");
             if (soilyList.size() < 1) {
-//                pb.setVisibility(View.INVISIBLE);
                 Log.d("soil", "No information has been recorded thus far");
                 pb.setVisibility(View.INVISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else {
                 // clears old list so it doesnt double stack / repeat Data twice
-//                pb.setVisibility(View.INVISIBLE);
                 soilDepthList.clear();
                 for (String swe : soilyList) {
 //                    Log.d("discharge", dsl);
@@ -601,6 +612,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 }
             }
             pb.setVisibility(View.INVISIBLE);
+            ListView lv = findViewById(R.id.historyList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
+            lv.setAdapter(adapter);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
     };
 
@@ -616,14 +631,13 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             List<String> snowyList = SnotelService.parseTimes(result);
 
             if (snowyList.size() < 1) {
-//                pb.setVisibility(View.INVISIBLE);
                 Log.d("snow", "No information has been recorded thus far");
                 pb.setVisibility(View.INVISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else {
                 // clears old list so it doesnt double stack / repeat Data twice
-//                pb.setVisibility(View.INVISIBLE);
                 sweSnotelList.clear();
                 for (String snot : snowyList) {
                     sweSnotelList.add(snot);
@@ -631,6 +645,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 }
             }
             pb.setVisibility(View.INVISIBLE);
+            ListView lv = findViewById(R.id.historyList);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
+            lv.setAdapter(adapter);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
     };
 
@@ -650,53 +668,45 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
     public void displayHistoryList(View v)
     {
-//        pb.setVisibility(View.VISIBLE);
-//        Log.d("wwwid" , WELLID);
+
         if (isWellNull == false) {
+//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+//                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             ListView lv = findViewById(R.id.historyList);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dbgsUList);
             lv.setAdapter(adapter);
             addWells(WELLID);
-
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
         if (isReservoirNull == false) {
             Log.d("reserves", "ADDED RESERVOIRS ");
-            ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, resStorageList);
-            lv.setAdapter(adapter);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             addReservoirs(ReservoirID);
+
 
         }
         if (isRiverNull == false) {
             Log.d("discharge", "ADDED RIVERS ");
-            ListView lv = findViewById(R.id.historyList);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             addRivers(RiverID);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
-            lv.setAdapter(adapter);
+
         }
         if (isSoilNull == false) {
             Log.d("soily", "ADDED SOIL MOISTURE ");
-            ListView lv = findViewById(R.id.historyList);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             addSoils(SoilMoistureID);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
-            lv.setAdapter(adapter);
+
         }
         if (isSnotelNull == false) {
             Log.d("snow", "ADDED Snotels ");
-            ListView lv = findViewById(R.id.historyList);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             addSnotel(SnotelID);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
-            lv.setAdapter(adapter);
+
         }
-
-//        Log.d("starz" , firstDate);
-//        Log.d("starz" , lastDate);
-
-
-//        final StringBuilder sb = new StringBuilder(starttext.getText().length());
-//        sb.append(starttext.getText());
-//        String x = sb.toString();
-//        Log.d("tv",x); //example 11/1/2018
 
     }
 }
