@@ -418,6 +418,71 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         return dataPoints;
     }
 
+    // The big graph function.
+    private void populateGraph(ArrayList<String> xValue, ArrayList<String> yValue) {
+
+        Date earliestDate = new Date();
+        Date latestDate = new Date();
+        for (int i = 0; i < xValue.size(); i++) {
+            Date date = new Date();
+            try {
+                date = simpleDateFormat.parse(simpleDateFormat.format(simpleDateFormat.parse(xValue.get(i))));
+                Log.d("Date Format",date+"");
+                dateList.add(date);
+
+            } catch (ParseException e) {
+            }
+        }
+
+        DataPoint[] dataPoints = new DataPoint[xValue.size()];
+        DataPoint dataPoint = null;
+        String isNull = "null";
+        for (int i = 0; i < dateList.size(); i++) {
+            try {
+                if (yValue.get(i) != null && dateList.get(i) != null) {
+                    dataPoint = new DataPoint(dateList.get(i), Double.parseDouble(yValue.get(i)));
+                    dataPoints[i] = dataPoint;
+                }
+            } catch (Exception e) {
+                dataPoints[i] = dataPoint;
+            }
+        }
+
+
+        for (int i = 0; i < dataPoints.length; i++) {
+            try {
+                Log.i("Datapoint", String.valueOf(dataPoints[i].getX())+","+String.valueOf(dataPoints[i].getY()));
+            } catch (Exception e) {
+                Log.i("nullPointException", "");
+            }
+        }
+
+        dataPoints = bubbleSortDates(dataPoints);
+        for(int i = 0; i<dataPoints.length;i++){
+            Log.i("dp",simpleDateFormat.format(new Date((long)dataPoints[i].getX()))+","+dataPoints[i].getY());
+        }
+        Log.i("dp","Min/Max X:"+dataPoints[0].getX()+","+dataPoints[dataPoints.length-1].getX());
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(context));
+        graph.getGridLabelRenderer().setNumHorizontalLabels(10);
+        graph.getGridLabelRenderer().setNumVerticalLabels(10);
+        //Set Min and Max for x-axis values
+        graph.getViewport().setMinX(dataPoints[0].getX());
+        graph.getViewport().setMaxX(dataPoints[dataPoints.length-1].getX());
+        graph.getViewport().setXAxisBoundsManual(true);
+
+        //Set Min and Max for y-axis values
+        double maxY = findMaxDouble(yValue);
+        double minY = findMinDouble(yValue);
+        Log.i("dp","Min/Max Y:"+minY+","+maxY);
+        graph.getViewport().setMinY(minY);
+        graph.getViewport().setMaxY(maxY);
+        graph.getViewport().setYAxisBoundsManual(true);
+
+        graph.getGridLabelRenderer().setHumanRounding(false);
+        graph.getGridLabelRenderer().setLabelsSpace(10);
+        graph.getGridLabelRenderer().setPadding(100);
+        series.resetData(dataPoints);
+    }
 
     //Method to order dates in ascending order.
     private DataPoint[] ascendingDates(DataPoint[] dataPoints) {
@@ -435,6 +500,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             List<String> dbgsunitList = WellService.parseDBGSunits(result);
             if (dbgsunitList.size() < 1) {
                 pb.setVisibility(View.INVISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Toast.makeText(getApplicationContext(), " No informationhas been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else {
@@ -456,70 +522,14 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                     }
                 }
 
-                Date earliestDate = new Date();
-                Date latestDate = new Date();
-                for (int i = 0; i < xValue.size(); i++) {
-                    Date date = new Date();
-                    try {
-                        date = simpleDateFormat.parse(simpleDateFormat.format(simpleDateFormat.parse(xValue.get(i))));
-                        Log.d("Date Format",date+"");
-                        dateList.add(date);
-
-                    } catch (ParseException e) {
-                    }
-                }
-
-                DataPoint[] dataPoints = new DataPoint[xValue.size()];
-                DataPoint dataPoint = null;
-                String isNull = "null";
-                for (int i = 0; i < dateList.size(); i++) {
-                    try {
-                        if (yValue.get(i) != null && dateList.get(i) != null) {
-                            dataPoint = new DataPoint(dateList.get(i), Double.parseDouble(yValue.get(i)));
-                            dataPoints[i] = dataPoint;
-                        }
-                    } catch (Exception e) {
-                        dataPoints[i] = dataPoint;
-                    }
-                }
-
-
-                for (int i = 0; i < dataPoints.length; i++) {
-                    try {
-                        Log.i("Datapoint", String.valueOf(dataPoints[i].getX())+","+String.valueOf(dataPoints[i].getY()));
-                    } catch (Exception e) {
-                        Log.i("nullPointException", "");
-                    }
-                }
-
-                dataPoints = bubbleSortDates(dataPoints);
-                for(int i = 0; i<dataPoints.length;i++){
-                    Log.i("dp",simpleDateFormat.format(new Date((long)dataPoints[i].getX()))+","+dataPoints[i].getY());
-                }
-                Log.i("dp","Min/Max X:"+dataPoints[0].getX()+","+dataPoints[dataPoints.length-1].getX());
-                graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(context));
-                graph.getGridLabelRenderer().setNumHorizontalLabels(10);
-                graph.getGridLabelRenderer().setNumVerticalLabels(10);
-                //Set Min and Max for x-axis values
-                graph.getViewport().setMinX(dataPoints[0].getX());
-                graph.getViewport().setMaxX(dataPoints[dataPoints.length-1].getX());
-                graph.getViewport().setXAxisBoundsManual(true);
-
-                //Set Min and Max for y-axis values
-                double maxY = findMaxDouble(yValue);
-                double minY = findMinDouble(yValue);
-                Log.i("dp","Min/Max Y:"+minY+","+maxY);
-                graph.getViewport().setMinY(minY);
-                graph.getViewport().setMaxY(maxY);
-                graph.getViewport().setYAxisBoundsManual(true);
-
-                graph.getGridLabelRenderer().setHumanRounding(false);
-                graph.getGridLabelRenderer().setLabelsSpace(10);
-                graph.getGridLabelRenderer().setPadding(100);
-                series.resetData(dataPoints);
-
+                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dbgsUList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
-            pb.setVisibility(View.INVISIBLE);
+
 
         }
 
@@ -670,13 +680,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     {
 
         if (isWellNull == false) {
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-//                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dbgsUList);
-            lv.setAdapter(adapter);
+            Log.d("wells", "ADDED WELLS ");
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                   WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             addWells(WELLID);
-//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
         if (isReservoirNull == false) {
             Log.d("reserves", "ADDED RESERVOIRS ");
