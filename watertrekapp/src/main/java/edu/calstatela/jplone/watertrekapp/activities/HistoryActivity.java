@@ -460,13 +460,17 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         for (int i = 0; i < dataPoints.length; i++) {
             Log.i("dp", simpleDateFormat.format(new Date((long) dataPoints[i].getX())) + "," + dataPoints[i].getY());
         }
-        Log.i("dp", "Min/Max X:" + dataPoints[0].getX() + "," + dataPoints[dataPoints.length - 1].getX());
+//        Log.i("dp", "Min/Max X:" + dataPoints[0].getX() + "," + dataPoints[dataPoints.length - 1].getX());
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(context));
         graph.getGridLabelRenderer().setNumHorizontalLabels(10);
         graph.getGridLabelRenderer().setNumVerticalLabels(10);
         //Set Min and Max for x-axis values
-        graph.getViewport().setMinX(dataPoints[0].getX());
-        graph.getViewport().setMaxX(dataPoints[dataPoints.length - 1].getX());
+        try {
+            graph.getViewport().setMinX(dataPoints[0].getX());
+            graph.getViewport().setMaxX(dataPoints[dataPoints.length - 1].getX());
+        } catch (Exception e) {
+            Log.i("Datapoint[0]", "DNE.");
+        }
         graph.getViewport().setXAxisBoundsManual(true);
 
         //Set Min and Max for y-axis values
@@ -481,14 +485,6 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         graph.getGridLabelRenderer().setLabelsSpace(10);
         graph.getGridLabelRenderer().setPadding(100);
         series.resetData(dataPoints);
-    }
-
-    //Method to order dates in ascending order.
-    private DataPoint[] ascendingDates(DataPoint[] dataPoints) {
-        DataPoint[] dp = new DataPoint[dataPoints.length];
-        Arrays.sort(dataPoints);
-
-        return dp;
     }
 
     // METHOD that populates recyclerView
@@ -597,19 +593,32 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 return;
             } else {
-                // clears old list so it doesnt double stack / repeat Data twice
-                dischargeList.clear();
-                for (String dsl : disList) {
-//                    Log.d("discharge", dsl);
-                    dischargeList.add(dsl);
-                }
-            }
-            pb.setVisibility(View.INVISIBLE);
-            ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
-            lv.setAdapter(adapter);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                graph.setTitle("Discharge units (m^3/s) vs. Time (MM-DD-YY)");
 
+                dischargeList.clear();
+                yValue.clear();
+                xValue.clear();
+                for (int i = 0; i < disList.size(); i++) {
+                    String dsl = disList.get(i);
+                    dischargeList.add(dsl);
+                    if (i > 0) {
+                        String[] date = dsl.split("T");
+                        // values are seperated by tabs not spaces.
+                        String[] value = dsl.split("\t");
+                        xValue.add(date[0]);
+                        yValue.add(value[1]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
+                }
+
+                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
         }
     };
 
