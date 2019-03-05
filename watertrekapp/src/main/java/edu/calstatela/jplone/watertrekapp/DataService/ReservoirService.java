@@ -131,10 +131,10 @@ public class ReservoirService {
         Log.d("reserves" , line);
         List<String> storagevaluesList = new ArrayList();
         String[] rowEntry = line.split("\n");
-        if (rowEntry[1].equals("null")){
+        if (rowEntry[0].equals("null")){
             return storagevaluesList ;
         }
-        if (rowEntry[1] == null){
+        if (rowEntry[0] == null){
             return storagevaluesList ;
         }
 
