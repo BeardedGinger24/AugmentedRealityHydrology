@@ -193,6 +193,22 @@
                     android:layout_height="wrap_content"
                     android:onClick="toggleCamera"/>
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shaded Mesh"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"/>
+                <Switch
+                    android:id="@+id/meshToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="toggleMesh"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"

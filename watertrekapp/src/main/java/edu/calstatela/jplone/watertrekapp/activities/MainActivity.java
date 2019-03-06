@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     Button login_button;
     Button logout_button;
     Switch cameraToggle;
+    Switch meshToggle;
 
     private ArrayList<Well> wellList = new ArrayList<>();
     private ArrayList<Reservoir> reservoirList = new ArrayList<>();
@@ -160,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         arview.changeBGC(cameraToggle.isChecked());
 
+        meshToggle = (Switch) findViewById(R.id.meshToggle);
         mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
         mainLayout.addView(arview);
 
@@ -187,14 +190,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG,"IN ON PAUSE");
+        Log.d(TAG, "IN ON PAUSE");
         //arview.onPause();
         mSensorManager.unregisterListener(this);
-        paused = true;
     }
 
     @Override
     protected void onResume() {
+        Log.d(TAG, "IN ON RESUME");
         super.onResume();
         arview.onResume();
         mSensorManager.registerListener(this, mRotationSensor, SENSOR_DELAY);
@@ -386,7 +389,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         db=helper.getReadableDatabase();
         return helper.getMeshData(db,filename);
     }
-
+    public void toggleMesh(View view){
+        arview.setShadedMesh(meshToggle.isChecked());
+    }
     public void logout(View v){
         SplashActivity.toggleLogin(false);
         NetworkTask.updateWatertrekCredentials(null, null);
@@ -787,6 +792,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(well != null) {
+            onStop();
             WellActivity.launchDetailsActivity(this, well);
             return;
         }
@@ -801,6 +807,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(rL != null) {
+            onStop();
             ReservoirActivity.launchDetailsActivity(this, rL);
             return;
         }
@@ -815,6 +822,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(sL != null) {
+            onStop();
             SoilMoistureActivity.launchDetailsActivity(this, sL);
 //            Log.d("LaunchSoildetails","going now...");
             return;
@@ -832,6 +840,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(sntel != null) {
             Log.d("snow" , sntel.getStationId());
+            onStop();
             SnotelActivity.launchDetailsActivity(this, sntel);
 //            Log.d("LaunchSoildetails","going now...");
             return;
@@ -848,6 +857,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             }
         }
         if(rivL != null) {
+            onStop();
             RiverActivity.launchDetailsActivity(this, rivL);
 //            Log.d("LaunchSoildetails","going now...");
             return;

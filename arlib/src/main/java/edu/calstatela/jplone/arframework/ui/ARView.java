@@ -53,10 +53,12 @@ public class ARView extends FrameLayout {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void onPause(){
+        Log.d(TAG,"IN ON PAUSE");
         glSurfaceView.onPause();
     }
 
     public void onResume(){
+        Log.d(TAG,"IN ON RESUME");
         glSurfaceView.onResume();
     }
 
@@ -84,6 +86,7 @@ public class ARView extends FrameLayout {
 
         @Override
         public void onSurfaceChanged(GL10 gl, int width, int height) {
+            Log.d(TAG,"SURFACE CHANGED");
             GLResize(width, height);
         }
 

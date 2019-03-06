@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.R;
 public class WellActivity extends AppCompatActivity{
+    String TAG = "well-activity";
     MapView map;
     GeoPoint defaultLocation;
     IMapController mapController;
@@ -74,6 +75,7 @@ public class WellActivity extends AppCompatActivity{
                 startActivity(intent); // startActivity allow you to move
             }
         });
+        Log.d(TAG,"IN ON CREATE");
     }
     public static void launchDetailsActivity(Activity currentActivity, Well e) {
         Intent intent = new Intent(currentActivity, WellActivity.class);
@@ -88,10 +90,12 @@ public class WellActivity extends AppCompatActivity{
     protected void onPause() {
         super.onPause();
         map.onPause();
+        Log.d(TAG,"IN ON PAUSE");
     }
     @Override
     protected void onResume() {
         super.onResume();
         map.onResume();
+        Log.d(TAG,"IN ON RESUME");
     }
 }

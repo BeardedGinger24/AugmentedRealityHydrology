@@ -65,6 +65,7 @@ public class SensorARView extends ARView {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void onPause(){
+        Log.d(TAG,"IN ON PAUSE");
         super.onPause();
         orientationSensor.stop();
         locationSensor.stop();
@@ -72,6 +73,7 @@ public class SensorARView extends ARView {
     }
 
     public void onResume(){
+        Log.d(TAG,"IN ON RESUME");
         super.onResume();
         orientationSensor.start();
         locationSensor.start();

@@ -54,6 +54,7 @@ public class BillboardView_sorting extends SensorARView{
     float[] color;
 
     boolean drawMesh;
+    boolean shadedMesh;
     public BillboardView_sorting(Context context){
         super(context);
         mContext = context;
@@ -82,6 +83,12 @@ public class BillboardView_sorting extends SensorARView{
     }
     public void setMeshStatus(boolean b){
         drawMesh=b;
+    }
+    public void setShadedMesh(boolean b){
+        if(!meshCurrentInfos.isEmpty()) {
+            shadedMesh = b;
+            newMesh(meshCurrentInfos.get(0));
+        }
     }
     public boolean meshNull(){
         return vecs==null;
@@ -141,6 +148,7 @@ public class BillboardView_sorting extends SensorARView{
         scene = new Scene();
         meshLoc = new float[3];
         drawMesh = false;
+        shadedMesh = false;
     }
 
     @Override
@@ -335,31 +343,41 @@ public class BillboardView_sorting extends SensorARView{
     }
     private void newMesh(MeshInfo info){
         float[] newMeshLoc = getbbLoc(meshLoc,getLocation());
+        LitModel litMesh = new LitModel();
+        Model transMesh = new Model();
+        ColorHolder color;
+        Entity entity2 = new Entity();
+        if(shadedMesh) {
+            litMesh.loadVertices(info.getVerts());
+            litMesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
+            litMesh.setDrawingModeTriangles();
 
-        LitModel mesh = new LitModel();
-        mesh.loadVertices(info.getVerts());
-        mesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
-        mesh.setDrawingModeTriangles();
+            color = new ColorHolder(litMesh, new float[]{0.3f, 0.4f, 0.3f, 0.1f});
+        }else{
+            transMesh.loadVertices(info.getVerts());
+            transMesh.setDrawingModeTriangles();
+            color = new ColorHolder(transMesh,new float[]{0.3f, 0.4f, 0.3f, 0.1f});
 
-        ColorHolder color = new ColorHolder(mesh, new float[]{0.3f, 0.4f, 0.3f, 0.1f});
+            Model wireFrame = new Model();
+            wireFrame.loadVertices(info.getVerts());
+            wireFrame.setDrawingModeLines();
+            ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,0.5f});
+            entity2.setDrawable(black);
+            entity2.setPosition(newMeshLoc[0],-0.05f-newMeshLoc[1],newMeshLoc[2]);
+            //entity2.setLatLonAlt(info.getLatlonalt());
+            //meshList.add(entity2);
+        }
+
         Entity entity1 = new Entity();
         entity1.setDrawable(color);
-        entity1.setPosition(newMeshLoc[0],-0.5f-newMeshLoc[1],newMeshLoc[2]);
+        entity1.setPosition(newMeshLoc[0],-0.05f-newMeshLoc[1],newMeshLoc[2]);
         //entity1.setLatLonAlt(info.getLatlonalt());
         //meshList.add(entity1);
 
-//        Model wireFrame = new Model();
-//        wireFrame.loadVertices(info.getVerts());
-//        wireFrame.setDrawingModeLines();
-//        ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,0.5f});
-//        Entity entity2 = new Entity();
-//        entity2.setDrawable(black);
-//        entity2.setPosition(newMeshLoc[0],-0.04f-newMeshLoc[1],newMeshLoc[2]);
-        //entity2.setLatLonAlt(info.getLatlonalt());
-        //meshList.add(entity2);
-
         scene.add(entity1);
-        //scene.add(entity2);
+        if(!shadedMesh){
+            scene.add(entity2);
+        }
     }
     public float[] getbbLoc(float[] bbloc,float[] meshloc){
         float bbx = bbloc[1];
