@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.bvapp.arcmenulibrary.ArcMenu;
 import com.bvapp.arcmenulibrary.widget.FloatingActionButton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,6 +54,7 @@ import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.Helpers.CSVReader;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.LoginService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
@@ -235,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         Double currlong =  Double.parseDouble(longy);
         ElevationObstructionService.getObstruction(obstructNetworkCallback,currlat,currlong,roll,pitch);
 
+
     }
 
     public String parseNatCall(String JSONString) {
@@ -267,6 +270,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             Toast.makeText(getApplicationContext(), parseNatCall(result),Toast.LENGTH_LONG).show();
         }
     };
+
+
 
     public void toggleReservoir(View v) {
         int i = 1;

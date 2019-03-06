@@ -36,6 +36,7 @@ import edu.calstatela.jplone.watertrekapp.DataService.SnotelService;
 import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 import edu.calstatela.jplone.watertrekapp.R;
 
 
@@ -321,7 +322,8 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         if (dateVerifier() != false) {
             pb.setVisibility(View.VISIBLE);
             Log.d("discharge", "Calling rivernetworkcallback");
-            RiverService.getDischarge(riverNetworkCallback, firstDate, lastDate, RiverID);
+//            RiverService.getDischarge(riverNetworkCallback, firstDate, lastDate, RiverID);
+            RiverService.getDischargeJSON(riverNetworkCallbackJSON, firstDate, lastDate, RiverID);
             pb.setVisibility(View.VISIBLE);
         }
     }
@@ -458,15 +460,24 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
         dataPoints = bubbleSortDates(dataPoints);
         for (int i = 0; i < dataPoints.length; i++) {
-            Log.i("dp", simpleDateFormat.format(new Date((long) dataPoints[i].getX())) + "," + dataPoints[i].getY());
+            try {
+
+                Log.i("dp", simpleDateFormat.format(new Date((long) dataPoints[i].getX())) + "," + dataPoints[i].getY());
+            } catch (Exception e) {
+                Log.i("Dp", "null");
+            }
         }
-        Log.i("dp", "Min/Max X:" + dataPoints[0].getX() + "," + dataPoints[dataPoints.length - 1].getX());
+//        Log.i("dp", "Min/Max X:" + dataPoints[0].getX() + "," + dataPoints[dataPoints.length - 1].getX());
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(context));
         graph.getGridLabelRenderer().setNumHorizontalLabels(10);
         graph.getGridLabelRenderer().setNumVerticalLabels(10);
         //Set Min and Max for x-axis values
-        graph.getViewport().setMinX(dataPoints[0].getX());
-        graph.getViewport().setMaxX(dataPoints[dataPoints.length - 1].getX());
+        try {
+            graph.getViewport().setMinX(dataPoints[0].getX());
+            graph.getViewport().setMaxX(dataPoints[dataPoints.length - 1].getX());
+        } catch (Exception e) {
+            Log.i("Datapoint[0]", "DNE.");
+        }
         graph.getViewport().setXAxisBoundsManual(true);
 
         //Set Min and Max for y-axis values
@@ -481,14 +492,6 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         graph.getGridLabelRenderer().setLabelsSpace(10);
         graph.getGridLabelRenderer().setPadding(100);
         series.resetData(dataPoints);
-    }
-
-    //Method to order dates in ascending order.
-    private DataPoint[] ascendingDates(DataPoint[] dataPoints) {
-        DataPoint[] dp = new DataPoint[dataPoints.length];
-        Arrays.sort(dataPoints);
-
-        return dp;
     }
 
     // METHOD that populates recyclerView
@@ -597,24 +600,83 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 return;
             } else {
-                // clears old list so it doesnt double stack / repeat Data twice
-                dischargeList.clear();
-                for (String dsl : disList) {
-//                    Log.d("discharge", dsl);
-                    dischargeList.add(dsl);
-                }
-            }
-            pb.setVisibility(View.INVISIBLE);
-            ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
-            lv.setAdapter(adapter);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                graph.setTitle("Discharge units (m^3/s) vs. Time (MM-DD-YY)");
 
+                dischargeList.clear();
+                yValue.clear();
+                xValue.clear();
+                for (int i = 0; i < disList.size(); i++) {
+                    String dsl = disList.get(i);
+                    dischargeList.add(dsl);
+                    if (i > 0) {
+                        String[] date = dsl.split("T");
+                        // values are seperated by tabs not spaces.
+                        String[] value = dsl.split("\t");
+                        xValue.add(date[0]);
+                        yValue.add(value[1]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
+                }
+
+                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
         }
     };
 
     //*****************************RIVER/STREAMGAUGES RecylerView Ends ******************************************
+    //*****************RIVER/STREAMGAUGES  RECYCLER VIEW JSON STARTS *************************************************
 
+    NetworkTaskAuth.NetworkCallback riverNetworkCallbackJSON = new NetworkTaskAuth.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            Log.d("discharge", "before parsingdischarges");
+            List<String> disList = RiverService.parseDischargesJSON(result);
+            Log.d("discharge", "after parsingdischarges");
+            if (disList.size() < 1) {
+                Log.d("discharge", "No information has been recorded thus far");
+                pb.setVisibility(View.INVISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
+
+                return;
+            } else {
+                graph.setTitle("Discharge units (m^3/s) vs. Time (MM-DD-YY)");
+
+                dischargeList.clear();
+                yValue.clear();
+                xValue.clear();
+                for (int i = 0; i < disList.size(); i++) {
+                    String dsl = disList.get(i);
+                    dischargeList.add(dsl);
+                    if (i > 0) {
+                        String[] date = dsl.split("  ");
+                        // values are seperated by tabs not spaces.
+                        String[] value = date[1].split("  ");
+                        xValue.add(date[0]);
+                        yValue.add(value[0]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
+                }
+
+                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
+        }
+    };
+
+
+    //*****************RIVER/STREAMGAUGES  RECYCLER VIEW JSON ENDS *************************************************
     //*********************Soil Moisture RecyclerView Starts**********************
 
     NetworkTask.NetworkCallback soilNetworkCallback = new NetworkTask.NetworkCallback() {
@@ -630,19 +692,34 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else {
+
+                graph.setTitle("sm_5 units (mm^3) vs. Time (MM-DD-YY)");
+
                 // clears old list so it doesnt double stack / repeat Data twice
                 soilDepthList.clear();
-                for (String swe : soilyList) {
-//                    Log.d("discharge", dsl);
+                yValue.clear();
+                xValue.clear();
+                for (int i = 0; i < soilyList.size(); i++) {
+                    String swe = soilyList.get(i);
                     soilDepthList.add(swe);
-
+                    if (i > 0) {
+                        String[] date = swe.split("T");
+                        // values are seperated by tabs not spaces.
+                        String[] value = swe.split("\t");
+                        xValue.add(date[0]);
+                        yValue.add(value[1]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
                 }
+
+                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
-            pb.setVisibility(View.INVISIBLE);
-            ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
-            lv.setAdapter(adapter);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
     };
 
@@ -664,18 +741,32 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else {
+                graph.setTitle("swe (mm) vs. Time (MM-DD-YY)");
+
                 // clears old list so it doesnt double stack / repeat Data twice
                 sweSnotelList.clear();
-                for (String snot : snowyList) {
+                yValue.clear();
+                xValue.clear();
+                for (int i = 0; i < snowyList.size(); i++) {
+                    String snot = snowyList.get(i);
                     sweSnotelList.add(snot);
-
+                    if (i > 0) {
+                        String[] date = snot.split("T");
+                        // values are seperated by tabs not spaces.
+                        String[] value = snot.split("\t");
+                        xValue.add(date[0]);
+                        yValue.add(value[1]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
                 }
+                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
-            pb.setVisibility(View.INVISIBLE);
-            ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
-            lv.setAdapter(adapter);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
     };
 
