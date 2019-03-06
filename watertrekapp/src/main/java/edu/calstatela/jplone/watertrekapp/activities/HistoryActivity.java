@@ -639,19 +639,34 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else {
+
+                graph.setTitle("sm_5 units (mm^3) vs. Time (MM-DD-YY)");
+
                 // clears old list so it doesnt double stack / repeat Data twice
                 soilDepthList.clear();
-                for (String swe : soilyList) {
-//                    Log.d("discharge", dsl);
+                yValue.clear();
+                xValue.clear();
+                for (int i = 0; i < soilyList.size(); i++) {
+                    String swe = soilyList.get(i);
                     soilDepthList.add(swe);
-
+                    if (i > 0) {
+                        String[] date = swe.split("T");
+                        // values are seperated by tabs not spaces.
+                        String[] value = swe.split("\t");
+                        xValue.add(date[0]);
+                        yValue.add(value[1]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
                 }
+
+                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
-            pb.setVisibility(View.INVISIBLE);
-            ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
-            lv.setAdapter(adapter);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
     };
 
@@ -673,18 +688,32 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
                 return;
             } else {
+                graph.setTitle("swe (mm) vs. Time (MM-DD-YY)");
+
                 // clears old list so it doesnt double stack / repeat Data twice
                 sweSnotelList.clear();
-                for (String snot : snowyList) {
+                yValue.clear();
+                xValue.clear();
+                for (int i = 0; i < snowyList.size(); i++) {
+                    String snot = snowyList.get(i);
                     sweSnotelList.add(snot);
-
+                    if (i > 0) {
+                        String[] date = snot.split("T");
+                        // values are seperated by tabs not spaces.
+                        String[] value = snot.split("\t");
+                        xValue.add(date[0]);
+                        yValue.add(value[1]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
                 }
+                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
-            pb.setVisibility(View.INVISIBLE);
-            ListView lv = findViewById(R.id.historyList);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
-            lv.setAdapter(adapter);
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
     };
 
