@@ -2,6 +2,10 @@ package edu.calstatela.jplone.watertrekapp.DataService;
 
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +31,22 @@ public class RiverService {
         // returns  history of depth below ground surface  DBGS
 
         String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/"+masterSiteId+"/discharge/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
+//        String url2 = ("https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/"+masterSiteId+"/discharge/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00?format=json&units=metric");
+
         Log.d("riverurl" , url);
         NetworkTask nt = new NetworkTask(callback, River.DISCHARGE_UNITS);
+        nt.execute(url);
+    }
+    public static void getDischargeJSON(NetworkTaskAuth.NetworkCallback callback, String startDate , String endDate, String masterSiteId){
+//        int masterSiteId = 91133; example ID
+        String masterId = masterSiteId;
+//        yr/month/day
+        // returns  history of depth below ground surface  DBGS
+
+        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/"+masterSiteId+"/discharge/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00?format=json&units=metric");
+
+        Log.d("riverurl" , url);
+        NetworkTaskAuth nt = new NetworkTaskAuth(callback, River.DISCHARGE_UNITS);
         nt.execute(url);
     }
     //RIVER CALL NOT STREAMGAUGE
@@ -69,10 +87,11 @@ public class RiverService {
     }
 
     //retrieves various river information such as  WKT
-    public static void SpecificRiverInfo(NetworkTaskAuth.NetworkCallback callback ,  String riverID ){
+    public static void SpecificRiverInfo(NetworkTaskAuth.NetworkCallback callback ){
         // example stream id to test 09424050
         // correlating riverid 21437781
         //gets all  River ID in JSON  FORMAT
+        String riverID = "21437781";
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/comid/" +riverID+"?format=json";
 //        String url  = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/containing/streamgauge/site_no/" + StreamID+ "?format=json";
 //        NetworkTask nt = new NetworkTask(callback, SoilMoisture.TYPE_ID);
@@ -202,6 +221,40 @@ public class RiverService {
 
         Log.d("discharge", "END");
         return unitdisList;
+
+    }
+
+    public static List parseDischargesJSON(String line){
+        List<String> unitdisList = new ArrayList();
+        try {
+            JSONObject results = new JSONObject(line);
+            JSONArray accessriver = results.getJSONArray("data");
+            int length = accessriver .length();
+            for (int x =0 ; x<length; x++)
+            {
+                //keys are   {"datetime":"1981-09-01T00:00:00","discharge":4.870498,"units":"m^3/s"}
+
+                JSONObject jsondate = accessriver.getJSONObject(x);
+                JSONObject jsonDis = accessriver.getJSONObject(x);
+                JSONObject jsonUnits = accessriver.getJSONObject(x);
+                String dateTime = "004-034556";
+                String[] parts = jsondate.getString("datetime").split("T");
+                String rivDateOnly = parts[0];
+                String rivTimeOnly = parts[1];
+                String disAmount = jsonDis.getString("discharge");
+                String rivUnits = jsonUnits.getString("units");
+                String  rivOutput = rivDateOnly+"  "+disAmount+rivUnits;
+//                Log.d("JSONRIVER", jsondate.getString("datetime"));
+//                Log.d("JSONRIVER", jsonDis.getString("discharge"));
+//                Log.d("JSONRIVER", jsonUnits.getString("units"));
+                Log.d("JSONRIVER", rivOutput);
+                unitdisList.add(rivOutput);
+                           }
+            return unitdisList;
+        }catch (JSONException e) {
+            Log.d("JSONRIVER", "error  happened");
+            return unitdisList;
+        }
 
     }
 

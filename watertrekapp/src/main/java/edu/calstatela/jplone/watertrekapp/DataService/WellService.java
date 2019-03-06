@@ -8,6 +8,7 @@ import java.util.List;
 
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 
 /**
  * Created by nes on 3/1/18.
@@ -54,6 +55,8 @@ public class WellService {
 
     };
 
+
+
     public static void getMax(NetworkTask.NetworkCallback callback, int masterSiteId){
         //int masterSiteId= 60924;
         String url= ("https://watertrek.jpl.nasa.gov/hydrology/rest/well/master_site_id/"+ masterSiteId+"/dbgs/max");
@@ -90,6 +93,16 @@ public class WellService {
         NetworkTask nt = new NetworkTask(callback, Well.DBGS_UNTIS);
         nt.execute(url);
     }
+    ///usgswellca/site_no/{site_id}/fbgs/from/{start}/through/{end}
+    public static void getfbgsJSON(NetworkTaskAuth.NetworkCallback callback, String startDate , String endDate, String masterSiteId){
+
+        //Test value
+        //int masterSiteId = 60924;
+        String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/usgswellca/site_no/"+masterSiteId+ "/fbgs/from/"+startDate+"/through/"+endDate+ "?format=json";
+        NetworkTaskAuth nt = new NetworkTaskAuth(callback, Well.DBGS_ID);
+        nt.execute(url);
+
+    };
 
 
     //Parse Functions\\

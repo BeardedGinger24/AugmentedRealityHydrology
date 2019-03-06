@@ -36,6 +36,7 @@ import edu.calstatela.jplone.watertrekapp.DataService.SnotelService;
 import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 import edu.calstatela.jplone.watertrekapp.R;
 
 
@@ -321,7 +322,8 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         if (dateVerifier() != false) {
             pb.setVisibility(View.VISIBLE);
             Log.d("discharge", "Calling rivernetworkcallback");
-            RiverService.getDischarge(riverNetworkCallback, firstDate, lastDate, RiverID);
+//            RiverService.getDischarge(riverNetworkCallback, firstDate, lastDate, RiverID);
+            RiverService.getDischargeJSON(riverNetworkCallbackJSON, firstDate, lastDate, RiverID);
             pb.setVisibility(View.VISIBLE);
         }
     }
@@ -623,7 +625,53 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     };
 
     //*****************************RIVER/STREAMGAUGES RecylerView Ends ******************************************
+    //*****************RIVER/STREAMGAUGES  RECYCLER VIEW JSON STARTS *************************************************
 
+    NetworkTaskAuth.NetworkCallback riverNetworkCallbackJSON = new NetworkTaskAuth.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            Log.d("discharge", "before parsingdischarges");
+            List<String> disList = RiverService.parseDischargesJSON(result);
+            Log.d("discharge", "after parsingdischarges");
+            if (disList.size() < 1) {
+                Log.d("discharge", "No information has been recorded thus far");
+                pb.setVisibility(View.INVISIBLE);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                Toast.makeText(getApplicationContext(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
+
+                return;
+            } else {
+//                graph.setTitle("Discharge units (m^3/s) vs. Time (MM-DD-YY)");
+
+                dischargeList.clear();
+//                yValue.clear();
+//                xValue.clear();
+                for (int i = 0; i < disList.size(); i++) {
+                    String dsl = disList.get(i);
+                    dischargeList.add(dsl);
+//                    if (i > 0) {
+//                        String[] date = dsl.split("T");
+//                        // values are seperated by tabs not spaces.
+//                        String[] value = dsl.split("\t");
+//                        xValue.add(date[0]);
+//                        yValue.add(value[1]);
+//                        Log.i("x-value", xValue.get(i - 1));
+//                        Log.i("y-value", yValue.get(i - 1));
+//                    }
+                }
+
+//                populateGraph(xValue, yValue);
+                pb.setVisibility(View.INVISIBLE);
+                ListView lv = findViewById(R.id.historyList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+                lv.setAdapter(adapter);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
+        }
+    };
+
+
+    //*****************RIVER/STREAMGAUGES  RECYCLER VIEW JSON ENDS *************************************************
     //*********************Soil Moisture RecyclerView Starts**********************
 
     NetworkTask.NetworkCallback soilNetworkCallback = new NetworkTask.NetworkCallback() {
