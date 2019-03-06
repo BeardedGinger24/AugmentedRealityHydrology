@@ -460,7 +460,12 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
         dataPoints = bubbleSortDates(dataPoints);
         for (int i = 0; i < dataPoints.length; i++) {
-            Log.i("dp", simpleDateFormat.format(new Date((long) dataPoints[i].getX())) + "," + dataPoints[i].getY());
+            try {
+
+                Log.i("dp", simpleDateFormat.format(new Date((long) dataPoints[i].getX())) + "," + dataPoints[i].getY());
+            } catch (Exception e) {
+                Log.i("Dp", "null");
+            }
         }
 //        Log.i("dp", "Min/Max X:" + dataPoints[0].getX() + "," + dataPoints[dataPoints.length - 1].getX());
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(context));
@@ -641,26 +646,26 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
 
                 return;
             } else {
-//                graph.setTitle("Discharge units (m^3/s) vs. Time (MM-DD-YY)");
+                graph.setTitle("Discharge units (m^3/s) vs. Time (MM-DD-YY)");
 
                 dischargeList.clear();
-//                yValue.clear();
-//                xValue.clear();
+                yValue.clear();
+                xValue.clear();
                 for (int i = 0; i < disList.size(); i++) {
                     String dsl = disList.get(i);
                     dischargeList.add(dsl);
-//                    if (i > 0) {
-//                        String[] date = dsl.split("T");
-//                        // values are seperated by tabs not spaces.
-//                        String[] value = dsl.split("\t");
-//                        xValue.add(date[0]);
-//                        yValue.add(value[1]);
-//                        Log.i("x-value", xValue.get(i - 1));
-//                        Log.i("y-value", yValue.get(i - 1));
-//                    }
+                    if (i > 0) {
+                        String[] date = dsl.split("  ");
+                        // values are seperated by tabs not spaces.
+                        String[] value = date[1].split("  ");
+                        xValue.add(date[0]);
+                        yValue.add(value[0]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
                 }
 
-//                populateGraph(xValue, yValue);
+                populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);

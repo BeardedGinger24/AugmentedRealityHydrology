@@ -243,7 +243,8 @@ public class RiverService {
                 String rivTimeOnly = parts[1];
                 String disAmount = jsonDis.getString("discharge");
                 String rivUnits = jsonUnits.getString("units");
-                String  rivOutput = rivDateOnly+"  "+disAmount+rivUnits;
+                // Two spaces are used inbetween units
+                String  rivOutput = rivDateOnly+"  "+disAmount+"  "+rivUnits;
 //                Log.d("JSONRIVER", jsondate.getString("datetime"));
 //                Log.d("JSONRIVER", jsonDis.getString("discharge"));
 //                Log.d("JSONRIVER", jsonUnits.getString("units"));
