@@ -3,34 +3,6 @@ package edu.calstatela.jplone.arframework.graphics3d.helper;
 import edu.calstatela.jplone.arframework.util.VectorMath;
 
 public class MeshHelper {
-    public static float[] pyramid(){
-        return new float[]{
-                -0.5f, 0, -0.5f,
-                0.5f, 0, -0.5f,
-                0.5f, 0, 0.5f,
-
-                0.5f, 0, 0.5f,
-                -0.5f, 0, 0.5f,
-                -0.5f, 0, -0.5f,
-
-                0.5f, 0, 0.5f,
-                0, 1f, 0,
-                -0.5f, 0, 0.5f,
-
-                0.5f, 0, -0.5f,
-                0, 1f, 0,
-                0.5f, 0, 0.5f,
-
-                -0.5f, 0, -0.5f,
-                0, 1f, 0,
-                0.5f, 0, -0.5f,
-
-                -0.5f, 0, 0.5f,
-                0, 1f, 0,
-                -0.5f, 0, -0.5f,
-        };
-    }
-
     // Name: calculateNormals(...)
     // Precondition: vertexList != null
     // Precondition: (vertexList.length % 9) == 0
@@ -71,7 +43,33 @@ public class MeshHelper {
 
         return normals;
     }
+    public static float[] pyramid(){
+        return new float[]{
+                -0.5f, 0, -0.5f,
+                0.5f, 0, -0.5f,
+                0.5f, 0, 0.5f,
 
+                0.5f, 0, 0.5f,
+                -0.5f, 0, 0.5f,
+                -0.5f, 0, -0.5f,
+
+                0.5f, 0, 0.5f,
+                0, 1f, 0,
+                -0.5f, 0, 0.5f,
+
+                0.5f, 0, -0.5f,
+                0, 1f, 0,
+                0.5f, 0, 0.5f,
+
+                -0.5f, 0, -0.5f,
+                0, 1f, 0,
+                0.5f, 0, -0.5f,
+
+                -0.5f, 0, 0.5f,
+                0, 1f, 0,
+                -0.5f, 0, -0.5f,
+        };
+    }
     public static float[] triangle(){
         float[] vertices = {
                 -0.5f, -0.8f, 0f,

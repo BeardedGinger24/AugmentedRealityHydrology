@@ -122,9 +122,6 @@ public class SensorARView extends ARView {
             currentLocation[2] = (float)location.getAltitude();
 
             Log.d(TAG, "Location: " + VectorMath.vecToString(currentLocation));
-            Log.d(TAG, "Location: " +Float.toString(currentLocation[0]));
-            Log.d(TAG, "Location " + Float.toString(currentLocation[1]));
-            Log.d(TAG, "Location " + Float.toString(currentLocation[2]));
 
         }
     };

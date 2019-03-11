@@ -14,12 +14,14 @@ import edu.calstatela.jplone.arframework.util.VectorMath;
 
 public class Model implements Drawable, Colorable{
 
-    private FloatBuffer mBuffer = null;
-    private float[] mColor = {0.0f, 0.8f, 0.0f, 0.1f};
+    private FloatBuffer mBuffer1 = null;
+    private FloatBuffer mBuffer2 = null;
+    private float[] mColor1 = {0.0f, 0.8f, 0.0f, 0.1f};
+    private float[] mColor2 = {0f,0f,0f,0f};
 
     private static int mShaderProgram = -1;
-    private int mNumVertices = 0;
-    private int mDrawingMode = -1;
+    private int mNumVertices1 = 0;
+    private int mDrawingMode1 = -1;
 
     private static final int FLOATS_PER_VERTEX = 3;
 
@@ -50,36 +52,42 @@ public class Model implements Drawable, Colorable{
 
 
     public void setDrawingModeLineStrip(){
-        mDrawingMode = GLES20.GL_LINE_STRIP;
+        mDrawingMode1 = GLES20.GL_LINE_STRIP;
     }
 
     public void setDrawingModeTriangles(){
-        mDrawingMode = GLES20.GL_TRIANGLES;
+        mDrawingMode1 = GLES20.GL_TRIANGLES;
     }
 
-    public void  setDrawingModeTriangleStrip() { mDrawingMode = GLES20.GL_TRIANGLE_STRIP;}
+    public void  setDrawingModeTriangleStrip() { mDrawingMode1 = GLES20.GL_TRIANGLE_STRIP;}
 
-    public void setDrawingModeLines(){ mDrawingMode = GLES20.GL_LINES;}
+    public void setDrawingModeLines(){ mDrawingMode1 = GLES20.GL_LINES;}
 
 
     @Override
     public void draw(float[] MVPMatrix){
-        if(mBuffer == null)
+        if(mBuffer1 == null)
             return;
 
         GLES20.glUseProgram(mShaderProgram);
-
         int positionAttrib = GLES20.glGetAttribLocation(mShaderProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionAttrib);
-        GLES20.glVertexAttribPointer(positionAttrib, 3, GLES20.GL_FLOAT, false, 3 * 4, mBuffer);
 
+        GLES20.glVertexAttribPointer(positionAttrib, 3, GLES20.GL_FLOAT, false, 3 * 4, mBuffer1);
         int matrixUniform = GLES20.glGetUniformLocation(mShaderProgram, "uMVPMatrix");
         GLES20.glUniformMatrix4fv(matrixUniform, 1, false, MVPMatrix, 0);
 
+        //Draws filled mesh
         int colorUniform = GLES20.glGetUniformLocation(mShaderProgram, "vColor");
-        GLES20.glUniform4fv(colorUniform, 1, mColor, 0);
+        GLES20.glUniform4fv(colorUniform, 1, mColor1, 0);
+        GLES20.glDrawArrays(mDrawingMode1, 0, mNumVertices1);
 
-        GLES20.glDrawArrays(mDrawingMode, 0, mNumVertices);
+        //Draws wireframe
+        GLES20.glVertexAttribPointer(positionAttrib, 3, GLES20.GL_FLOAT, false, 3 * 4, mBuffer2);
+        int colorUniform2 = GLES20.glGetUniformLocation(mShaderProgram, "vColor");
+        GLES20.glUniform4fv(colorUniform2, 1, mColor2, 0);
+        GLES20.glDrawArrays(GLES20.GL_LINES, 0, mNumVertices1);
+
 
         GLES20.glDisableVertexAttribArray(positionAttrib);
     }
@@ -95,18 +103,17 @@ public class Model implements Drawable, Colorable{
     @Override
     public void setColor(float[] rgbaVec){
         if(rgbaVec != null && rgbaVec.length == 4)
-            VectorMath.copyVec(rgbaVec, mColor, 4);
+            VectorMath.copyVec(rgbaVec, mColor1, 4);
     }
 
     @Override
     public void getColor(float[] color) {
-        VectorMath.copyVec(mColor, color, 4);
+        VectorMath.copyVec(mColor1, color, 4);
     }
 
     public void loadVertices(float[] vertexList){
-        mNumVertices = vertexList.length / FLOATS_PER_VERTEX;
-        mBuffer = BufferHelper.arrayToBuffer(vertexList);
+        mNumVertices1 = vertexList.length / FLOATS_PER_VERTEX;
+        mBuffer1 = BufferHelper.arrayToBuffer(vertexList);
+        mBuffer2 = BufferHelper.arrayToBuffer(vertexList);
     }
-
-
 }

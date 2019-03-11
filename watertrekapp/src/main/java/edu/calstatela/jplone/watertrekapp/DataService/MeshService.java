@@ -24,7 +24,7 @@ import mil.nga.tiff.TiffReader;
 public class MeshService {
 
     public static class getDEM extends AsyncTask<String, Void, MeshData>{
-        String TAG = "MeshDemo";
+        String TAG = "mesh-service";
         MeshData meshData = null;
         int baseDownSample = 2;
         int width = 0;
@@ -49,7 +49,6 @@ public class MeshService {
 
                 final String user = strings[4];
                 final String pw = strings[5];
-                Log.d(TAG,user+","+pw);
                 String base = strings[3];
                 URL url = new URL(getURL(lat,lon,base));
                 Log.d(TAG,url+"");
@@ -80,8 +79,7 @@ public class MeshService {
             height = rasters.getHeight();
             double maxHeight = 0;
             double heightVal;
-            double maxY=3000;
-            double left = 255,right=255,top=255,bottom = 255;
+
             int index = 0;
             Vector3[] vector3s = new Vector3[(width/baseDownSample)*(height/baseDownSample)];
             for(int y = 0; y<(height/baseDownSample); y++) {

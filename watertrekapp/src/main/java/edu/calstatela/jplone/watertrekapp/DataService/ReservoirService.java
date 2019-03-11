@@ -13,10 +13,11 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 
 
 public class ReservoirService {
-
+static String TAG = "reservoir-service";
     //Invoke Reservoir REST call. Gets all Reservoir from resources.
     public static void getAllReservoir(NetworkTask.NetworkCallback callback){
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no";
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback, Reservoir.TYPE_ID);
         nt.execute(url);
     }
@@ -28,6 +29,7 @@ public class ReservoirService {
         // String url ="https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no/"+ site_no+"/storage";
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no";        //Log.d("URL", ""+url);
         // NetworkTask nt = new NetworkTask(callback, Reservoir.ADDTL_ID);
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback, Reservoir.TYPE_ID);
 
         //Log.d("getSTRG", "In REST CALL");
@@ -41,7 +43,7 @@ public class ReservoirService {
         // returns  history of depth below ground surface  DBGS
 
         String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no/"+masterSiteId+"/storage/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
-        Log.d("reservs" , url);
+        Log.d(TAG , url);
         NetworkTask nt = new NetworkTask(callback, Reservoir.STORAGE_UNITS);
         nt.execute(url);
     }

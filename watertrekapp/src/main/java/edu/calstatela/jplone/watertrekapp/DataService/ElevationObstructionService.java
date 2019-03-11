@@ -8,7 +8,7 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 public class ElevationObstructionService {
 //    Find obstruction given location, bearing, and pitch:
 
-
+    static String TAG = "obs-service";
 
 
 
@@ -16,8 +16,8 @@ public class ElevationObstructionService {
 //        http://54.237.80.7:8080/LOSService/ws/los/earthLOS/firstViewObs?origin=[-118.20177021,34.12922031]&bearing=29&pitch=5
 
         //Double Check int Value
-        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/firstViewObs?origin=["+longitude+","+latitude+"]&bearing="+bearing+"&pitch="+pitch+"&height=1.997");
-        Log.d("oop", url);
+        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/firstViewObs?origin=["+longitude+","+latitude+"]&bearing="+bearing+"&pitch="+pitch+"&height=0.01");
+        Log.d(TAG, url);
 //        URL theurl = new URL(SERVER_URL);
 //        BufferedReader reader = new BufferedReader(new InputStreamReader(theurl));
 //        String jsonString = reader.readLine();
@@ -48,7 +48,7 @@ public class ElevationObstructionService {
 //        http://54.237.80.7:8080/LOSService/ws/los/earthLOS/calculateAngle?path=[[-118.20177021,34.12922031],[-118.20775683,34.24009466]]
         //Double Check int Value
 
-        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/calculateAngle?path=[["+startlongitude+","+startlatitude+",["+endlongitude+","+endlatitude+"]]");
+        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/calculateAngle?path=[["+startlongitude+","+startlatitude+"],["+endlongitude+","+endlatitude+"]]");
 //        new NetworkTaskJSON().execute(url);
 //        NetworkTask nt = new NetworkTask(callback,0);
 //        nt.execute(url);

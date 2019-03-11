@@ -15,12 +15,13 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 
 public class RiverService {
-
+static String TAG = "river-service";
 
     //    String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/containing/-119.2%2078.3/flowstat";
     public static void getAllRiverIDS(NetworkTask.NetworkCallback callback){
         //gets all  Rivers JSON FORMAT
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/comid?format=json";
+        Log.d(TAG,url);
 //        NetworkTask nt = new NetworkTask(callback, SoilMoisture.TYPE_ID);
 //        nt.execute(url);
     }
@@ -33,7 +34,7 @@ public class RiverService {
         String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/"+masterSiteId+"/discharge/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
 //        String url2 = ("https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/"+masterSiteId+"/discharge/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00?format=json&units=metric");
 
-        Log.d("riverurl" , url);
+        Log.d(TAG , url);
         NetworkTask nt = new NetworkTask(callback, River.DISCHARGE_UNITS);
         nt.execute(url);
     }
@@ -45,7 +46,7 @@ public class RiverService {
 
         String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/streamgauge/site_no/"+masterSiteId+"/discharge/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00?format=json&units=metric");
 
-        Log.d("riverurl" , url);
+        Log.d(TAG , url);
         NetworkTaskAuth nt = new NetworkTaskAuth(callback, River.DISCHARGE_UNITS);
         nt.execute(url);
     }
@@ -53,6 +54,7 @@ public class RiverService {
     public static void avgFlux(NetworkTask.NetworkCallback callback, String startDate , String endDate, String comid){
         String comID = comid;
         String url =  " https://watertrek.jpl.nasa.gov/hydrology/rest/river/comid/1176550/avg/2016-01-28T00:00:00/2019-01-28T00:00:00";
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback,River.AVGFLUX);
         nt.execute(url);
     }
@@ -71,7 +73,7 @@ public class RiverService {
                 +gpsPoints[17] +"%20"+gpsPoints[16] +",%20"+
                 +gpsPoints[1] +"%20"+gpsPoints[0] +"%29%29";//Close Parenthesis
 
-
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback, River.TYPE_ID);
         nt.execute(url);
     }
@@ -82,6 +84,7 @@ public class RiverService {
         StreamID = "09424050";
         //gets all  River ID in JSON  FORMAT
         String url  = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/containing/streamgauge/site_no/" + StreamID+ "?format=json";
+        Log.d(TAG,url);
         NetworkTaskAuth nt = new NetworkTaskAuth(callback, River.TYPE_ID);
         nt.execute(url);
     }
@@ -96,6 +99,7 @@ public class RiverService {
 //        String url  = "https://watertrek.jpl.nasa.gov/hydrology/rest/river/containing/streamgauge/site_no/" + StreamID+ "?format=json";
 //        NetworkTask nt = new NetworkTask(callback, SoilMoisture.TYPE_ID);
 //        nt.execute(url);
+        Log.d(TAG,url);
         NetworkTaskAuth nt = new NetworkTaskAuth(callback, River.TYPE_ID);
         nt.execute(url);
     }

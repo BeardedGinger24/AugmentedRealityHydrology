@@ -11,11 +11,12 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSONAuthentica
 
 
 public class SnotelService {
-
+static String TAG = "snotel-service";
     public static void getAllSnotel(NetworkTask.NetworkCallback callback ){
         // xml format
         // Retrieve a list of station ids with the latitude and longitude
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/snotel/station_id";
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback, Snotel.TYPE_ID);
         nt.execute(url);
     }
@@ -71,6 +72,7 @@ public class SnotelService {
         // JSON FORMAT
         // units = us or units =metric   sets to us or metric system
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/snotel/station_id/"+uniqueID+"/swe/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00?format=text&units=metric";
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback, Snotel.ADDTL_ID);
         nt.execute(url);
 //        NetworkTaskJSONAuthentication ntjsauth = new NetworkTaskJSONAuthentication();
@@ -81,6 +83,7 @@ public class SnotelService {
 
     public static void getAdditionalInfo(NetworkTask.NetworkCallback callback, int stationId){
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/snotel/station_id/"+stationId+"/swe";
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback, Snotel.ADDTL_ID);
         nt.execute(url);
 

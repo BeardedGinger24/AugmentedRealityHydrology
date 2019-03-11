@@ -45,7 +45,6 @@ public class GeoMath {
         xyz[1] = -0.02f;
         xyz[2] = (latLonAlt[0] - referenceLLA[0]); //* metersPerDegreeLat;
 
-        Log.d(TAG,"Reference: "+referenceLLA[0]+","+referenceLLA[1]+","+referenceLLA[2]);
         return xyz;
     }
 

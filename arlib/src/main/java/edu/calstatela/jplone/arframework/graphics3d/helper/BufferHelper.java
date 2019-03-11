@@ -14,7 +14,12 @@ public class BufferHelper {
         buffer.put(array).position(0);
         return buffer;
     }
-
+    public static FloatBuffer arrayToBuffer(float[] array1,float[] array2){
+        FloatBuffer buffer = ByteBuffer.allocateDirect(array2.length*array1.length * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        buffer.put(array1).position(0);
+        buffer.put(array2).position(1);
+        return buffer;
+    }
     public static ShortBuffer arrayToBuffer(short[] array){
         ShortBuffer buffer = ByteBuffer.allocateDirect(array.length * BYTES_PER_SHORT).order(ByteOrder.nativeOrder()).asShortBuffer();
         buffer.put(array).position(0);

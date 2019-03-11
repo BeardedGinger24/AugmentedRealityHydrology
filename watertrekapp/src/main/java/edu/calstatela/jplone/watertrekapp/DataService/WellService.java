@@ -16,7 +16,7 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 
 public class WellService {
 
-
+static String TAG = "data-service";
     //  Get calls  \\
 
     public static void getWell(NetworkTask.NetworkCallback callback, double latitude, double longitude){
@@ -99,6 +99,7 @@ public class WellService {
         //Test value
         //int masterSiteId = 60924;
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/usgswellca/site_no/"+masterSiteId+ "/fbgs/from/"+startDate+"/through/"+endDate+ "?format=json";
+        Log.d(TAG,url);
         NetworkTaskAuth nt = new NetworkTaskAuth(callback, Well.DBGS_ID);
         nt.execute(url);
 

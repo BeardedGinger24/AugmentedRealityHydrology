@@ -13,12 +13,13 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 
 
 public class SoilMoistureService {
-
+static String TAG = "soil-service";
 
     //Get
     public static void getSoilMoistures(NetworkTask.NetworkCallback callback){
         //404 error. Sponsor changed url? Check after 3/5/18
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno";
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback, SoilMoisture.TYPE_ID);
         nt.execute(url);
     }
@@ -27,6 +28,7 @@ public class SoilMoistureService {
     public static void getSoilMoistureInfo(NetworkTask.NetworkCallback callback, int id , int depth){
         //404 error. Sponsor changed url? Check after 3/5/18
         String url = "https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno/"+id +"/at/"+depth+"cm";
+        Log.d(TAG,url);
         NetworkTask nt = new NetworkTask(callback, SoilMoisture.ADDTL_ID);
         nt.execute(url);
     }
@@ -36,7 +38,7 @@ public class SoilMoistureService {
 //        yr/month/day
         // returns  history of depth below ground surface  DBGS
         String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/soilmoisture/wbanno/"+masterSiteId+"/at/5cm/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00");
-        Log.d("soily" , url);
+        Log.d(TAG , url);
         NetworkTask nt = new NetworkTask(callback, SoilMoisture.SOIL_MOIST_DEPTH);
         nt.execute(url);
     }

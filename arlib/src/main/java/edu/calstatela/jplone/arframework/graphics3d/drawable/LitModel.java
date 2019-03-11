@@ -16,8 +16,8 @@ public class LitModel implements Drawable, Colorable{
 
     private FloatBuffer mVertexBuffer = null;
     private FloatBuffer mNormalBuffer = null;
-    private float[] mColor = {0.0f, 0.8f, 0.0f, 1f};
-    private float[] mLightVec = {0.0f, 0.0f, -1.0f, 0.0f};
+    private float[] mColor = {0.0f, 0.0f, 0.0f, 1f};
+    private float[] mLightVec = {0.0f, -1.0f, 0.0f, 0.0f};
 
     private int mShaderProgram;
     private int mNumVertices = 0;
@@ -68,6 +68,10 @@ public class LitModel implements Drawable, Colorable{
     public void setDrawingModeTriangles(){
         mDrawingMode = GLES20.GL_TRIANGLES;
     }
+
+    public void  setDrawingModeTriangleStrip() { mDrawingMode = GLES20.GL_TRIANGLE_STRIP;}
+
+    public void setDrawingModeLines(){ mDrawingMode = GLES20.GL_LINES;}
 
 
 
