@@ -59,7 +59,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     private ImageView iv;
     private ProgressBar pb;
     private Button startBtn;
-
+    private Button meshTest;
     Context context;
     MeshData meshData;
     float[] currentLocation;
@@ -74,6 +74,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     private static final int REQUEST_STORAGE = 2;
 
     Thread t1;
+    Thread t2;
     static boolean isLoggedIn;
 
     @Override
@@ -90,7 +91,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         iv = findViewById(R.id.ara_ico);
         pb = findViewById(R.id.indeterminateBar);
         startBtn = findViewById(R.id.startBtn);
-
+        //meshTest = findViewById(R.id.meshtest);
         boolean havePermissions = true;
         if(!Permissions.havePermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION)){
             Permissions.requestPermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION,REQUEST_LOCATION);
@@ -144,6 +145,38 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
                 // start the service  to get location update
 
                 Intent i = new Intent(context, MainActivity.class);
+                String baseurl = getString(R.string.demurl);
+
+                String[] cred = NetworkTask.getCredentials();
+                Log.d(TAG,cred[0]+","+cred[1]);
+                asyncTask= new MeshService.getDEM();
+                asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl,cred[0],cred[1]);
+                try {
+                    meshData = asyncTask.get();
+                    meshData.setFilenameTerrain("terrain");
+                    meshData.setFilenameTerrainVecs("meshvecs");
+                    meshData.setDir(context.getFilesDir()+"");
+
+                    helper = new DatabaseHelper(context);
+                    db = helper.getWritableDatabase();
+                    helper.addMeshData(db,meshData);
+
+
+                    //Write meshdata to file
+                    genVerts(meshData);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                //start the main activity
+                startActivity(i);
+            }
+        });
+        t2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Intent i = new Intent(context, MeshTest.class);
                 String baseurl = getString(R.string.demurl);
 
                 String[] cred = NetworkTask.getCredentials();
@@ -272,5 +305,10 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    public void meshTest(View v){
+        currentLocation = sensorARView.getLocation();
+        t2.start();
     }
 }

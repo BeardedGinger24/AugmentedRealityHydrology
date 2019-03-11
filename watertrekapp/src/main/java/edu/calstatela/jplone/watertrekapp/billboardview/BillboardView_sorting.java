@@ -155,7 +155,8 @@ public class BillboardView_sorting extends SensorARView{
     public void GLResize(int width, int height) {
         super.GLResize(width, height);
         mCamera.setViewport(0, 0, width, height);
-        mCamera.setPerspective(60, (float)width / height, 0.01f, 1000000f);
+        mCamera.setPerspective(60, (float)width / height, 0.0f, 100f);
+
     }
 
     @Override
@@ -346,7 +347,7 @@ public class BillboardView_sorting extends SensorARView{
         LitModel litMesh = new LitModel();
         Model transMesh = new Model();
         ColorHolder color;
-        Entity entity2 = new Entity();
+
         if(shadedMesh) {
             litMesh.loadVertices(info.getVerts());
             litMesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
@@ -357,27 +358,14 @@ public class BillboardView_sorting extends SensorARView{
             transMesh.loadVertices(info.getVerts());
             transMesh.setDrawingModeTriangles();
             color = new ColorHolder(transMesh,new float[]{0.3f, 0.4f, 0.3f, 0.1f});
-
-            Model wireFrame = new Model();
-            wireFrame.loadVertices(info.getVerts());
-            wireFrame.setDrawingModeLines();
-            ColorHolder black = new ColorHolder(wireFrame, new float[]{0,0,0,0.5f});
-            entity2.setDrawable(black);
-            entity2.setPosition(newMeshLoc[0],-0.05f-newMeshLoc[1],newMeshLoc[2]);
-            //entity2.setLatLonAlt(info.getLatlonalt());
-            //meshList.add(entity2);
         }
 
         Entity entity1 = new Entity();
         entity1.setDrawable(color);
-        entity1.setPosition(newMeshLoc[0],-0.05f-newMeshLoc[1],newMeshLoc[2]);
+        entity1.setPosition(newMeshLoc[0],-0.5f-newMeshLoc[1],newMeshLoc[2]);
         //entity1.setLatLonAlt(info.getLatlonalt());
         //meshList.add(entity1);
-
         scene.add(entity1);
-        if(!shadedMesh){
-            scene.add(entity2);
-        }
     }
     public float[] getbbLoc(float[] bbloc,float[] meshloc){
         float bbx = bbloc[1];
@@ -389,7 +377,6 @@ public class BillboardView_sorting extends SensorARView{
         double x = (Math.abs(mx-0.20)-Math.abs(bbx))/0.002;
         double y = Math.abs((Math.abs(my+0.20)-Math.abs(bby))/0.002);
         int index = (int) (x+(y*200));
-        Log.d(TAG,index+"");
 
         if(index<vecs.length && index>=0) {
             Vector3 vec = vecs[index];
