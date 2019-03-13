@@ -1,6 +1,7 @@
 package edu.calstatela.jplone.arframework.graphics3d.drawable;
 
 
+import android.graphics.Bitmap;
 import android.opengl.GLES20;
 
 
@@ -8,6 +9,7 @@ import java.nio.FloatBuffer;
 
 import edu.calstatela.jplone.arframework.graphics3d.helper.BufferHelper;
 import edu.calstatela.jplone.arframework.graphics3d.helper.ShaderHelper;
+import edu.calstatela.jplone.arframework.graphics3d.helper.TextureHelper;
 import edu.calstatela.jplone.arframework.graphics3d.matrix.MatrixMath;
 import edu.calstatela.jplone.arframework.util.VectorMath;
 
