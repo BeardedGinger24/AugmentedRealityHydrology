@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     Button logout_button;
     Switch cameraToggle;
     Switch meshToggle;
+    Switch textureToggle;
 
     private ArrayList<Well> wellList = new ArrayList<>();
     private ArrayList<Reservoir> reservoirList = new ArrayList<>();
@@ -165,6 +166,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         arview.changeBGC(cameraToggle.isChecked());
 
         meshToggle = (Switch) findViewById(R.id.meshToggle);
+        textureToggle = (Switch) findViewById(R.id.textureToggle);
+
         mainLayout = (FrameLayout)findViewById(R.id.ar_view_container);
         mainLayout.addView(arview);
 
@@ -396,6 +399,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     }
     public void toggleMesh(View view){
         arview.setShadedMesh(meshToggle.isChecked());
+    }
+    public void toggleTexture(View view){
+        arview.setTexturedMesh(meshToggle.isChecked());
     }
     public void logout(View v){
         SplashActivity.toggleLogin(false);

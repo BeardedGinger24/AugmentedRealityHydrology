@@ -209,7 +209,22 @@
                     android:layout_height="wrap_content"
                     android:onClick="toggleMesh"/>
             </LinearLayout>
-
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Textured Mesh"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"/>
+                <Switch
+                    android:id="@+id/textureToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="toggleTexture"/>
+            </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
