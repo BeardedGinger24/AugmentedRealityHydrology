@@ -4,30 +4,19 @@ package edu.calstatela.jplone.watertrekapp.billboardview;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import edu.calstatela.jplone.arframework.graphics3d.camera.Camera3D;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
-import edu.calstatela.jplone.arframework.graphics3d.drawable.BillboardInfo;
-import edu.calstatela.jplone.arframework.graphics3d.drawable.BillboardMaker;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.ColorHolder;
-import edu.calstatela.jplone.arframework.graphics3d.drawable.LitModel;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Model;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
-import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
-import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
-import edu.calstatela.jplone.arframework.util.VectorMath;
-import edu.calstatela.jplone.watertrekapp.Data.MeshData;
+import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
-import edu.calstatela.jplone.watertrekapp.Data.Vector3;
-import edu.calstatela.jplone.watertrekapp.R;
 
 
 public class ARViewTest extends SensorARView{

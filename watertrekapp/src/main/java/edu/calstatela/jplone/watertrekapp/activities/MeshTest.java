@@ -14,15 +14,13 @@ import android.widget.NumberPicker;
 
 import java.io.File;
 
-import edu.calstatela.jplone.arframework.ui.ARView;
 import edu.calstatela.jplone.arframework.util.Orientation;
+import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
-import edu.calstatela.jplone.watertrekapp.Data.Vector3;
 import edu.calstatela.jplone.watertrekapp.Helpers.CSVReader;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.billboardview.ARViewTest;
-import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 public class MeshTest extends AppCompatActivity implements SensorEventListener{
     String TAG = "mesh-test";

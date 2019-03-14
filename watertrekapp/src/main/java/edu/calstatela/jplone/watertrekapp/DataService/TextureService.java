@@ -32,9 +32,9 @@ public class TextureService{
             try {
                 lat = Float.parseFloat(strings[0]);
                 lon = Float.parseFloat(strings[1]);
-                String base = strings[3];
-                final String user = strings[4];
-                final String pw = strings[5];
+                String base = strings[2];
+                final String user = strings[3];
+                final String pw = strings[4];
 
                 URL url = new URL(getURL(lat, lon, base));
                 Log.d(TAG, url + "");
@@ -53,8 +53,10 @@ public class TextureService{
                 is = urlConnection.getInputStream();
                 BufferedInputStream bis = new BufferedInputStream(is);
                 bmp = BitmapFactory.decodeStream(bis);
-            } catch (Exception e) {
 
+                Log.d(TAG,bmp.getByteCount()+"");
+            } catch (Exception e) {
+                Log.e(TAG,e+"");
             }
             return bmp;
         }
@@ -65,9 +67,9 @@ public class TextureService{
         }
 
         public String getURL(float lat, float lon, String base) {
-            String size = "size=400%2C400&";
+            String size = "size=200%2C200&";
             String format = "format=BMP&";
-            String transparent = "transparent=true";
+            String transparent = "transparent=true&";
             String f = "f=image";
 
             double minX = lon - bboxSpaceX;
