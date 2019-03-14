@@ -55,6 +55,7 @@ public class Billboard implements Drawable {
             return;
 
         mGLTextureId = TextureHelper.glTextureFromBitmap(bitmap);
+        Log.d(TAG,mGLTextureId+"");
     }
 
     public void delete(){
@@ -72,12 +73,12 @@ public class Billboard implements Drawable {
 
         int positionAttribute = GLES20.glGetAttribLocation(sGLProgramId, "a_Position");
         GLES20.glEnableVertexAttribArray(positionAttribute);
-        int colorAttribute = GLES20.glGetAttribLocation(sGLProgramId, "a_Color");
-        GLES20.glEnableVertexAttribArray(colorAttribute);
+        //int colorAttribute = GLES20.glGetAttribLocation(sGLProgramId, "a_Color");
+        //GLES20.glEnableVertexAttribArray(colorAttribute);
         int texCoordAttribute = GLES20.glGetAttribLocation(sGLProgramId, "a_TexCoord");
         GLES20.glEnableVertexAttribArray(texCoordAttribute);
-
         int textureUniform = GLES20.glGetUniformLocation(sGLProgramId, "u_Texture");
+
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mGLTextureId);
         GLES20.glUniform1i(textureUniform, 0);
@@ -93,7 +94,7 @@ public class Billboard implements Drawable {
             vertexCount = circleVertexFloats.length / FLOATS_PER_VERTEX;
         }
         GLES20.glVertexAttribPointer(positionAttribute, FLOATS_PER_VERTEX, GLES20.GL_FLOAT, false, FLOATS_PER_VERTEX * BYTES_PER_FLOAT, sVertexBuffer);
-        GLES20.glVertexAttribPointer(colorAttribute, FLOATS_PER_COLOR, GLES20.GL_FLOAT, false, FLOATS_PER_COLOR * BYTES_PER_FLOAT, sColorBuffer);
+        //GLES20.glVertexAttribPointer(colorAttribute, FLOATS_PER_COLOR, GLES20.GL_FLOAT, false, FLOATS_PER_COLOR * BYTES_PER_FLOAT, sColorBuffer);
         GLES20.glVertexAttribPointer(texCoordAttribute, FLOATS_PER_TEX_COORD, GLES20.GL_FLOAT, false, FLOATS_PER_TEX_COORD * BYTES_PER_FLOAT, sTexCoordBuffer);
         if(shape=="rectangle"){
             GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
@@ -103,7 +104,7 @@ public class Billboard implements Drawable {
 
 
         GLES20.glDisableVertexAttribArray(positionAttribute);
-        GLES20.glDisableVertexAttribArray(colorAttribute);
+        //GLES20.glDisableVertexAttribArray(colorAttribute);
         GLES20.glDisableVertexAttribArray(texCoordAttribute);
     }
 
@@ -123,7 +124,7 @@ public class Billboard implements Drawable {
     private static void fillBuffersRect(){
         shape="rectangle";
         sVertexBuffer = BufferHelper.arrayToBuffer(rectangleVertexFloats);
-        sColorBuffer = BufferHelper.arrayToBuffer(rectangleColorFloats);
+        //sColorBuffer = BufferHelper.arrayToBuffer(rectangleColorFloats);
         sTexCoordBuffer = BufferHelper.arrayToBuffer(rectangleTexCoordFloats);
     }
     private static void fillBufferCircle(){
@@ -220,18 +221,18 @@ public class Billboard implements Drawable {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private static final String vertexShaderSource =
         "attribute vec4 a_Position;                 \n" +
-        "attribute vec4 a_Color;                    \n" +
+        //"attribute vec4 a_Color;                    \n" +
         "attribute vec2 a_TexCoord;                 \n" +
         "                                           \n" +
         "uniform mat4 u_Matrix;                     \n" +
         "                                           \n" +
         "varying vec2 v_TexCoord;                   \n" +
-        "varying vec4 v_Color;                      \n" +
+        //"varying vec4 v_Color;                      \n" +
         "                                           \n" +
         "void main()                                \n" +
         "{                                          \n" +
         "    gl_Position = u_Matrix * a_Position;   \n" +
-        "    v_Color = a_Color;                     \n" +
+        //"    v_Color = a_Color;                     \n" +
         "    v_TexCoord = a_TexCoord;               \n" +
         "}                                          \n";
 
@@ -241,7 +242,7 @@ public class Billboard implements Drawable {
         "precision mediump float;                                               \n" +
         "                                                                       \n" +
         "uniform sampler2D u_Texture;                                           \n" +
-        "varying vec4 v_Color;                                                  \n" +
+        //"varying vec4 v_Color;                                                  \n" +
         "varying vec2 v_TexCoord;                                               \n" +
         "                                                                       \n" +
         "void main()                                                            \n" +

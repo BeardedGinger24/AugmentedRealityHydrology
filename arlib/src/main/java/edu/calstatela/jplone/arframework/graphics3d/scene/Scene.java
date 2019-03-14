@@ -1,5 +1,7 @@
 package edu.calstatela.jplone.arframework.graphics3d.scene;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Drawable;
@@ -16,8 +18,10 @@ public class Scene {
     }
 
     public void draw(float[] projectionMatrix, float[] viewMatrix){
+        int count = 0;
         for(Entity e : mEntityList){
             e.draw(projectionMatrix, viewMatrix, e.getModelMatrix());
+            count++;
         }
     }
 
