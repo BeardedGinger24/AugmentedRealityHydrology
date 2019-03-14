@@ -3,12 +3,13 @@ package edu.calstatela.jplone.watertrekapp.billboardview;
 
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,15 +25,17 @@ import edu.calstatela.jplone.arframework.graphics3d.drawable.TextureModel;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
 import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
 import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
+import edu.calstatela.jplone.arframework.graphics3d.helper.TextureHelper;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
+import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.arframework.util.VectorMath;
-import edu.calstatela.jplone.watertrekapp.Data.MeshData;
 import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
-import edu.calstatela.jplone.watertrekapp.Data.Vector3;
-import edu.calstatela.jplone.watertrekapp.DataService.TextureService;
+import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
+import edu.calstatela.jplone.watertrekapp.DataService.MeshService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
 
 
@@ -42,12 +45,18 @@ public class BillboardView_sorting extends SensorARView{
 
     private Context mContext;
     private int deviceOrientation = 0;
+    private float userElevation = 0;
+    float[] latlonalt;
 
     private ArrayList<BillboardInfo> mAddList = new ArrayList<>();
     private ArrayList<Integer> mRemoveList = new ArrayList<>();
     private ArrayList<BillboardInfo> mCurrentInfos = new ArrayList<>();
     private ArrayList<Entity> mEntityList;
 
+
+    boolean transMade;
+    boolean litMade;
+    boolean textMade;
     //Scene scene;
     ArrayList<MeshInfo> meshAddList = new ArrayList<>();
     ArrayList<MeshInfo> meshCurrentInfos = new ArrayList<>();
@@ -63,7 +72,6 @@ public class BillboardView_sorting extends SensorARView{
     boolean shadedMesh;
     boolean textureMesh;
 
-    AsyncTask asyncTask;
     public BillboardView_sorting(Context context){
         super(context);
         mContext = context;
@@ -83,6 +91,8 @@ public class BillboardView_sorting extends SensorARView{
     public void addMesh(MeshInfo info){
         vecs = info.getVecs();
         meshLoc = info.getLatlonalt();
+        latlonalt = getLocation();
+        ElevationObstructionService.getObstruction(obstructNetworkCallback,latlonalt[0],latlonalt[1],"0","-90");
         synchronized(meshAddList) {
             meshAddList.add(info);
         }
@@ -168,14 +178,17 @@ public class BillboardView_sorting extends SensorARView{
         drawMesh = false;
         shadedMesh = false;
         textureMesh = false;
-        asyncTask = new TextureService.getTexture();
+
+        transMade = false;
+        litMade = false;
+        textMade = false;
     }
 
     @Override
     public void GLResize(int width, int height) {
         super.GLResize(width, height);
         mCamera.setViewport(0, 0, width, height);
-        mCamera.setPerspective(60, (float)width / height, 0.0f, 100f);
+        mCamera.setPerspective(60, (float)width / height, 0.0f, 10000f);
 
     }
 
@@ -350,13 +363,13 @@ public class BillboardView_sorting extends SensorARView{
     //
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private void newEntity(BillboardInfo info){
-        Billboard bb = new BillboardMaker().make(mContext, info.iconResource);
-        ScaleObject sbb = new ScaleObject(bb, 0.4f, 0.2f, 0.2f);
+        Billboard bb = new BillboardMaker().make(mContext,info.iconResource);
+        ScaleObject sbb = new ScaleObject(bb, 0.8f, 0.4f, 0.4f);
         Entity e = new Entity();
         e.setDrawable(sbb);
         //e.setLatLonAlt(new float[]{info.lat,info.lon});
         float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},meshLoc);
-        e.setPosition(bbLoc[0],-0.03f-bbLoc[1],bbLoc[2]);
+        e.setPosition(bbLoc[0],-bbLoc[1]+0.1f,bbLoc[2]);
         e.yaw(45);
         Log.d(TAG,"BBXYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
         mEntityList.add(e);
@@ -364,45 +377,52 @@ public class BillboardView_sorting extends SensorARView{
     }
     private void newMesh(MeshInfo info){
         float[] newMeshLoc = getbbLoc(meshLoc,getLocation());
-        LitModel litMesh = new LitModel();
-        Model transMesh = new Model();
-        TextureModel texturedMesh = new TextureModel();
         ColorHolder color;
         Entity entity = new Entity();
         if(textureMesh){
-            texturedMesh.loadVertices(info.getVerts());
-            Bitmap bmp = null;
-            String[] cred = NetworkTask.getCredentials();
-            float[] currentLocation = info.getLatlonalt();
-            String baseurl = getResources().getString(R.string.textureUrl);
-            asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl,cred[0],cred[1]);
-            try{
-                bmp = (Bitmap) asyncTask.get();
-            }catch (Exception e){
-                Log.e(TAG,e+"");
+            TextureModel texturedMesh = new TextureModel();
+            if(!textMade) {
+                texturedMesh.loadVertices(info.getVerts());
+                texturedMesh.loadTextureVerctices(info.getTextCoordinates());
+                texturedMesh.setBitmap(TextureHelper.bitmapFromResource(mContext,R.drawable.export));
+                color = new ColorHolder(texturedMesh,new float[]{0.3f, 0.4f, 0.3f, 0.1f});
+                textMade = true;
             }
-            texturedMesh.setBitmap(bmp);
             entity.setDrawable(texturedMesh);
-            bmp.recycle();
-        }
-        if(shadedMesh) {
-            litMesh.loadVertices(info.getVerts());
-            litMesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
-            litMesh.setDrawingModeTriangles();
-
+        }else if(shadedMesh){
+            LitModel litMesh = new LitModel();
+            if(!litMade) {
+                litMesh.loadVertices(info.getVerts());
+                litMesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
+                litMesh.setDrawingModeTriangles();
+            }
             color = new ColorHolder(litMesh, new float[]{0.3f, 0.4f, 0.3f, 0.1f});
             entity.setDrawable(color);
         }else{
-            transMesh.loadVertices(info.getVerts());
-            transMesh.setDrawingModeTriangles();
+            Model transMesh = new Model();
+            if(!transMade) {
+                transMesh.loadVertices(info.getVerts());
+                transMesh.setDrawingModeTriangles();
+            }
             color = new ColorHolder(transMesh,new float[]{0.3f, 0.4f, 0.3f, 0.1f});
             entity.setDrawable(color);
         }
-        entity.setPosition(newMeshLoc[0],-0.5f-newMeshLoc[1],newMeshLoc[2]);
-        //entity1.setLatLonAlt(info.getLatlonalt());
-        //meshList.add(entity1);
+        entity.setPosition(0f,-(userElevation+10)/100,0f);
+        entity.yaw(356);
         scene.add(entity);
     }
+    NetworkTaskJSON.NetworkCallback obstructNetworkCallback = new NetworkTaskJSON.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            try {
+                JSONObject results = new JSONObject(result);
+                JSONObject temp = results.getJSONObject("obstruction_point");
+                userElevation = Float.parseFloat(temp.get("elevation").toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    };
     public float[] getbbLoc(float[] bbloc,float[] meshloc){
         float bbx = bbloc[1];
         float bby = bbloc[0];
@@ -427,10 +447,5 @@ public class BillboardView_sorting extends SensorARView{
         }else {
             color = new float[]{0, 0, 0, 0};
         }
-    }
-
-    public void clearScreen(){
-        mEntityList.clear();
-        scene.clearList();
     }
 }
