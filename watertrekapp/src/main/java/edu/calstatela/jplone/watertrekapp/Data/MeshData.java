@@ -1,4 +1,7 @@
 package edu.calstatela.jplone.watertrekapp.Data;
+
+import edu.calstatela.jplone.arframework.util.Vector3;
+
 public class MeshData {
     public Vector3[] Vectors;
     public int[] Triangles;

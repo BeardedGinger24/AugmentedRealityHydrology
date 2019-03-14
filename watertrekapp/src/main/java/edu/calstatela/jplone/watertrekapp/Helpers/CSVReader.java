@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import edu.calstatela.jplone.watertrekapp.Data.Vector3;
+import edu.calstatela.jplone.arframework.util.Vector3;
 
 public class CSVReader {
     static String TAG = "waka-CSV";

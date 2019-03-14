@@ -12,10 +12,8 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
-import edu.calstatela.jplone.watertrekapp.Data.Vector3;
-import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
-import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import mil.nga.tiff.FileDirectory;
 import mil.nga.tiff.Rasters;
 import mil.nga.tiff.TIFFImage;
@@ -93,25 +91,28 @@ public class MeshService {
                     index++;
                 }
             }
+            double midpoint_x = ((width/baseDownSample)/2)-1;
+            double midpoint_z = ((height/baseDownSample)/2)-1;
+            double elevationScale = 100;
+            double lonScale = 22236/elevationScale;
+            double latScale = 18217/elevationScale;
             for(Vector3 v : vector3s){
-                double midpoint_x = ((width/baseDownSample)/2)-1;
-                double midpoint_z = ((height/baseDownSample)/2)-1;
 
                 double temp_x = v.getX();
                 if(v.getX()<=midpoint_x){
-                    v.setX(-((midpoint_x-temp_x)/midpoint_x)*100);
+                    v.setX(-((midpoint_x-temp_x)/midpoint_x)*lonScale);
                 }else{
-                    v.setX(((temp_x-midpoint_x)/midpoint_x)*100);
+                    v.setX(((temp_x-midpoint_x)/midpoint_x)*lonScale);
                 }
 
                 double temp = v.getY();
-                v.setY(temp/100);
-                Log.d(TAG,maxHeight+"");
+                v.setY((temp/elevationScale));
+                //Log.d(TAG,maxHeight+"");
                 double temp_z = v.getZ();
                 if(v.getZ()<=midpoint_z){
-                    v.setZ(-((midpoint_z-temp_z)/midpoint_z)*100);
+                    v.setZ(-((midpoint_z-temp_z)/midpoint_z)*latScale);
                 }else{
-                    v.setZ(((temp_z-midpoint_z)/midpoint_z)*100);
+                    v.setZ(((temp_z-midpoint_z)/midpoint_z)*latScale);
                 }
             }
             int[] triangles = generateTriangles(width/baseDownSample,height/baseDownSample);
@@ -160,7 +161,7 @@ public class MeshService {
 //                    result[startIndex + 3] = rb;
 //                    result[startIndex + 4] = lb;
 //                    result[startIndex + 5] = lt;
-                    startIndex += 6;
+                    startIndex =startIndex+ 6;
 
                 }
             }

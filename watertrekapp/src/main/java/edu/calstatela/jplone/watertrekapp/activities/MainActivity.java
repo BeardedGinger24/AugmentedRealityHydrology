@@ -3,6 +3,7 @@ package edu.calstatela.jplone.watertrekapp.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -35,6 +36,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.calstatela.jplone.arframework.graphics3d.helper.TextureHelper;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.arframework.util.Permissions;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
@@ -43,13 +46,14 @@ import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.Data.Snotel;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
-import edu.calstatela.jplone.watertrekapp.Data.Vector3;
+import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
 import edu.calstatela.jplone.watertrekapp.DataService.SnotelService;
 import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
+import edu.calstatela.jplone.watertrekapp.DataService.TextureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
 import edu.calstatela.jplone.watertrekapp.Helpers.CSVReader;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.LoginService;
@@ -384,13 +388,24 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     public MeshInfo getMeshInfo(String type){
         File file1 = new File(getFilesDir(),"meshvecs");
         Vector3[] vecs= CSVReader.readVecFile(file1);
-
         File file2 = new File(getFilesDir(),"terrain");
         float[] verts = CSVReader.readCSV(file2);
-
         float[] loc = meshdataLoc(file2.getName());
-
-        return new MeshInfo(vecs,type,loc,verts);
+        meshInfo = new MeshInfo(vecs,type,loc,verts);
+        Bitmap bmp = null;
+        String[] cred = NetworkTask.getCredentials();
+        String baseurl = getResources().getString(R.string.textureUrl);
+        TextureService.getTexture textureTask = new TextureService.getTexture();
+        textureTask.execute(String.valueOf(loc[0]),String.valueOf(loc[1]),baseurl,cred[0],cred[1]);
+        Log.d(TAG,"Executed Texture Service");
+        try{
+            bmp = textureTask.get();
+        }catch (Exception e){
+            Log.e(TAG,e+"");
+        }
+        meshInfo.setTextCoordinates(TextureHelper.generateTextureCoordinates(bmp,vecs));
+        meshInfo.setBmp(bmp);
+        return meshInfo;
     }
     public float[] meshdataLoc(String filename){
         helper = new DatabaseHelper(this);
@@ -398,10 +413,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         return helper.getMeshData(db,filename);
     }
     public void toggleMesh(View view){
+        if(textureToggle.isChecked()){
+            textureToggle.setChecked(false);
+        }
         arview.setShadedMesh(meshToggle.isChecked());
     }
     public void toggleTexture(View view){
-        arview.setTexturedMesh(meshToggle.isChecked());
+        if(meshToggle.isChecked()){
+            meshToggle.setChecked(false);
+        }
+        arview.setTexturedMesh(textureToggle.isChecked());
     }
     public void logout(View v){
         SplashActivity.toggleLogin(false);

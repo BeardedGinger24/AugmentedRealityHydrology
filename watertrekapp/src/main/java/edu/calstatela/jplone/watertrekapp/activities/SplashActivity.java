@@ -1,54 +1,35 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.hardware.Sensor;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.ActivityCompat;
-import android.Manifest;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.security.Permission;
 import java.util.concurrent.ExecutionException;
 
-import edu.calstatela.jplone.arframework.sensor.ARGps;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
-import edu.calstatela.jplone.arframework.util.GeoMath;
-import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.arframework.util.Permissions;
-import edu.calstatela.jplone.arframework.util.VectorMath;
+import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
-import edu.calstatela.jplone.watertrekapp.Data.Vector3;
 import edu.calstatela.jplone.watertrekapp.DataService.MeshService;
-import edu.calstatela.jplone.watertrekapp.NetworkUtils.LoginService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
-import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 public class SplashActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private static final int CREDENTIALS_ACTIVITY_REQUEST_CODE = 5;
@@ -149,7 +130,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
 
                 String[] cred = NetworkTask.getCredentials();
                 Log.d(TAG,cred[0]+","+cred[1]);
-                asyncTask= new MeshService.getDEM();
+                asyncTask = new MeshService.getDEM();
                 asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl,cred[0],cred[1]);
                 try {
                     meshData = asyncTask.get();
@@ -255,7 +236,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
             Log.e("Exception", "File write failed: " + e.toString());
         }
     }
-    public void writeToFile(Vector3[] input,String filename){
+    public void writeToFile(Vector3[] input, String filename){
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i<input.length; i++){
