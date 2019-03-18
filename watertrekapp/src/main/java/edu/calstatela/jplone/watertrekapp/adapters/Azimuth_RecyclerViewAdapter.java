@@ -22,7 +22,7 @@ public class Azimuth_RecyclerViewAdapter extends RecyclerView.Adapter<Azimuth_Re
     public Azimuth_RecyclerViewAdapter(ArrayList<String> ticks, Context context) {
         this.verticalTicks = verticalTicks;
 
-        for(int i=0; i< 12; i++){
+        for(int i=0; i< 400; i++){
             this.verticalTicks.add("");
         }
 
@@ -30,7 +30,7 @@ public class Azimuth_RecyclerViewAdapter extends RecyclerView.Adapter<Azimuth_Re
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
+    public ViewHolder onCreateViewHolder( ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.vertical_ticks, parent, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;

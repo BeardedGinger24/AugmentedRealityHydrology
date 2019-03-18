@@ -1,6 +1,7 @@
 package edu.calstatela.jplone.watertrekapp.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,7 +23,7 @@ public class Pitch_RecyclerViewAdapter extends RecyclerView.Adapter<Pitch_Recycl
     public Pitch_RecyclerViewAdapter(ArrayList<String> horizontalTicks, Context context) {
         this.horizontalTicks = horizontalTicks;
 
-        for(int i=0; i< 12; i++){
+        for(int i=0; i< 365; i++){
             this.horizontalTicks.add("");
         }
 
@@ -30,7 +31,7 @@ public class Pitch_RecyclerViewAdapter extends RecyclerView.Adapter<Pitch_Recycl
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int i) {
+    public ViewHolder onCreateViewHolder( ViewGroup parent, int i) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.horizontal_ticks, parent, false);
         ViewHolder holder = new ViewHolder(view);
         return holder;

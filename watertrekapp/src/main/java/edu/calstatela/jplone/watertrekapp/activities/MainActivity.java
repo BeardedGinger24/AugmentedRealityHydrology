@@ -60,6 +60,8 @@ import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import edu.calstatela.jplone.watertrekapp.adapters.Azimuth_RecyclerViewAdapter;
 import edu.calstatela.jplone.watertrekapp.adapters.Pitch_RecyclerViewAdapter;
+import edu.calstatela.jplone.watertrekapp.adapters.SmoothScrollHorizontal;
+import edu.calstatela.jplone.watertrekapp.adapters.SmoothScrollVertical;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 public class MainActivity extends AppCompatActivity implements BillboardView_sorting.TouchCallback, SensorEventListener{
@@ -920,7 +922,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             direction = "NW";
         }
 
-
         //Pitch
         ((TextView)findViewById(R.id.bearingL)).setText(Pitch);
 //        Log.d("JSON" , )
@@ -928,6 +929,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         // FIX LATER EFFECTS NATALIES CALL
 //        ((TextView)findViewById(R.id.bearingR)).setText(direction + " " + Roll);
         ((TextView)findViewById(R.id.bearingR)).setText(Roll);
+
+        scrollRecyclerView((int) -pitch_angle, (int) azimuth_angle );
 
     }
 
@@ -945,21 +948,44 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         RecyclerView PitchView = findViewById(R.id.Pitch_RecyclerView);
 
 
+        //Custom scroll layout manager
+        SmoothScrollVertical smoothScollLayoutM = new SmoothScrollVertical(this);
+        SmoothScrollHorizontal smoothScrollH = new SmoothScrollHorizontal(this, LinearLayoutManager.HORIZONTAL, false);
 
+
+        //Azimuth RecyclerView Setup
 
         Azimuth_RecyclerViewAdapter AzimuthSensorAdapter = new Azimuth_RecyclerViewAdapter(verticalTicks, this);
-
-        //Initialize for Azimuth
         AzimuthView.setAdapter(AzimuthSensorAdapter);
         AzimuthView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        AzimuthView.setLayoutManager(smoothScrollH);
 
 
+        //Pitch RecyclerView Setup
 
         Pitch_RecyclerViewAdapter pitchSensorAdapter = new Pitch_RecyclerViewAdapter(horizontalTicks, this);
-
-        //Initialize for Pitch
         PitchView.setAdapter(pitchSensorAdapter);
-        PitchView.setLayoutManager(new LinearLayoutManager(this));
+        PitchView.setLayoutManager(smoothScollLayoutM);
+
+    }
+
+    private void scrollRecyclerView(int pitchPos, int rollPos){
+
+        RecyclerView pitchView = findViewById(R.id.Pitch_RecyclerView);
+        RecyclerView azimuthView = findViewById(R.id.Azimuth_RecyclerView);
+
+        pitchView.smoothScrollToPosition(fixPitch(pitchPos));
+        azimuthView.smoothScrollToPosition(rollPos);
+
+    }
+
+
+    private int fixPitch(int pitch){
+
+//        Log.d("before", "pitchBefore: " + pitch);
+        pitch += 269;
+//        Log.d("after", "pitchAfter: " + pitch);
+        return pitch;
 
     }
 
