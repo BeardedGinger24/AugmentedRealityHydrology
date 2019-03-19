@@ -58,7 +58,7 @@ public class WellActivity extends AppCompatActivity{
         Marker marker = new Marker(map);
         marker.setPosition(defaultLocation);
         marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
-        marker.setIcon(this.getDrawable(R.drawable.well_res_ico_clr));
+        marker.setIcon(this.getDrawable(R.drawable.well_res_ico_clr_sm));
         marker.setTitle("Well: LatLon("+lat+","+lon+")");
         map.getOverlays().add(marker);
 

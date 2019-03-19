@@ -403,7 +403,19 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }catch (Exception e){
             Log.e(TAG,e+"");
         }
-        meshInfo.setTextCoordinates(TextureHelper.generateTextureCoordinates(bmp,vecs));
+        meshInfo.setTextCoordinates(TextureHelper.generateTextureCoordinates(bmp));
+        StringBuilder sb = new StringBuilder();
+        int count = 0;
+        for(float i:meshInfo.getTextCoordinates()){
+            if(count<400) {
+                sb.append(i + ",");
+                count++;
+            }else{
+                sb.append("\n");
+                count=0;
+            }
+        }
+        Log.d(TAG,sb.toString());
         meshInfo.setBmp(bmp);
         return meshInfo;
     }
@@ -693,7 +705,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                         int id = Integer.parseInt(riv.getSiteNo());
                         riverList.add(riv);
                         arview.addBillboard(id,
-                                R.drawable.river_bb_icon,
+                                R.drawable.river_res_ico_clr,
                                 "River # "+ riv.getSiteNo(),
                                 "(" + riv.getLat() + "," + riv.getLon() + ")",
                                 Float.parseFloat(riv.getLat()), Float.parseFloat(riv.getLon()),0
