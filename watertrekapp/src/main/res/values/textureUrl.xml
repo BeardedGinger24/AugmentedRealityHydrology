@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="textureUrl">https://services.arcgisonline.com/arcgis/rest/services/ESRI_Imagery_World_2D/MapServer/export?</string>
+    <string name="riverTextUrl">https://watertrek.jpl.nasa.gov/arcgis/rest/services/earth/NHDFlowline_WSWM_Sort_GD/MapServer/export?</string>
 </resources>
