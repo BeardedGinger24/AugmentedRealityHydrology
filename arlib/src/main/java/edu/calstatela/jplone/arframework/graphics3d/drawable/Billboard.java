@@ -232,7 +232,6 @@ public class Billboard implements Drawable {
         "void main()                                \n" +
         "{                                          \n" +
         "    gl_Position = u_Matrix * a_Position;   \n" +
-        //"    v_Color = a_Color;                     \n" +
         "    v_TexCoord = a_TexCoord;               \n" +
         "}                                          \n";
 
@@ -242,7 +241,6 @@ public class Billboard implements Drawable {
         "precision mediump float;                                               \n" +
         "                                                                       \n" +
         "uniform sampler2D u_Texture;                                           \n" +
-        //"varying vec4 v_Color;                                                  \n" +
         "varying vec2 v_TexCoord;                                               \n" +
         "                                                                       \n" +
         "void main()                                                            \n" +

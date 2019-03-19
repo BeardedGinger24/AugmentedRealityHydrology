@@ -52,45 +52,34 @@ public class TextureHelper {
 
         GLES20.glDeleteTextures(1, textureHandle, 0);
     }
-    public static float[] generateTextureCoordinates(Bitmap bitmap, Vector3[] vectors){
-        int hQuadCount = bitmap.getWidth()-1;
-        int vQuadCount = bitmap.getHeight()-1;
-        int hVertCount = bitmap.getWidth();
+    public static float[] generateTextureCoordinates(Bitmap bitmap){
+        int hQuadCount = (bitmap.getWidth()/2)-1;
+        int vQuadCount = (bitmap.getHeight()/2)-1;
 
-        float[] result = new float[(6 * hQuadCount* vQuadCount)*3];
+        Log.d("TextHelp",hQuadCount+"");
+        float[] result = new float[(6 * hQuadCount* vQuadCount)*2];
         int startIndex = 0;
         for (int y = 0; y < vQuadCount; y++) {
             for (int x = 0; x < hQuadCount; x++) {
-                int lt = x + y * hVertCount;
-                int rt = lt + 1;
-                int lb = lt + hVertCount;
-                int rb = lb + 1;
+                result[startIndex] = (x+0.0f)/hQuadCount;
+                result[startIndex+1] = (y+0.0f)/hQuadCount;
 
-                result[startIndex] = x;
-                result[startIndex+1] = (int) vectors[lt].getY();
-                result[startIndex+2] = y;
+                result[startIndex + 2] = (x+0.0f)/hQuadCount;
+                result[startIndex+3] = (y+1.0f)/hQuadCount;
 
-                result[startIndex + 3] = x;
-                result[startIndex+4] = (int) vectors[lb].getY();
-                result[startIndex+5] = y+1;
+                result[startIndex + 4] = (x+1.0f)/hQuadCount;
+                result[startIndex+5] = (y+1.0f)/hQuadCount;
 
-                result[startIndex + 6] = x+1;
-                result[startIndex+7]= (int) vectors[rb].getY();;;
-                result[startIndex+8] = y+1;
+                result[startIndex + 6] = (x+1.0f)/hQuadCount;
+                result[startIndex+7] = (y+1.0f)/hQuadCount;
 
-                result[startIndex + 9] = x+1;
-                result[startIndex+10] = (int) vectors[rb].getY();;;
-                result[startIndex+11] = y+1;
+                result[startIndex + 8] = (x+1.0f)/hQuadCount;
+                result[startIndex+9] = (y+0.0f)/hQuadCount;
 
-                result[startIndex + 12] = x+1;
-                result[startIndex+13] = (int) vectors[rt].getY();;;
-                result[startIndex+14] = y;
+                result[startIndex + 10] = (x+0.0f)/hQuadCount;
+                result[startIndex+11] = (y+0.0f)/hQuadCount;
 
-                result[startIndex + 15] = x;
-                result[startIndex+16] = (int) vectors[lt].getY();;;
-                result[startIndex+17] = y;
-
-                startIndex =startIndex+ 18;
+                startIndex =startIndex+ 12;
 
             }
         }

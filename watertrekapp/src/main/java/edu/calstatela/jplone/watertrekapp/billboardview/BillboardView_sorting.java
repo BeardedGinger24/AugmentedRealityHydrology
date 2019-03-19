@@ -3,6 +3,7 @@ package edu.calstatela.jplone.watertrekapp.billboardview;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -57,8 +58,9 @@ public class BillboardView_sorting extends SensorARView{
     boolean transMade;
     boolean litMade;
     boolean textMade;
-    //Scene scene;
+
     ArrayList<MeshInfo> meshAddList = new ArrayList<>();
+    private ArrayList<Entity>removeMeshList = new ArrayList<>();
     ArrayList<MeshInfo> meshCurrentInfos = new ArrayList<>();
     ArrayList<Entity> meshList;
 
@@ -97,6 +99,11 @@ public class BillboardView_sorting extends SensorARView{
             meshAddList.add(info);
         }
     }
+    public void removeMesh(Entity e){
+        synchronized (removeMeshList){
+            removeMeshList.add(e);
+        }
+    }
     public boolean getMeshStatus(){
         return drawMesh;
     }
@@ -108,6 +115,7 @@ public class BillboardView_sorting extends SensorARView{
         if(!meshCurrentInfos.isEmpty()) {
             shadedMesh = b;
             textureMesh = false;
+            removeMesh(null);
             newMesh(meshCurrentInfos.get(0));
         }
     }
@@ -115,6 +123,7 @@ public class BillboardView_sorting extends SensorARView{
         if(!meshCurrentInfos.isEmpty()) {
             shadedMesh = false;
             textureMesh = b;
+            removeMesh(null);
             newMesh(meshCurrentInfos.get(0));
         }
     }
@@ -166,14 +175,17 @@ public class BillboardView_sorting extends SensorARView{
     public void GLInit() {
         super.GLInit();
         Billboard.init();
+        TextureModel.init();
+        Model.init();
+        LitModel.init();
 
         mCamera = new Camera3D();
         mCamera.setDepthTestEnabled(false);
         color = new float[]{0, 0, 0, 0};
+
         mEntityList = new ArrayList<>();
         meshList = new ArrayList<>();
 
-        scene = new Scene();
         meshLoc = new float[3];
         drawMesh = false;
         shadedMesh = false;
@@ -211,7 +223,6 @@ public class BillboardView_sorting extends SensorARView{
             }
         }
         if(meshList.isEmpty() && !meshCurrentInfos.isEmpty() && this.getLocation() != null){
-            scene.clearList();
             for(MeshInfo info : meshCurrentInfos){
                 newMesh(info);
             }
@@ -250,6 +261,12 @@ public class BillboardView_sorting extends SensorARView{
                 mRemoveList.clear();
             }
         }
+        synchronized (removeMeshList){
+            if(!removeMeshList.isEmpty()) {
+                meshList.clear();
+                removeMeshList.clear();
+            }
+        }
         //
         //Update Entities to be properly rotated and scaled
         if(getLocation() != null) {
@@ -269,19 +286,17 @@ public class BillboardView_sorting extends SensorARView{
 
         // Draw billboards/Meshes
         if(getLocation() != null) {
-            if(drawMesh && scene !=null) {
-//                for(Entity e : meshList){
-//                    e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
-//                }
-                scene.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix());
-            }
-            for(Iterator<Entity> iterator = mEntityList.iterator();iterator.hasNext();){
-                Entity e = iterator.next();
-                e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
-            }
-//            for (Entity e : mEntityList) {
+                for(Entity e : meshList){
+                    e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
+                }
+                //scene.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix());
+//            for(Iterator<Entity> iterator = mEntityList.iterator();iterator.hasNext();){
+//                Entity e = iterator.next();
 //                e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
 //            }
+            for (Entity e : mEntityList) {
+                e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
+            }
         }
 
         //
@@ -380,36 +395,29 @@ public class BillboardView_sorting extends SensorARView{
         ColorHolder color;
         Entity entity = new Entity();
         if(textureMesh){
-            TextureModel texturedMesh = new TextureModel();
-            if(!textMade) {
-                texturedMesh.loadVertices(info.getVerts());
-                texturedMesh.loadTextureVerctices(info.getTextCoordinates());
-                texturedMesh.setBitmap(TextureHelper.bitmapFromResource(mContext,R.drawable.export));
-                color = new ColorHolder(texturedMesh,new float[]{0.3f, 0.4f, 0.3f, 0.1f});
-                textMade = true;
-            }
+            TextureModel texturedMesh = new BillboardMaker().makeM2(info.getBmp());
+            //TextureModel texturedMesh = new BillboardMaker().makeM(mContext,R.drawable.export);
+            texturedMesh.loadVertices(info.getVerts());
+            texturedMesh.loadTextureVerctices(info.getTextCoordinates());
             entity.setDrawable(texturedMesh);
         }else if(shadedMesh){
             LitModel litMesh = new LitModel();
-            if(!litMade) {
-                litMesh.loadVertices(info.getVerts());
-                litMesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
-                litMesh.setDrawingModeTriangles();
-            }
+            litMesh.loadVertices(info.getVerts());
+            litMesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
+            litMesh.setDrawingModeTriangles();
             color = new ColorHolder(litMesh, new float[]{0.3f, 0.4f, 0.3f, 0.1f});
             entity.setDrawable(color);
         }else{
             Model transMesh = new Model();
-            if(!transMade) {
-                transMesh.loadVertices(info.getVerts());
-                transMesh.setDrawingModeTriangles();
-            }
+            transMesh.loadVertices(info.getVerts());
+            transMesh.setDrawingModeTriangles();
             color = new ColorHolder(transMesh,new float[]{0.3f, 0.4f, 0.3f, 0.1f});
             entity.setDrawable(color);
         }
         entity.setPosition(0f,-(userElevation+10)/100,0f);
         entity.yaw(356);
-        scene.add(entity);
+        meshList.add(entity);
+        //scene.add(entity);
     }
     NetworkTaskJSON.NetworkCallback obstructNetworkCallback = new NetworkTaskJSON.NetworkCallback() {
         @Override

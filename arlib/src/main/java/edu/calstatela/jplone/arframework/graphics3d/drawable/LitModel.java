@@ -19,7 +19,7 @@ public class LitModel implements Drawable, Colorable{
     private float[] mColor = {0.0f, 0.0f, 0.0f, 1f};
     private float[] mLightVec = {0.0f, -1.0f, 0.0f, 1.0f};
 
-    private int mShaderProgram;
+    static int mShaderProgram;
     private int mNumVertices = 0;
     private int mDrawingMode = GLES20.GL_TRIANGLES;
 
@@ -56,7 +56,7 @@ public class LitModel implements Drawable, Colorable{
 
 
 
-    public LitModel(){
+    public static void init(){
         mShaderProgram = ShaderHelper.buildShaderProgram(vertexShaderCode, fragmentShaderCode);
     }
 

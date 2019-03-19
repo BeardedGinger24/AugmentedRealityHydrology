@@ -78,6 +78,17 @@ public class BillboardMaker {
         bitmap.recycle();
         return billboard;
     }
-
+    public static TextureModel makeM2(Bitmap bitmap){
+        TextureModel textureModel = new TextureModel();
+        textureModel.setBitmap(bitmap);
+        return textureModel;
+    }
+    public static TextureModel makeM(Context context,int id){
+        TextureModel textureModel = new TextureModel();
+        Bitmap bitmap = TextureHelper.bitmapFromResource(context, id);
+        textureModel.setBitmap(bitmap);
+        bitmap.recycle();
+        return textureModel;
+    }
 
 }

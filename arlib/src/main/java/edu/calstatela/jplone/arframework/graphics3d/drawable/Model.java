@@ -47,11 +47,14 @@ public class Model implements Drawable, Colorable{
 
 
 
-    public Model(){
+//    public Model(){
+//        // find a way to only make this happen once
+//        mShaderProgram = ShaderHelper.buildShaderProgram(vertexShaderCode, fragmentShaderCode);
+//    }
+    public static void init(){
         // find a way to only make this happen once
         mShaderProgram = ShaderHelper.buildShaderProgram(vertexShaderCode, fragmentShaderCode);
     }
-
 
     public void setDrawingModeLineStrip(){
         mDrawingMode1 = GLES20.GL_LINE_STRIP;

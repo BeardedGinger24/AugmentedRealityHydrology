@@ -53,8 +53,6 @@ public class TextureService{
                 is = urlConnection.getInputStream();
                 BufferedInputStream bis = new BufferedInputStream(is);
                 bmp = BitmapFactory.decodeStream(bis);
-
-                Log.d(TAG,bmp.getByteCount()+"");
             } catch (Exception e) {
                 Log.e(TAG,e+"");
             }
@@ -67,7 +65,7 @@ public class TextureService{
         }
 
         public String getURL(float lat, float lon, String base) {
-            String size = "size=200%2C200&";
+            String size = "size=400%2C400&";
             String format = "format=BMP&";
             String transparent = "transparent=true&";
             String f = "f=image";
