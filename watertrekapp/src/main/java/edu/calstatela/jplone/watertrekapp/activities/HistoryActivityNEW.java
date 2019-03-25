@@ -45,7 +45,7 @@ import edu.calstatela.jplone.watertrekapp.R;
 
 
 //FragmentActivity
-public class HistoryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class HistoryActivityNEW extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     Context context;
     TextView starttext;
     TextView endtext;
@@ -104,7 +104,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+        setContentView(R.layout.activity_history_new);
         context = this;
         WELLID = getIntent().getStringExtra("wellID");
         RiverID = getIntent().getStringExtra("RiverID");
@@ -536,7 +536,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dbgsUList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, dbgsUList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -581,7 +581,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, resStorageList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, resStorageList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -628,7 +628,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, resStorageList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, resStorageList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -679,7 +679,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, dischargeList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -725,7 +725,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, dischargeList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -773,7 +773,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, soilDepthList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -820,7 +820,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, sweSnotelList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }

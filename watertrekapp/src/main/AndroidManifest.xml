@@ -77,6 +77,11 @@
             android:label="History"
             android:parentActivityName=".activities.MainActivity"
             android:configChanges="orientation|screenSize"/>
+        <activity
+            android:name=".activities.HistoryActivityNEW"
+            android:label="HistoryNEW"
+            android:parentActivityName=".activities.MainActivity"
+            android:configChanges="orientation|screenSize"/>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBa_gtuzcQV57FHGAXufSRy5kCVnajU1Qs" />
