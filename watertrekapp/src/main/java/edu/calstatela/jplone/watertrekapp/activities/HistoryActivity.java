@@ -402,6 +402,60 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         return minValue;
     }
 
+   private boolean allValuesNull(ArrayList<String> values) {
+        int counter = 0;
+        for (String value : values) {
+            if (value == null) {
+                counter++;
+            }
+        }
+        if (counter == values.size())
+            return true;
+
+        return false;
+   }
+
+   private void mergeSortDates(DataPoint[] dataPoints, int n) {
+       if (n < 2) {
+           return;
+       }
+       int mid = n/2;
+       DataPoint[] l = new DataPoint[mid];
+       DataPoint[] r = new DataPoint[n - mid];
+
+       for (int i = 0; i < mid; i++) {
+           l[i] = dataPoints[i];
+       }
+
+       for (int i = mid; i < n; i++){
+          r[i - mid] = dataPoints[i];
+       }
+
+       mergeSortDates(l , mid);
+       mergeSortDates(r , n - mid);
+
+       merge(dataPoints, l, r, mid, n - mid);
+   }
+
+   private void merge(DataPoint[] dataPoints, DataPoint[] l, DataPoint[] r, int left, int right) {
+        int i = 0, j = 0, k = 0;
+        while (i < left && j < right) {
+            if (l[i].getX() <= r[j].getX()) {
+               dataPoints[k++] = l[i++];
+            } else {
+                dataPoints[k++] = r[j++];
+            }
+        }
+
+        while (i < left) {
+           dataPoints[k++] = l[i++];
+        }
+
+        while (j < right) {
+            dataPoints[k++] = r[j++];
+        }
+   }
+
     private DataPoint[] bubbleSortDates(DataPoint[] dataPoints) {
         int n = dataPoints.length;
         for (int i = 0; i < n - 1; i++) {
@@ -465,7 +519,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             }
         }
 
-        dataPoints = bubbleSortDates(dataPoints);
+        mergeSortDates(dataPoints, dataPoints.length);
         for (int i = 0; i < dataPoints.length; i++) {
             try {
 
@@ -532,6 +586,14 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                         Log.i("y-value", yValue.get(i - 1));
                     }
                 }
+                if (allValuesNull(yValue)) {
+                    Log.i("allYNull", "All Y values are null");
+                    Toast.makeText(getApplicationContext(), "All values are null.", Toast.LENGTH_LONG).show();
+                    pb.setVisibility(View.INVISIBLE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    return;
+                }
+
 
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
