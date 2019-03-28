@@ -76,7 +76,7 @@ public class WellActivity extends AppCompatActivity{
 //            }
             public void onClick(View v) {
                 Intent intent = new Intent(WellActivity.this,
-                        HistoryActivityNEW.class);
+                        HistoryActivity.class);
                 intent.putExtra("wellID", welluniqueID);
                 startActivity(intent); // startActivity allow you to move
             }
