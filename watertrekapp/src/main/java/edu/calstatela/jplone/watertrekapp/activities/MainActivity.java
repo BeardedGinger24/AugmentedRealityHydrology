@@ -840,7 +840,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(well != null) {
             onStop();
 //            WellActivity.launchDetailsActivity(this, well);
-            MapActivity.launchWellDetailsActivity(this, well);
+            Navigation.launchWellDetailsActivity(this, well);
             return;
         }
         //added  by leo
@@ -856,7 +856,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(rL != null) {
             onStop();
 //            ReservoirActivity.launchDetailsActivity(this, rL);
-            MapActivity.launchReservoirDetailsActivity(this, rL);
+            Navigation.launchReservoirDetailsActivity(this, rL);
             return;
         }
         //Soil Moisture
@@ -872,7 +872,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(sL != null) {
             onStop();
 //            SoilMoistureActivity.launchDetailsActivity(this, sL);
-            MapActivity.launchSoilDetailsActivity(this, sL);
+            Navigation.launchSoilDetailsActivity(this, sL);
 //            Log.d("LaunchSoildetails","going now...");
             return;
         }
@@ -891,7 +891,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             Log.d("snow" , sntel.getStationId());
             onStop();
 //            SnotelActivity.launchDetailsActivity(this, sntel);
-            MapActivity.launchSnotelDetailsActivity(this,sntel);
+            Navigation.launchSnotelDetailsActivity(this,sntel);
 //            Log.d("LaunchSoildetails","going now...");
             return;
         }
@@ -909,7 +909,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(rivL != null) {
             onStop();
 //            RiverActivity.launchDetailsActivity(this, rivL);
-            MapActivity.launchRiverDetailsActivity(this,rivL);
+            Navigation.launchRiverDetailsActivity(this,rivL);
 //            Log.d("LaunchSoildetails","going now...");
             return;
         }
