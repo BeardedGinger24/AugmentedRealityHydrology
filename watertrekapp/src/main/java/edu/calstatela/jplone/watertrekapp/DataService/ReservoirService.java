@@ -3,14 +3,19 @@ package edu.calstatela.jplone.watertrekapp.DataService;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
+import edu.calstatela.jplone.watertrekapp.Data.ReservoirStorageData;
 import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
@@ -166,33 +171,27 @@ static String TAG = "reservoir-service";
 
     }
     public static List parseStoragesJSON(String line){
+        Gson gson = new Gson();
+
+
+//        usgs_reservoir_data usgrd = gson.fromJson(line,usgs_reservoir_data.class);
+
+
+        // {"usgs_reservoir_data":[{"datetime":"1981-09-01T00:00:00","storage":2100.0,"units":"ac-ft"},
+        // {"datetime":"1981-09-02T00:00:00","storage":1970.0,"units":"ac-ft"},
         List<String> storeList = new ArrayList();
         try {
-            JSONObject results = new JSONObject(line);
-            JSONArray accessRESERVOIR = results.getJSONArray("usgs_reservoir_data");
-            int length = accessRESERVOIR .length();
-            for (int x =0 ; x<length; x++)
-            {
-                //keys are   {"datetime":"1981-09-01T00:00:00","discharge":4.870498,"units":"m^3/s"}
 
-                JSONObject jsondateTime = accessRESERVOIR.getJSONObject(x);
-                JSONObject jsonStore = accessRESERVOIR.getJSONObject(x);
-                JSONObject jsonUnits = accessRESERVOIR.getJSONObject(x);
-//                String dateTime = "004-034556";
-                String[] parts = jsondateTime.getString("datetime").split("T");
-                String resDateOnly = parts[0];
-                String resTimeOnly = parts[1];
-                String storeAmount = jsonStore.getString("storage");
-                String resUnits = jsonUnits.getString("units");
-                // Two spaces are used inbetween units
-                String  resOutput = resDateOnly+"  "+storeAmount+"  "+resUnits;
-//                Log.d("JSONRIVER", jsondate.getString("datetime"));
-//                Log.d("JSONRIVER", jsonDis.getString("discharge"));
-//                Log.d("JSONRIVER", jsonUnits.getString("units"));
-                Log.d("JSONRESERVOIR", resOutput);
-                storeList.add(resOutput);
-            }
-            return storeList;
+            JSONObject results = new JSONObject(line);
+            String   reservoirString =   results.toString();
+            JSONArray accessRESERVOIR = results.getJSONArray("usgs_reservoir_data");
+            String resArray = accessRESERVOIR.toString();
+            Type ResStorageList = new TypeToken<ArrayList<ReservoirStorageData>>(){}.getType();
+           // ReservoirStorageData[] rsd = new Gson().fromJson(resArray,ReservoirStorageData[].class);
+            List<ReservoirStorageData> resDlist = new Gson().fromJson(resArray,ResStorageList);
+
+            return resDlist;
+//            return storeList;
         }catch (JSONException e) {
             Log.d("JSONRESERVOIR", "error  happened");
             return storeList;
