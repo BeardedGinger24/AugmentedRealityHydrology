@@ -8,6 +8,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import edu.calstatela.jplone.watertrekapp.Data.Snotel;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.Fragments.BlankFragment;
+import edu.calstatela.jplone.watertrekapp.Fragments.GraphFragment;
 import edu.calstatela.jplone.watertrekapp.Fragments.TestFragment;
 import edu.calstatela.jplone.watertrekapp.R;
 
@@ -27,8 +29,8 @@ public class Navigation extends AppCompatActivity {
     // https://medium.com/@oluwabukunmi.aluko/bottom-navigation-view-with-fragments-a074bfd08711
 
     final Fragment fragment1 = new MapActivity();
-    final Fragment fragment2 = new TestFragment();
-    final Fragment fragment3 = new BlankFragment();
+    final Fragment fragment2 = new GraphFragment();
+    final Fragment fragment3 = new edu.calstatela.jplone.watertrekapp.Fragments.ListFragment();
     final FragmentManager fm = getSupportFragmentManager();
     Fragment active = fragment1;
 
