@@ -1,8 +1,10 @@
 package edu.calstatela.jplone.watertrekapp.Data;
 
+import java.io.Serializable;
+
 import edu.calstatela.jplone.arframework.util.Vector3;
 
-public class MeshData {
+public class MeshData implements Serializable{
     public Vector3[] Vectors;
     public int[] Triangles;
     public float[] latlonalt;

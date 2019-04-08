@@ -65,8 +65,8 @@ public class TextureService{
         }
 
         public String getURL(float lat, float lon, String base) {
-            String size = "size=400%2C400&";
-            String format = "format=BMP&";
+            String size = "size=1600%2C1600&";
+            String format = "format=PNG&";
             String transparent = "transparent=true&";
             String f = "f=image";
 

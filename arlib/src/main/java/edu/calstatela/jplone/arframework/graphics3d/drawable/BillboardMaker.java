@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.Image;
 import android.util.Log;
 
 import edu.calstatela.jplone.arframework.graphics3d.helper.TextureHelper;
@@ -78,16 +79,9 @@ public class BillboardMaker {
         bitmap.recycle();
         return billboard;
     }
-    public static TextureModel makeM2(Bitmap bitmap){
+    public static TextureModel makeM2(Bitmap bitmap1,Bitmap bitmap2){
         TextureModel textureModel = new TextureModel();
-        textureModel.setBitmap(bitmap);
-        return textureModel;
-    }
-    public static TextureModel makeM(Context context,int id){
-        TextureModel textureModel = new TextureModel();
-        Bitmap bitmap = TextureHelper.bitmapFromResource(context, id);
-        textureModel.setBitmap(bitmap);
-        bitmap.recycle();
+        textureModel.setBitmap(bitmap1, bitmap2);
         return textureModel;
     }
 

@@ -25,20 +25,21 @@ public class TextureModel implements Drawable{
     private static FloatBuffer sTexCoordBuffer = null;
     static int sGLProgramId = -1;
     static int mNumVertices = 0;
-    private int mGLTextureId = 0;
+    private int mGLTextureId1 = 0;
+    private int mGLTextureId2 = 0;
     private static final String vertexShaderSource =
             "attribute vec4 a_Position;                 \n" +
-                    "attribute vec2 a_TexCoord;                 \n" +
-                    "                                           \n" +
-                    "uniform mat4 u_Matrix;                     \n" +
-                    "                                           \n" +
-                    "varying vec2 v_TexCoord;                   \n" +
-                    "                                           \n" +
-                    "void main()                                \n" +
-                    "{                                          \n" +
-                    "    gl_Position = u_Matrix * a_Position;   \n" +
-                    "    v_TexCoord = a_TexCoord;               \n" +
-                    "}                                          \n";
+            "attribute vec2 a_TexCoord;                 \n" +
+            "                                           \n" +
+            "uniform mat4 u_Matrix;                     \n" +
+            "                                           \n" +
+            "varying vec2 v_TexCoord;                   \n" +
+            "                                           \n" +
+            "void main()                                \n" +
+            "{                                          \n" +
+            "    gl_Position = u_Matrix * a_Position;   \n" +
+            "    v_TexCoord = a_TexCoord;               \n" +
+            "}                                          \n";
 
 
 
@@ -46,26 +47,26 @@ public class TextureModel implements Drawable{
             "precision mediump float;                                               \n" +
                     "                                                                       \n" +
                     "uniform sampler2D u_Texture;                                           \n" +
-                    //"varying vec4 v_Color;                                                  \n" +
+                    "uniform sampler2D u2_Texture;                                           \n" +
                     "varying vec2 v_TexCoord;                                               \n" +
                     "                                                                       \n" +
                     "void main()                                                            \n" +
                     "{                                                                      \n" +
-                    "   gl_FragColor = texture2D(u_Texture, v_TexCoord);                    \n" +
+                    "   vec4 texel1 = texture2D(u_Texture, v_TexCoord);\n"+
+                    "   vec4 texel2 = texture2D(u2_Texture, v_TexCoord);\n"+
+                    "   gl_FragColor = mix(texel1,texel2,0.40);                    \n" +
                     "}                                                                  \n";
-//    public TextureModel(){
-//        sGLProgramId = ShaderHelper.buildShaderProgram(vertexShaderSource, fragmentShaderSource);
-//    }
+
     public static void init(){
         sGLProgramId = ShaderHelper.buildShaderProgram(vertexShaderSource, fragmentShaderSource);
     }
-    public void setBitmap(Bitmap bitmap){
+    public void setBitmap(Bitmap bitmap1,Bitmap bitmap2){
         // Make sure texture/bitmap is only set once per object
-        if(mGLTextureId != 0)
+        if(mGLTextureId1 != 0)
             return;
 
-        mGLTextureId = TextureHelper.glTextureFromBitmap(bitmap);
-        Log.d(TAG,mGLTextureId+"");
+        mGLTextureId1 = TextureHelper.glTextureFromBitmap(bitmap1);
+        mGLTextureId2 = TextureHelper.glTextureFromBitmap(bitmap2);
     }
     @Override
     public void draw(float[] matrix) {
@@ -80,11 +81,18 @@ public class TextureModel implements Drawable{
         GLES20.glEnableVertexAttribArray(positionAttribute);
         int texCoordAttribute = GLES20.glGetAttribLocation(sGLProgramId, "a_TexCoord");
         GLES20.glEnableVertexAttribArray(texCoordAttribute);
+
         int textureUniform = GLES20.glGetUniformLocation(sGLProgramId, "u_Texture");
+        GLES20.glUniform1i(textureUniform, 0);
+
+        int textureUniform2 = GLES20.glGetUniformLocation(sGLProgramId,"u2_Texture");
+        GLES20.glUniform1i(textureUniform2,1);
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mGLTextureId);
-        GLES20.glUniform1i(textureUniform, 0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mGLTextureId1);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mGLTextureId2);
 
         int matrixUniform = GLES20.glGetUniformLocation(sGLProgramId, "u_Matrix");
         GLES20.glUniformMatrix4fv(matrixUniform, 1, false, matrix, 0);
@@ -105,40 +113,11 @@ public class TextureModel implements Drawable{
     }
     public void loadVertices(float[] vertexList){
         mNumVertices = vertexList.length / FLOATS_PER_VERTEX;
-        //mNumVertices = rectangleVertexFloats.length/FLOATS_PER_VERTEX;
         sVertexBuffer = BufferHelper.arrayToBuffer(vertexList);
-        //sVertexBuffer = BufferHelper.arrayToBuffer(rectangleVertexFloats);
+
     }
     public void loadTextureVerctices(float[] textCoordinates){
         sTexCoordBuffer = BufferHelper.arrayToBuffer(textCoordinates);
-        //sTexCoordBuffer = BufferHelper.arrayToBuffer(rectangleTexCoordFloats);
     }
-    private static final float[] rectangleVertexFloats = {
-            -0.5f,  0.0f,  -0.5f,
-            0.5f,   0.0f,  -0.5f,
-            0.5f,   0.0f,   0.5f,
-
-            -0.5f,  0.0f,  -0.5f,
-            0.5f,   0.0f,   0.5f,
-            -0.5f,  0.0f,   0.5f
-    };
-    private static final float[] rectangleColorFloats = {
-            1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 1.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f, 1.0f,
-
-            1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f, 1.0f,
-            0.2f, 0.5f, 0.0f, 1.0f
-    };
-    private static final float[] rectangleTexCoordFloats = {
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-
-            0.0f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f
-    };
 
 }

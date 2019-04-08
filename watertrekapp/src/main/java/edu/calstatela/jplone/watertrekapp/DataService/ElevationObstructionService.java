@@ -59,13 +59,12 @@ public class ElevationObstructionService {
 
 //    Given multiple points in WKT format, return points with elevation values
 
-    public static void getPointsElevationValues( double startlatitude, double startlongitude , double endlatitude, double endlongitude){
-//        http://54.237.80.7:8080/LOSService/ws/los/earthLOS/getElevations?multiPoints=multipoint((-118.16,34.07),(-118.2,34.1),(-118.17,34.22))
-        //FIX VALUES
-        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/getElevations?multiPoints=multipoint((-118.16,34.07),(-118.2,34.1),(-118.17,34.22))");
-//        NetworkTask nt = new NetworkTask(callback,0);
+    public static String getPointElevation(double startlatitude, double startlongitude ){
+
+        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/getElevations?multiPoints=multipoint(("+startlongitude+","+startlatitude+"))");
+//        NetworkTaskJSON nt = new NetworkTaskJSON(callback,0);
 //        nt.execute(url);
-//        new NetworkTaskJSON().execute(url);
+    return url;
     }
 
 

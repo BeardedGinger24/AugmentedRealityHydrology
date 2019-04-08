@@ -4,16 +4,16 @@ package edu.calstatela.jplone.watertrekapp.billboardview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 
 import edu.calstatela.jplone.arframework.graphics3d.camera.Camera3D;
 import edu.calstatela.jplone.arframework.graphics3d.drawable.Billboard;
@@ -26,15 +26,13 @@ import edu.calstatela.jplone.arframework.graphics3d.drawable.TextureModel;
 import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
 import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
 import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
-import edu.calstatela.jplone.arframework.graphics3d.helper.TextureHelper;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.arframework.util.VectorMath;
-import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
-import edu.calstatela.jplone.watertrekapp.DataService.MeshService;
+import edu.calstatela.jplone.watertrekapp.Helpers.OBJLoader;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -46,29 +44,35 @@ public class BillboardView_sorting extends SensorARView{
 
     private Context mContext;
     private int deviceOrientation = 0;
-    private float userElevation = 0;
+    private float userElevation;
     float[] latlonalt;
 
+    //1 for near, 2 for mid, 3 for far. Default is 1:near
+    int bbFilter = 1;
     private ArrayList<BillboardInfo> mAddList = new ArrayList<>();
     private ArrayList<Integer> mRemoveList = new ArrayList<>();
     private ArrayList<BillboardInfo> mCurrentInfos = new ArrayList<>();
     private ArrayList<Entity> mEntityList;
+    private ArrayList<Entity> entityListNear;
+    private ArrayList<Entity> entityListMid;
+    private ArrayList<Entity> entiyiListFar;
+
 
 
     boolean transMade;
     boolean litMade;
     boolean textMade;
 
-    ArrayList<MeshInfo> meshAddList = new ArrayList<>();
+    ArrayList<OBJLoader> meshAddList = new ArrayList<>();
     private ArrayList<Entity>removeMeshList = new ArrayList<>();
-    ArrayList<MeshInfo> meshCurrentInfos = new ArrayList<>();
+    ArrayList<OBJLoader> meshCurrentInfos = new ArrayList<>();
     ArrayList<Entity> meshList;
 
     Scene scene;
     float[] meshLoc;
-    Vector3[] vecs;
     public Camera3D mCamera;
     float[] color;
+    Bitmap bitmapTerrain,bitmapRiver;
 
     boolean drawMesh;
     boolean shadedMesh;
@@ -81,6 +85,7 @@ public class BillboardView_sorting extends SensorARView{
 
     public void addBillboard(int id, int iconResource, String title, String text, float lat, float lon, float alt){
         BillboardInfo info = new BillboardInfo(id, iconResource, title, text, lat, lon, alt);
+
         synchronized(mAddList) {
             mAddList.add(info);
         }
@@ -90,11 +95,18 @@ public class BillboardView_sorting extends SensorARView{
             mRemoveList.add(id);
         }
     }
-    public void addMesh(MeshInfo info){
-        vecs = info.getVecs();
-        meshLoc = info.getLatlonalt();
+    public void addBitMap(Bitmap terrain,Bitmap river){
+        bitmapTerrain = terrain;
+        bitmapRiver = river;
+    }
+//    public void addRiverText(String path){
+//        riverPath = path;
+//    }
+    public void addMesh(OBJLoader info){
         latlonalt = getLocation();
+        meshLoc = info.getLoc();
         ElevationObstructionService.getObstruction(obstructNetworkCallback,latlonalt[0],latlonalt[1],"0","-90");
+
         synchronized(meshAddList) {
             meshAddList.add(info);
         }
@@ -128,7 +140,7 @@ public class BillboardView_sorting extends SensorARView{
         }
     }
     public boolean meshNull(){
-        return vecs==null;
+        return meshLoc==null;
     }
     public interface TouchCallback{
         void onTouch(int id);
@@ -180,13 +192,12 @@ public class BillboardView_sorting extends SensorARView{
         LitModel.init();
 
         mCamera = new Camera3D();
-        mCamera.setDepthTestEnabled(false);
+        mCamera.setDepthTestEnabled(true);
         color = new float[]{0, 0, 0, 0};
 
         mEntityList = new ArrayList<>();
         meshList = new ArrayList<>();
 
-        meshLoc = new float[3];
         drawMesh = false;
         shadedMesh = false;
         textureMesh = false;
@@ -194,13 +205,15 @@ public class BillboardView_sorting extends SensorARView{
         transMade = false;
         litMade = false;
         textMade = false;
+
+        userElevation = -1;
     }
 
     @Override
     public void GLResize(int width, int height) {
         super.GLResize(width, height);
         mCamera.setViewport(0, 0, width, height);
-        mCamera.setPerspective(60, (float)width / height, 0.0f, 10000f);
+        mCamera.setPerspective(53.3f, (float)width / height, 0.0f, 100f);
 
     }
 
@@ -223,7 +236,7 @@ public class BillboardView_sorting extends SensorARView{
             }
         }
         if(meshList.isEmpty() && !meshCurrentInfos.isEmpty() && this.getLocation() != null){
-            for(MeshInfo info : meshCurrentInfos){
+            for(OBJLoader info : meshCurrentInfos){
                 newMesh(info);
             }
         }
@@ -240,7 +253,7 @@ public class BillboardView_sorting extends SensorARView{
         }
         synchronized(meshAddList) {
             if (!meshAddList.isEmpty() && getLocation() != null) {
-                for (MeshInfo info : meshAddList) {
+                for (OBJLoader info : meshAddList) {
                     meshCurrentInfos.add(info);
                     newMesh(info);
                 }
@@ -249,17 +262,23 @@ public class BillboardView_sorting extends SensorARView{
         }
         // If billboard need to be removed... remove
         synchronized(mRemoveList) {
-            if (!mRemoveList.isEmpty()) {
-                for (Integer id : mRemoveList) {
-                    for (int i = 0; i < mCurrentInfos.size(); i++) {
-                        if (mCurrentInfos.get(i).id == id) {
-                            mCurrentInfos.remove(i);
-                            mEntityList.remove(i);
-                        }
-                    }
-                }
-                mRemoveList.clear();
-            }
+//            if (!mRemoveList.isEmpty()) {
+//                for (Integer id : mRemoveList) {
+//                    for (int i = 0; i < mCurrentInfos.size(); i++) {
+//                        if (mCurrentInfos.get(i).id == id) {
+//                            mCurrentInfos.remove(i);
+//                            mEntityList.remove(i);
+//                        }
+//                    }
+//                }
+//                mRemoveList.clear();
+//            }
+            mRemoveList.clear();
+            mCurrentInfos.clear();
+            mEntityList.clear();
+//            entityListNear.clear();
+//            entityListMid.clear();
+//            entiyiListFar.clear();
         }
         synchronized (removeMeshList){
             if(!removeMeshList.isEmpty()) {
@@ -286,14 +305,12 @@ public class BillboardView_sorting extends SensorARView{
 
         // Draw billboards/Meshes
         if(getLocation() != null) {
-                for(Entity e : meshList){
+            if(drawMesh) {
+                for (Entity e : meshList) {
                     e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
                 }
-                //scene.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix());
-//            for(Iterator<Entity> iterator = mEntityList.iterator();iterator.hasNext();){
-//                Entity e = iterator.next();
-//                e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
-//            }
+
+            }
             for (Entity e : mEntityList) {
                 e.draw(mCamera.getProjectionMatrix(), mCamera.getViewMatrix(), e.getModelMatrix());
             }
@@ -386,51 +403,59 @@ public class BillboardView_sorting extends SensorARView{
         float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},meshLoc);
         e.setPosition(bbLoc[0],-bbLoc[1]+0.1f,bbLoc[2]);
         e.yaw(45);
-        Log.d(TAG,"BBXYZ: "+bbLoc[0]+","+bbLoc[1]+","+bbLoc[2]);
         mEntityList.add(e);
-        //scene.add(e);
+        entityListNear.add(e);
+        entityListMid.add(e);
+        entiyiListFar.add(e);
     }
-    private void newMesh(MeshInfo info){
-        float[] newMeshLoc = getbbLoc(meshLoc,getLocation());
+    private void newMesh(OBJLoader info){
         ColorHolder color;
         Entity entity = new Entity();
         if(textureMesh){
-            TextureModel texturedMesh = new BillboardMaker().makeM2(info.getBmp());
-            //TextureModel texturedMesh = new BillboardMaker().makeM(mContext,R.drawable.export);
-            texturedMesh.loadVertices(info.getVerts());
-            texturedMesh.loadTextureVerctices(info.getTextCoordinates());
+            TextureModel texturedMesh = new BillboardMaker().makeM2(bitmapTerrain,bitmapRiver);
+            texturedMesh.loadVertices(info.getV());
+            texturedMesh.loadTextureVerctices(info.getVt());
             entity.setDrawable(texturedMesh);
         }else if(shadedMesh){
             LitModel litMesh = new LitModel();
-            litMesh.loadVertices(info.getVerts());
-            litMesh.loadNormals(MeshHelper.calculateNormals(info.getVerts()));
+            litMesh.loadVertices(info.getV());
+            litMesh.loadNormals(info.getN());
             litMesh.setDrawingModeTriangles();
             color = new ColorHolder(litMesh, new float[]{0.3f, 0.4f, 0.3f, 0.1f});
             entity.setDrawable(color);
         }else{
             Model transMesh = new Model();
-            transMesh.loadVertices(info.getVerts());
+            transMesh.loadVertices(info.getV());
             transMesh.setDrawingModeTriangles();
             color = new ColorHolder(transMesh,new float[]{0.3f, 0.4f, 0.3f, 0.1f});
             entity.setDrawable(color);
         }
-        entity.setPosition(0f,-(userElevation+10)/100,0f);
-        entity.yaw(356);
+
+        if(userElevation==-1){
+            userElevation = getLocation()[2]+30;
+        }
+        entity.setPosition(0f,-(userElevation+15)/100,0f);
+        entity.yaw(200);
         meshList.add(entity);
+
         //scene.add(entity);
     }
     NetworkTaskJSON.NetworkCallback obstructNetworkCallback = new NetworkTaskJSON.NetworkCallback() {
         @Override
-        public void onResult(int type, String result) {
+        public String onResult(int type, String result) {
+            Log.d(TAG,result+"");
             try {
                 JSONObject results = new JSONObject(result);
                 JSONObject temp = results.getJSONObject("obstruction_point");
                 userElevation = Float.parseFloat(temp.get("elevation").toString());
             } catch (JSONException e) {
                 e.printStackTrace();
+                return (result.replace("multipoint z((","")).replace("))","");
             }
+            return null;
         }
     };
+
     public float[] getbbLoc(float[] bbloc,float[] meshloc){
         float bbx = bbloc[1];
         float bby = bbloc[0];
@@ -438,16 +463,33 @@ public class BillboardView_sorting extends SensorARView{
         float mx = meshloc[1];
         float my = meshloc[0];
 
-        double x = (Math.abs(mx-0.20)-Math.abs(bbx))/0.002;
-        double y = Math.abs((Math.abs(my+0.20)-Math.abs(bby))/0.002);
-        int index = (int) (x+(y*200));
+        float elevationScale = 100;
+        //1 lat is about 111180 meters at equator, and 111200 at poles
+        //1 lon is cosine(lon)*lat at equator
+        //since our mesh area covers 0.2 degrees in lat/lon directions we divide above values by 5
+        double lonScale = 22236/elevationScale;
+        double latScale = 18425/elevationScale;
 
-        if(index<vecs.length && index>=0) {
-            Vector3 vec = vecs[index];
-            float[] result = { (float) vec.getX(),(float) vec.getY(),(float) vec.getZ()};
+        float x = (float) ((bbx-mx)*lonScale);
+        double y = (my- bby)*latScale;
+
+        NetworkTaskJSON networkTaskJSON = new NetworkTaskJSON(null,0);
+        networkTaskJSON.execute(ElevationObstructionService.getPointElevation(bby,bbx));
+        try {
+            String temp = (networkTaskJSON.get().replace("multipoint z((","").replace("))",""));
+            String[] vals = temp.split(" ");
+
+            float[] result = new float[3];
+            result[0] = x;
+            result[1] = Float.parseFloat(vals[2])/elevationScale;
+            result[2] = (float) y;
             return result;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-        return new float[]{0,0,0};
+        return null;
     }
     public void changeBGC(boolean b){
         if(!b){

@@ -136,21 +136,4 @@ public class LitModel implements Drawable, Colorable{
     }
 
 
-
-
-
-    public static LitModel modelFromVertices(float[] vertices){
-        LitModel model = new LitModel();
-        model.loadVertices(vertices);
-        model.loadNormals(MeshHelper.calculateNormals(vertices));
-        return model;
-    }
-
-    public static LitModel cube(){
-        return modelFromVertices(MeshHelper.cube());
-    }
-    public static LitModel pyramid(){
-        return modelFromVertices(MeshHelper.pyramid());
-    }
-
 }

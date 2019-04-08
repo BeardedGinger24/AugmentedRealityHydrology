@@ -4,10 +4,10 @@ import android.graphics.Bitmap;
 import edu.calstatela.jplone.arframework.util.Vector3;
 public class MeshInfo {
     Vector3[] vecs;
-    float[] verts;
     String type;
     float[] latlonalt;
     Bitmap bmp;
+    float[] verts;
     float[] textCoordinates;
 
     public MeshInfo(Vector3[] vecs,String type,float[] latlonalt,float[] verts) {

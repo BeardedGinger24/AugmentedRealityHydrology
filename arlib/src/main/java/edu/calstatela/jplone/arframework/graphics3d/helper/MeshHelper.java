@@ -7,14 +7,14 @@ public class MeshHelper {
     // Precondition: vertexList != null
     // Precondition: (vertexList.length % 9) == 0
     // Postcondition: creates new array that contains normal vectors for the input vertices
-    public static float[] calculateNormals(float[] vertexList){
-        float[] normals = new float[vertexList.length];
+    public static StringBuilder calculateNormals(float[] vertexList){
+        String[] normals = new String[vertexList.length];
 
         float[] vec0 = new float[3];
         float[] vec1 = new float[3];
 
         float[] normal = new float[3];
-
+        StringBuilder n = new StringBuilder();
         for(int i = 0; i < vertexList.length; i += 9){
 
             vec0[0] = vertexList[i + 3] - vertexList[i + 0];
@@ -28,20 +28,23 @@ public class MeshHelper {
             VectorMath.crossProduct(normal, vec0, vec1);
             VectorMath.normalizeInPlace(normal);
 
-            normals[i + 0] = normal[0];
-            normals[i + 1] = normal[1];
-            normals[i + 2] = normal[2];
+            normals[i + 0] = String.valueOf(normal[0]);
+            normals[i + 1] = String.valueOf(normal[1]);
+            normals[i + 2] = String.valueOf(normal[2]);
 
-            normals[i + 3] = normal[0];
-            normals[i + 4] = normal[1];
-            normals[i + 5] = normal[2];
+            normals[i + 3] = String.valueOf(normal[0]);
+            normals[i + 4] = String.valueOf(normal[1]);
+            normals[i + 5] = String.valueOf(normal[2]);
 
-            normals[i + 6] = normal[0];
-            normals[i + 7] = normal[1];
-            normals[i + 8] = normal[2];
+            normals[i + 6] = String.valueOf(normal[0]);
+            normals[i + 7] = String.valueOf(normal[1]);
+            normals[i + 8] = String.valueOf(normal[2]);
+            n.append("vn "+normal[0]+" "+normal[1]+" "+normal[2]+"\n");
+            n.append("vn "+normal[0]+" "+normal[1]+" "+normal[2]+"\n");
+            n.append("vn "+normal[0]+" "+normal[1]+" "+normal[2]+"\n");
         }
 
-        return normals;
+        return n;
     }
     public static float[] pyramid(){
         return new float[]{

@@ -11,14 +11,21 @@
     sothree:umanoShadowHeight="4dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:baselineAligned="false" />
+
+        <android.support.design.widget.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            sothree:menu="@menu/menu_details">
+
+        </android.support.design.widget.BottomNavigationView>
 
     </LinearLayout>
 
@@ -29,9 +36,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".activities.HistoryActivity">
-
-
-
 
 
         <Button

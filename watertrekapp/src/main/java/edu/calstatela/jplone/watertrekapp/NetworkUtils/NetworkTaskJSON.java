@@ -1,6 +1,7 @@
 package edu.calstatela.jplone.watertrekapp.NetworkUtils;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +34,7 @@ public class NetworkTaskJSON extends AsyncTask<String,Void,String> {
         };
         StringBuilder stringBuilder = new StringBuilder();
         HttpURLConnection urlConnection = null;
+        Log.d("NTJ",url+"");
         try{
             urlConnection=(HttpURLConnection) url.openConnection();
         }catch (IOException e){
@@ -52,72 +54,28 @@ public class NetworkTaskJSON extends AsyncTask<String,Void,String> {
         }
         return stringBuilder.toString();
     }
-//    private ConnectivityManager.NetworkCallback callback;
-
-//    public NetworkTaskJSON(ConnectivityManager.NetworkCallback callback, int data_type) {
-//        this.callback = callback;
-//        this.data_type = data_type;
-//    }
 
     @Override
     protected  String doInBackground(String... params){
-//        try{
-////            String myurl = params[0];
-//            URL jurl = new URL(params[0]);
-//
-////            URL jurl = new URL(params[0]);
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(jurl.openConnection().getInputStream(), "UTF-8"));
-//        String jsonString = reader.readLine();
-//            Log.d("JSON", jsonString);
-//
-//        }catch (MalformedURLException e){
-//            e.printStackTrace();
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        return readJSONFeed (params[0]);
+
+        return readJSONFeed(params[0]);
     }
 
     protected void onPostExecute(String result){
+        Log.d("NTJ",result);
         try{
-
             JSONObject object = new JSONObject(result);
-//            Log.d("JSON", object.toString());
             String doesitObstruct = object.toString();
             callbackJS.onResult(this.data_type, doesitObstruct);
-//            Toast.makeText( context,object.toString(),Toast.LENGTH_LONG).show();
-//            JSONArray Jarray  = object.getJSONArray("obstructed_view");
-//            or (int i = 0; i < Jarray.length(); i++)
-//            {
-//                JSONObject Jasonobject = Jarray.getJSONObject(i);
-//            }
-
-           // JSONArray jsonArray = new JSONArray(result);
-          //  Log.i("JSON","NUmber of surveys fed" + jsonArray.length());
-
-            // print out the content of the json feed
-//            for (int i =0; i<=jsonArray.length();i++)
-//            {
-//                JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                Log.i("JSON","NUmber of surveys fed" + jsonObject.getString("obstructed_view"));
-////                Toast.makeText(getBaseContext(),jsonObject.getString("obstructed_view"), Toast.LENGTH_LONG).show();
-//            }
-//                        for (int i = 0; i < Jarray.length(); i++)
-//            {
-//                JSONObject Jasonobject = Jarray.getJSONObject(i);
-//                                Log.d("JSON","Number of surveys fed" + Jasonobject);
-//
-//            }
         } catch (JSONException e) {
-
             e.printStackTrace();
+            super.onPostExecute(result);
         }
+
     }
 
 
     public interface NetworkCallback {
-        void onResult(int type, String result);
+        String onResult(int type, String result);
     }
 }
