@@ -17,7 +17,7 @@ public class LitModel implements Drawable, Colorable{
     private FloatBuffer mVertexBuffer = null;
     private FloatBuffer mNormalBuffer = null;
     private float[] mColor = {0.0f, 0.0f, 0.0f, 1f};
-    private float[] mLightVec = {0.0f, -1.0f, 0.0f, 1.0f};
+    private float[] mLightVec = {0.0f, 1.0f, 0.0f, 1.0f};
 
     static int mShaderProgram;
     private int mNumVertices = 0;

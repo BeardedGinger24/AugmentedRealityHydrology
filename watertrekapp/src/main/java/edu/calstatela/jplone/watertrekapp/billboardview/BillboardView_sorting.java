@@ -262,20 +262,20 @@ public class BillboardView_sorting extends SensorARView{
         }
         // If billboard need to be removed... remove
         synchronized(mRemoveList) {
-//            if (!mRemoveList.isEmpty()) {
-//                for (Integer id : mRemoveList) {
-//                    for (int i = 0; i < mCurrentInfos.size(); i++) {
-//                        if (mCurrentInfos.get(i).id == id) {
-//                            mCurrentInfos.remove(i);
-//                            mEntityList.remove(i);
-//                        }
-//                    }
-//                }
-//                mRemoveList.clear();
-//            }
-            mRemoveList.clear();
-            mCurrentInfos.clear();
-            mEntityList.clear();
+            if (!mRemoveList.isEmpty()) {
+                for (Integer id : mRemoveList) {
+                    for (int i = 0; i < mCurrentInfos.size(); i++) {
+                        if (mCurrentInfos.get(i).id == id) {
+                            mCurrentInfos.remove(i);
+                            mEntityList.remove(i);
+                        }
+                    }
+                }
+                mRemoveList.clear();
+            }
+//            mRemoveList.clear();
+//            mCurrentInfos.clear();
+//            mEntityList.clear();
 //            entityListNear.clear();
 //            entityListMid.clear();
 //            entiyiListFar.clear();
@@ -404,9 +404,9 @@ public class BillboardView_sorting extends SensorARView{
         e.setPosition(bbLoc[0],-bbLoc[1]+0.1f,bbLoc[2]);
         e.yaw(45);
         mEntityList.add(e);
-        entityListNear.add(e);
-        entityListMid.add(e);
-        entiyiListFar.add(e);
+//        entityListNear.add(e);
+//        entityListMid.add(e);
+//        entiyiListFar.add(e);
     }
     private void newMesh(OBJLoader info){
         ColorHolder color;

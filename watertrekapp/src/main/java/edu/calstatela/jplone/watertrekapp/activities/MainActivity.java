@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //Arc menu items
     ArcMenu arcMenu;
     private static int[] ITEM_DRAWABLES = { R.drawable.mtn_res_ico_clr, R.drawable.reservoir_bb_icon, R.drawable.soil_bb_icon,
-            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr, R.drawable.snotel_res_ico, R.drawable.eye24 };
+            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr_sm, R.drawable.snotel_res_ico, R.drawable.eye24 };
     private String[] str = {"mountain","reservoir","soil","well", "river", "snotel", "eye"};
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -683,7 +683,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                         int id = Integer.parseInt(riv.getSiteNo());
                         riverList.add(riv);
                         arview.addBillboard(id,
-                                R.drawable.river_res_ico_clr,
+                                R.drawable.river_res_ico_clr_sm,
                                 "River # "+ riv.getSiteNo(),
                                 "(" + riv.getLat() + "," + riv.getLon() + ")",
                                 Float.parseFloat(riv.getLat()), Float.parseFloat(riv.getLon()),0
