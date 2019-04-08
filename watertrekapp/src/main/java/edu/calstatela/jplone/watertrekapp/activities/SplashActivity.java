@@ -1,5 +1,6 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -83,22 +84,33 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         pb = findViewById(R.id.indeterminateBar);
         startBtn = findViewById(R.id.startBtn);
         //meshTest = findViewById(R.id.meshtest);
+
         boolean havePermissions = true;
-        if(!Permissions.havePermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION)){
-            Permissions.requestPermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION,REQUEST_LOCATION);
-            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+//        if(!Permissions.havePermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION)){
+//            Permissions.requestPermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION,REQUEST_LOCATION);
+//            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+//            havePermissions = false;
+//        }
+//        if(!Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
+//            Permissions.requestPermission(this, Permissions.PERMISSION_CAMERA,REQUEST_CAMERA);
+//            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
+//            havePermissions = false;
+//        }
+//        if(!Permissions.havePermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE)){
+//            Permissions.requestPermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE,REQUEST_STORAGE);
+//            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE);
+//            havePermissions = false;
+//        }
+
+        if(!Permissions.havePermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION) &&
+                !Permissions.havePermission(this, Permissions.PERMISSION_CAMERA) &&
+                !Permissions.havePermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE)){
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CAMERA);
+
             havePermissions = false;
         }
-        if(!Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
-            Permissions.requestPermission(this, Permissions.PERMISSION_CAMERA,REQUEST_CAMERA);
-            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
-            havePermissions = false;
-        }
-        if(!Permissions.havePermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE)){
-            Permissions.requestPermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE,REQUEST_STORAGE);
-            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE);
-            havePermissions = false;
-        }
+
         if(!havePermissions)
             return;
 
@@ -252,26 +264,50 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
 
         }
     };
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if(requestCode == REQUEST_LOCATION){
-            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                finish();
-                startActivity(getIntent());
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//
+//        if(requestCode == REQUEST_LOCATION){
+//            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//                finish();
+//                startActivity(getIntent());
+//            }
+//        } else if(requestCode == REQUEST_CAMERA){
+//            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//                finish();
+//                startActivity(getIntent());
+//            }
+//        } else if(requestCode == REQUEST_STORAGE){
+//            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+//                finish();
+//                startActivity(getIntent());
+//            }
+//        } else {
+//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        }
+//    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        switch (requestCode){
+            case REQUEST_CAMERA:{
+                // When request is cancelled, the results array are empty
+                if(
+                        (grantResults.length >0) &&
+                                (grantResults[0]
+                                        + grantResults[1]
+                                        + grantResults[2]
+                                        == PackageManager.PERMISSION_GRANTED
+                                )
+                        ){
+                    // Permissions are granted
+//                    Toast.makeText(mContext,"Permissions granted.",Toast.LENGTH_SHORT).show();
+                }else {
+                    // Permissions are denied
+//                    Toast.makeText(mContext,"Permissions denied.",Toast.LENGTH_SHORT).show();
+                }
+                return;
             }
-        } else if(requestCode == REQUEST_CAMERA){
-            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                finish();
-                startActivity(getIntent());
-            }
-        } else if(requestCode == REQUEST_STORAGE){
-            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                finish();
-                startActivity(getIntent());
-            }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 

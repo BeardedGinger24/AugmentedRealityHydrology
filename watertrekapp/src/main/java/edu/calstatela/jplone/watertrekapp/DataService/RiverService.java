@@ -2,14 +2,19 @@ package edu.calstatela.jplone.watertrekapp.DataService;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.calstatela.jplone.watertrekapp.Data.River;
+import edu.calstatela.jplone.watertrekapp.Data.RiverStorageData;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
@@ -229,33 +234,17 @@ static String TAG = "river-service";
     }
 
     public static List parseDischargesJSON(String line){
+        Gson gson = new Gson();
         List<String> unitdisList = new ArrayList();
         try {
+
             JSONObject results = new JSONObject(line);
             JSONArray accessriver = results.getJSONArray("data");
-            int length = accessriver .length();
-            for (int x =0 ; x<length; x++)
-            {
-                //keys are   {"datetime":"1981-09-01T00:00:00","discharge":4.870498,"units":"m^3/s"}
+            String resArray = accessriver.toString();
+            Type ResStorageList = new TypeToken<ArrayList<RiverStorageData>>(){}.getType();
+            List<RiverStorageData> resDlist = new Gson().fromJson(resArray,ResStorageList);
 
-                JSONObject jsondate = accessriver.getJSONObject(x);
-                JSONObject jsonDis = accessriver.getJSONObject(x);
-                JSONObject jsonUnits = accessriver.getJSONObject(x);
-                String dateTime = "004-034556";
-                String[] parts = jsondate.getString("datetime").split("T");
-                String rivDateOnly = parts[0];
-                String rivTimeOnly = parts[1];
-                String disAmount = jsonDis.getString("discharge");
-                String rivUnits = jsonUnits.getString("units");
-                // Two spaces are used inbetween units
-                String  rivOutput = rivDateOnly+"  "+disAmount+"  "+rivUnits;
-//                Log.d("JSONRIVER", jsondate.getString("datetime"));
-//                Log.d("JSONRIVER", jsonDis.getString("discharge"));
-//                Log.d("JSONRIVER", jsonUnits.getString("units"));
-                Log.d("JSONRIVER", rivOutput);
-                unitdisList.add(rivOutput);
-                           }
-            return unitdisList;
+            return resDlist;
         }catch (JSONException e) {
             Log.d("JSONRIVER", "error  happened");
             return unitdisList;

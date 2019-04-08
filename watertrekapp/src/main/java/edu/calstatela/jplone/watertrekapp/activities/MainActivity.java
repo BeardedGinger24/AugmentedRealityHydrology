@@ -9,7 +9,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -813,7 +815,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(well != null) {
             onStop();
-            WellActivity.launchDetailsActivity(this, well);
+//            WellActivity.launchDetailsActivity(this, well);
+            Navigation.launchWellDetailsActivity(this, well);
             return;
         }
         //added  by leo
@@ -828,7 +831,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(rL != null) {
             onStop();
-            ReservoirActivity.launchDetailsActivity(this, rL);
+//            ReservoirActivity.launchDetailsActivity(this, rL);
+            Navigation.launchReservoirDetailsActivity(this, rL);
             return;
         }
         //Soil Moisture
@@ -843,7 +847,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(sL != null) {
             onStop();
-            SoilMoistureActivity.launchDetailsActivity(this, sL);
+//            SoilMoistureActivity.launchDetailsActivity(this, sL);
+            Navigation.launchSoilDetailsActivity(this, sL);
 //            Log.d("LaunchSoildetails","going now...");
             return;
         }
@@ -861,7 +866,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(sntel != null) {
             Log.d("snow" , sntel.getStationId());
             onStop();
-            SnotelActivity.launchDetailsActivity(this, sntel);
+//            SnotelActivity.launchDetailsActivity(this, sntel);
+            Navigation.launchSnotelDetailsActivity(this,sntel);
 //            Log.d("LaunchSoildetails","going now...");
             return;
         }
@@ -878,7 +884,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
         if(rivL != null) {
             onStop();
-            RiverActivity.launchDetailsActivity(this, rivL);
+//            RiverActivity.launchDetailsActivity(this, rivL);
+            Navigation.launchRiverDetailsActivity(this,rivL);
 //            Log.d("LaunchSoildetails","going now...");
             return;
         }
@@ -1013,6 +1020,15 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                     }
                 }
             });
+        }
+    }
+
+    public void permission_settings(View view){
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName()));
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
         }
     }
 

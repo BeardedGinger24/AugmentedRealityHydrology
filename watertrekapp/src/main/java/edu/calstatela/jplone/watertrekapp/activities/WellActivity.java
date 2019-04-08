@@ -68,6 +68,12 @@ public class WellActivity extends AppCompatActivity{
         goHist.setOnClickListener(new View.OnClickListener() {
 
             @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(WellActivity.this,
+//                        HistoryActivity.class);
+//                intent.putExtra("wellID", welluniqueID);
+//                startActivity(intent); // startActivity allow you to move
+//            }
             public void onClick(View v) {
                 Intent intent = new Intent(WellActivity.this,
                         HistoryActivity.class);

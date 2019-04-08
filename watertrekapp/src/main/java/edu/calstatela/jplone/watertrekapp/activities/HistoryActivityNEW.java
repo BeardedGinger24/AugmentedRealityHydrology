@@ -34,8 +34,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import edu.calstatela.jplone.watertrekapp.Data.ReservoirStorageData;
-import edu.calstatela.jplone.watertrekapp.Data.RiverStorageData;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
 import edu.calstatela.jplone.watertrekapp.DataService.SnotelService;
@@ -47,7 +45,7 @@ import edu.calstatela.jplone.watertrekapp.R;
 
 
 //FragmentActivity
-public class HistoryActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class HistoryActivityNEW extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     Context context;
     TextView starttext;
     TextView endtext;
@@ -106,7 +104,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+        setContentView(R.layout.activity_history_new);
         context = this;
         WELLID = getIntent().getStringExtra("wellID");
         RiverID = getIntent().getStringExtra("RiverID");
@@ -404,60 +402,6 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         return minValue;
     }
 
-    private boolean allValuesNull(ArrayList<String> values) {
-        int counter = 0;
-        for (String value : values) {
-            if (value == null) {
-                counter++;
-            }
-        }
-        if (counter == values.size())
-            return true;
-
-        return false;
-    }
-
-    private void mergeSortDates(DataPoint[] dataPoints, int n) {
-        if (n < 2) {
-            return;
-        }
-        int mid = n / 2;
-        DataPoint[] l = new DataPoint[mid];
-        DataPoint[] r = new DataPoint[n - mid];
-
-        for (int i = 0; i < mid; i++) {
-            l[i] = dataPoints[i];
-        }
-
-        for (int i = mid; i < n; i++) {
-            r[i - mid] = dataPoints[i];
-        }
-
-        mergeSortDates(l, mid);
-        mergeSortDates(r, n - mid);
-
-        merge(dataPoints, l, r, mid, n - mid);
-    }
-
-    private void merge(DataPoint[] dataPoints, DataPoint[] l, DataPoint[] r, int left, int right) {
-        int i = 0, j = 0, k = 0;
-        while (i < left && j < right) {
-            if (l[i].getX() <= r[j].getX()) {
-                dataPoints[k++] = l[i++];
-            } else {
-                dataPoints[k++] = r[j++];
-            }
-        }
-
-        while (i < left) {
-            dataPoints[k++] = l[i++];
-        }
-
-        while (j < right) {
-            dataPoints[k++] = r[j++];
-        }
-    }
-
     private DataPoint[] bubbleSortDates(DataPoint[] dataPoints) {
         int n = dataPoints.length;
         for (int i = 0; i < n - 1; i++) {
@@ -521,7 +465,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
             }
         }
 
-        mergeSortDates(dataPoints, dataPoints.length);
+        dataPoints = bubbleSortDates(dataPoints);
         for (int i = 0; i < dataPoints.length; i++) {
             try {
 
@@ -588,20 +532,11 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                         Log.i("y-value", yValue.get(i - 1));
                     }
                 }
-                // Check if all y values are null before populating graph
-                if (allValuesNull(yValue)) {
-                    Log.i("allYNull", "All Y values are null");
-                    Toast.makeText(getApplicationContext(), "All values are null.", Toast.LENGTH_LONG).show();
-                    pb.setVisibility(View.INVISIBLE);
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    return;
-                }
-
 
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dbgsUList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, dbgsUList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -643,18 +578,10 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                         Log.i("y-value", yValue.get(i - 1));
                     }
                 }
-                // Check if all y values are null before populating graph
-                if (allValuesNull(yValue)) {
-                    Log.i("allYNull", "All Y values are null");
-                    Toast.makeText(getApplicationContext(), "All values are null.", Toast.LENGTH_LONG).show();
-                    pb.setVisibility(View.INVISIBLE);
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    return;
-                }
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, resStorageList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, resStorageList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -669,8 +596,9 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
     NetworkTaskAuth.NetworkCallback reservoirNetworkCallbackJSON = new NetworkTaskAuth.NetworkCallback() {
         @Override
         public void onResult(int type, String result) {
-            List <ReservoirStorageData> resResults = ReservoirService.parseStoragesJSON(result);
-            if (resResults.size() < 1) {
+            List<String> strgeList = ReservoirService.parseStoragesJSON(result);
+
+            if (strgeList.size() < 1) {
                 Log.d("Reservoir-Storage", "No information has been recorded thus far");
                 pb.setVisibility(View.INVISIBLE);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
@@ -683,35 +611,35 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 resStorageList.clear();
                 yValue.clear();
                 xValue.clear();
-                for (int i = 0; i < resResults.size(); i++) {
-                    String tempDT = resResults.get(i).getDateTime();
-                    String tempStorage = resResults.get(i).getStorage();
-                    String tempUnit = resResults.get(i).getUnits();
-                    String tempLast = tempDT +" " + tempStorage + " " + tempUnit;
-                    resStorageList.add(tempLast);
-//
-//                    if (i > 0) {
-//                        String[] date = dsl.split("  ");
-//                        // values are seperated by tabs not spaces.
-//                        String[] value = date[1].split("  ");
-//                        xValue.add(date[0]);
-//                        yValue.add(value[0]);
-//                        Log.i("x-value", xValue.get(i - 1));
-//                        Log.i("y-value", yValue.get(i - 1));
-//                    }
+                for (int i = 0; i < strgeList.size(); i++) {
+                    String dsl = strgeList.get(i);
+                    resStorageList.add(dsl);
+                    if (i > 0) {
+                        String[] date = dsl.split("  ");
+                        // values are seperated by tabs not spaces.
+                        String[] value = date[1].split("  ");
+                        xValue.add(date[0]);
+                        yValue.add(value[0]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
                 }
 
-//                populateGraph(xValue, yValue);
+                populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, resStorageList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, resStorageList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
         }
     };
 
+
     //*****************RESRVOIR RECYCLER VIEW JSON ENDS **********************************************
+
+
+
 
 
     //*****************************RIVER/STREAMGAUGES RecylerView Starts ******************************************
@@ -747,18 +675,11 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                         Log.i("y-value", yValue.get(i - 1));
                     }
                 }
-                // Check if all y values are null before populating graph
-                if (allValuesNull(yValue)) {
-                    Log.i("allYNull", "All Y values are null");
-                    Toast.makeText(getApplicationContext(), "All values are null.", Toast.LENGTH_LONG).show();
-                    pb.setVisibility(View.INVISIBLE);
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    return;
-                }
+
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, dischargeList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -772,10 +693,9 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
         @Override
         public void onResult(int type, String result) {
             Log.d("discharge", "before parsingdischarges");
-            List <RiverStorageData> resResults = RiverService.parseDischargesJSON(result);
-//            List<String> disList = RiverService.parseDischargesJSON(result);
+            List<String> disList = RiverService.parseDischargesJSON(result);
             Log.d("discharge", "after parsingdischarges");
-            if (resResults.size() < 1) {
+            if (disList.size() < 1) {
                 Log.d("discharge", "No information has been recorded thus far");
                 pb.setVisibility(View.INVISIBLE);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
@@ -788,35 +708,24 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 dischargeList.clear();
                 yValue.clear();
                 xValue.clear();
-                for (int i = 0; i < resResults.size(); i++) {
-                    String tempDT = resResults.get(i).getDateTime();
-                    String tempStorage = resResults.get(i).getStorage();
-                    String tempUnit = resResults.get(i).getUnits();
-                    String tempLast = tempDT +" " + tempStorage + " " + tempUnit;
-//                    String dsl = disList.get(i);
-                    dischargeList.add(tempLast);
-//                    if (i > 0) {
-//                        String[] date = dsl.split("  ");
-//                        // values are seperated by tabs not spaces.
-//                        String[] value = date[1].split("  ");
-//                        xValue.add(date[0]);
-//                        yValue.add(value[0]);
-//                        Log.i("x-value", xValue.get(i - 1));
-//                        Log.i("y-value", yValue.get(i - 1));
-//                    }
+                for (int i = 0; i < disList.size(); i++) {
+                    String dsl = disList.get(i);
+                    dischargeList.add(dsl);
+                    if (i > 0) {
+                        String[] date = dsl.split("  ");
+                        // values are seperated by tabs not spaces.
+                        String[] value = date[1].split("  ");
+                        xValue.add(date[0]);
+                        yValue.add(value[0]);
+                        Log.i("x-value", xValue.get(i - 1));
+                        Log.i("y-value", yValue.get(i - 1));
+                    }
                 }
-                // Check if all y values are null before populating graph
-//                if (allValuesNull(yValue)) {
-//                    Log.i("allYNull", "All Y values are null");
-//                    Toast.makeText(getApplicationContext(), "All values are null.", Toast.LENGTH_LONG).show();
-//                    pb.setVisibility(View.INVISIBLE);
-//                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-//                    return;
-//                }
-//                populateGraph(xValue, yValue);
+
+                populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, dischargeList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, dischargeList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -860,18 +769,11 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                         Log.i("y-value", yValue.get(i - 1));
                     }
                 }
-                // Check if all y values are null before populating graph
-                if (allValuesNull(yValue)) {
-                    Log.i("allYNull", "All Y values are null");
-                    Toast.makeText(getApplicationContext(), "All values are null.", Toast.LENGTH_LONG).show();
-                    pb.setVisibility(View.INVISIBLE);
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    return;
-                }
+
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, soilDepthList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, soilDepthList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -914,19 +816,11 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                         Log.i("x-value", xValue.get(i - 1));
                         Log.i("y-value", yValue.get(i - 1));
                     }
-                    // Check if all y values are null before populating graph
-                }
-                if (allValuesNull(yValue)) {
-                    Log.i("allYNull", "All Y values are null");
-                    Toast.makeText(getApplicationContext(), "All values are null.", Toast.LENGTH_LONG).show();
-                    pb.setVisibility(View.INVISIBLE);
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    return;
                 }
                 populateGraph(xValue, yValue);
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = findViewById(R.id.historyList);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivity.this, android.R.layout.simple_list_item_1, sweSnotelList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(HistoryActivityNEW.this, android.R.layout.simple_list_item_1, sweSnotelList);
                 lv.setAdapter(adapter);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }

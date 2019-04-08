@@ -79,6 +79,8 @@ public class SoilMoistureActivity extends AppCompatActivity {
         intent.putExtra("wbanno",e.getWbanno());
         currentActivity.startActivity(intent);
     }
+
+
     @Override
     protected void onPause() {
         super.onPause();

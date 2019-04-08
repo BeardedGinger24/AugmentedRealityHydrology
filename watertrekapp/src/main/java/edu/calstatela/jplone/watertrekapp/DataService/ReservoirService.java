@@ -3,13 +3,22 @@ package edu.calstatela.jplone.watertrekapp.DataService;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
+import edu.calstatela.jplone.watertrekapp.Data.ReservoirStorageData;
 import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
-
+import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 
 
 public class ReservoirService {
@@ -46,6 +55,19 @@ static String TAG = "reservoir-service";
         Log.d(TAG , url);
         NetworkTask nt = new NetworkTask(callback, Reservoir.STORAGE_UNITS);
         nt.execute(url);
+    }
+
+    public static void getStorageJSON(NetworkTaskAuth.NetworkCallback callback, String startDate , String endDate, String masterSiteId){
+//        int masterSiteId = 91133; example ID
+        String masterId = masterSiteId;
+//        yr/month/day
+        // returns  history of depth below ground surface  DBGS
+
+        String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/reservoir/site_no/"+masterSiteId+"/storage/from/"+startDate+"T00:00:00/through/"+endDate+"T00:00:00?format=json");
+        Log.d(TAG , url);
+        NetworkTaskAuth nt = new NetworkTaskAuth(callback, Reservoir.STORAGE_UNITS);
+        nt.execute(url);
+
     }
 
 
@@ -148,4 +170,33 @@ static String TAG = "reservoir-service";
         return storagevaluesList;
 
     }
+    public static List parseStoragesJSON(String line){
+        Gson gson = new Gson();
+
+
+//        usgs_reservoir_data usgrd = gson.fromJson(line,usgs_reservoir_data.class);
+
+
+        // {"usgs_reservoir_data":[{"datetime":"1981-09-01T00:00:00","storage":2100.0,"units":"ac-ft"},
+        // {"datetime":"1981-09-02T00:00:00","storage":1970.0,"units":"ac-ft"},
+        List<String> storeList = new ArrayList();
+        try {
+
+            JSONObject results = new JSONObject(line);
+            String   reservoirString =   results.toString();
+            JSONArray accessRESERVOIR = results.getJSONArray("usgs_reservoir_data");
+            String resArray = accessRESERVOIR.toString();
+            Type ResStorageList = new TypeToken<ArrayList<ReservoirStorageData>>(){}.getType();
+           // ReservoirStorageData[] rsd = new Gson().fromJson(resArray,ReservoirStorageData[].class);
+            List<ReservoirStorageData> resDlist = new Gson().fromJson(resArray,ResStorageList);
+
+            return resDlist;
+//            return storeList;
+        }catch (JSONException e) {
+            Log.d("JSONRESERVOIR", "error  happened");
+            return storeList;
+        }
+
+    }
+
 }
