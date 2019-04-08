@@ -81,11 +81,11 @@ public class MapActivity extends Fragment{
         RiveruniqueID = getActivity().getIntent().getStringExtra("RiversiteNO");
         ReservoiruniqueID = getActivity().getIntent().getStringExtra("ReservoirsiteNO");
         //************************
-            isWellNull = welluniqueID == null;
-            isRiverNull = RiveruniqueID == null;
-            isReservoirNull = ReservoiruniqueID == null;
-            isSoilNull = SoilMoistureuniqueID == null;
-            isSnotelNull = SnoteluniqueID == null;
+        isWellNull = welluniqueID == null;
+        isRiverNull = RiveruniqueID == null;
+        isReservoirNull = ReservoiruniqueID == null;
+        isSoilNull = SoilMoistureuniqueID == null;
+        isSnotelNull = SnoteluniqueID == null;
 
         defaultLocation = new GeoPoint(lat,lon);
         TextView txtData = mView.findViewById(R.id.txt_data);
@@ -102,7 +102,7 @@ public class MapActivity extends Fragment{
         marker.setAnchor(Marker.ANCHOR_CENTER,Marker.ANCHOR_BOTTOM);
 
 
-       //*********************
+        //*********************
         if (isWellNull == false){
             marker.setIcon(this.getActivity().getDrawable(R.drawable.well_res_ico_clr_sm));
             marker.setTitle("Well: LatLon("+lat+","+lon+")");

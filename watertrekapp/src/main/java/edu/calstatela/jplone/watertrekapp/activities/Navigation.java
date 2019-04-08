@@ -17,6 +17,8 @@ import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.Data.Snotel;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
+import edu.calstatela.jplone.watertrekapp.Fragments.BlankFragment;
+import edu.calstatela.jplone.watertrekapp.Fragments.TestFragment;
 import edu.calstatela.jplone.watertrekapp.R;
 
 public class Navigation extends AppCompatActivity {
@@ -25,8 +27,8 @@ public class Navigation extends AppCompatActivity {
     // https://medium.com/@oluwabukunmi.aluko/bottom-navigation-view-with-fragments-a074bfd08711
 
     final Fragment fragment1 = new MapActivity();
-//    final Fragment fragment2 = new Test();
-//    final Fragment fragment3 = new NotificationsFragment();
+    final Fragment fragment2 = new TestFragment();
+    final Fragment fragment3 = new BlankFragment();
     final FragmentManager fm = getSupportFragmentManager();
     Fragment active = fragment1;
 
@@ -43,12 +45,12 @@ public class Navigation extends AppCompatActivity {
 //                    active = fragment1;
                     return true;
                 case R.id.navigation_graph_id:
-//                    fm.beginTransaction().hide(active).show(fragment2).commit();
-//                    active = fragment2;
+                    fm.beginTransaction().hide(active).show(fragment2).commit();
+                    active = fragment2;
                     return true;
                 case R.id.navigation_list_id:
-//                    fm.beginTransaction().hide(active).show(fragment3).commit();
-//                    active = fragment3;
+                    fm.beginTransaction().hide(active).show(fragment3).commit();
+                    active = fragment3;
                     return true;
             }
             return false;
@@ -63,8 +65,8 @@ public class Navigation extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-//        fm.beginTransaction().add(R.id.main_container, fragment3, "3").hide(fragment3).commit();
-//        fm.beginTransaction().add(R.id.main_container, fragment2, "2").hide(fragment2).commit();
+        fm.beginTransaction().add(R.id.main_container, fragment3, "3").hide(fragment3).commit();
+        fm.beginTransaction().add(R.id.main_container, fragment2, "2").hide(fragment2).commit();
         fm.beginTransaction().add(R.id.main_container,fragment1, "1").commit();
 
     }
