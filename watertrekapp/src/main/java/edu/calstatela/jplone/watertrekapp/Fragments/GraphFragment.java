@@ -65,7 +65,7 @@ public class GraphFragment extends Fragment {
             Log.d("graphfrag", one);
             Log.d("graphfrag", two);
 
-            populateGraph(dbgsUList);
+//            populateGraph(dbgsUList);
         }
         // Inflate the layout for this fragment
         return gView;
