@@ -55,19 +55,19 @@ public class RiverActivity extends AppCompatActivity {
         map.getOverlays().add(marker);
 
         //*********Launch History Activity******************
-        Button goHist = (Button) findViewById(R.id.go2hist);
-
-
-        goHist.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RiverActivity.this,
-                        HistoryActivity.class);
-                intent.putExtra("RiverID", RiveruniqueID);
-                startActivity(intent); // startActivity allow you to move
-            }
-        });
+//        Button goHist = (Button) findViewById(R.id.go2hist);
+//
+//
+//        goHist.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(RiverActivity.this,
+//                        HistoryActivity.class);
+//                intent.putExtra("RiverID", RiveruniqueID);
+//                startActivity(intent); // startActivity allow you to move
+//            }
+//        });
     }
     public static void launchDetailsActivity(Activity currentActivity, River e) {
         Log.d("LaunchRiverdetails","going now...");

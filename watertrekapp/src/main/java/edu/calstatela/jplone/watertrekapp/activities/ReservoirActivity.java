@@ -59,19 +59,19 @@ public class ReservoirActivity extends AppCompatActivity{
         map.getOverlays().add(marker);
 
         //*********Launch History Activity******************
-        Button goHist = (Button) findViewById(R.id.go2hist);
-
-
-        goHist.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ReservoirActivity.this,
-                        HistoryActivity.class);
-                intent.putExtra("ReservoirID", ReservoiruniqueID);
-                startActivity(intent); // startActivity allow you to move
-            }
-        });
+//        Button goHist = (Button) findViewById(R.id.go2hist);
+//
+//
+//        goHist.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(ReservoirActivity.this,
+//                        HistoryActivity.class);
+//                intent.putExtra("ReservoirID", ReservoiruniqueID);
+//                startActivity(intent); // startActivity allow you to move
+//            }
+//        });
     }
     public static void launchDetailsActivity(Activity currentActivity, Reservoir e) {
         Intent intent = new Intent(currentActivity, ReservoirActivity.class);
