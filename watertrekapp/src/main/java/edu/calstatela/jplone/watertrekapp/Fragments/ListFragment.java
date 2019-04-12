@@ -139,11 +139,6 @@ public class ListFragment extends Fragment   {
                 endBclick = 2;
                 showDatePicker();
 
-////                Toast.makeText(getActivity(), "STARTBUTTON", Toast.LENGTH_SHORT).show();
-//                DialogFragment dp = new DatePickerFragment();
-//                dp.show(getFragmentManager(), "start_date_chosen");
-//                String value = getArguments().getString("OurDate");
-//                Log.d("qqqq", value);
 
             }
         });
@@ -156,14 +151,6 @@ public class ListFragment extends Fragment   {
                 endBclick = 1;
                 startBclick = 2;
                 showDatePicker();
-////                Toast.makeText(getActivity(), "ENDBUTTON", Toast.LENGTH_SHORT).show();
-//
-//
-//
-//                DialogFragment dialogpicker = new DatePickerFragment();
-//                dialogpicker.show(getFragmentManager(), "end_date_chosen");
-
-
             }
         });
         Button searchButt = lView.findViewById(R.id.Search);
@@ -200,29 +187,7 @@ public class ListFragment extends Fragment   {
 
     DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener() {
 
-//        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-//            starttext = (TextView) lView.findViewById(R.id.startView);
-//            starttext.setText(String.valueOf(dayOfMonth) + "-" + String.valueOf(monthOfYear+1)
-//                    + "-" + String.valueOf(year));
-//            firstDate  = String.valueOf(dayOfMonth) + "-" + String.valueOf(monthOfYear+1)
-//                    + "-" + String.valueOf(year);
-////            edittext.setText(String.valueOf(dayOfMonth) + "-" + String.valueOf(monthOfYear+1)
-////                    + "-" + String.valueOf(year));
-//        }
 public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
-//                starttext = (TextView) lView.findViewById(R.id.startView);
-//            starttext.setText(String.valueOf(dayOfMonth) + "-" + String.valueOf(month)
-//                    + "-" + String.valueOf(year));
-//            firstDate  = String.valueOf(dayOfMonth) + "-" + String.valueOf(month)
-//                    + "-" + String.valueOf(year);
-    Log.d("ListSet", "onDateSet#1 is called.");
-    // Example of date format ?? /2017-05-06 yr/month/day
-//    Calendar calendar = new GregorianCalendar(year, month, dayOfMonth);
-//        Calendar calendar = GregorianCalendar.getInstance();
-//        Calendar calendar = Calendar.getInstance();
-//    calendar.set(Calendar.YEAR, year);
-//    calendar.set(Calendar.MONTH, month);
-//    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
     month = month + 1;
     String smonth = Integer.toString(month);
     String sdayOfMonth = Integer.toString(dayOfMonth);
@@ -295,93 +260,6 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
 
 }
     };
-
-
-//    //DatePicker datePicker
-//    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-//        Log.d("ListSet", "onDateSet#1 is called.");
-//        // Example of date format ?? /2017-05-06 yr/month/day
-//        Calendar calendar = new GregorianCalendar(year, month, dayOfMonth);
-////        Calendar calendar = GregorianCalendar.getInstance();
-////        Calendar calendar = Calendar.getInstance();
-//        calendar.set(Calendar.YEAR, year);
-//        calendar.set(Calendar.MONTH, month);
-//        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-//        month = month + 1;
-//        String smonth = Integer.toString(month);
-//        String sdayOfMonth = Integer.toString(dayOfMonth);
-//
-//        String fixeddayOfMonth = "0" + dayOfMonth;
-//        String fixedmonth = "0" + month;
-//        // both month and day need to append a zero
-//        // if else statements just for now  Need to find a way to Verify End Date is not Before Start Date ????
-//        // This can be done by concatenating dates and converting to int and then checking which int is bigger Remember to Implement?????
-//        if ((smonth.length() == 1) && (sdayOfMonth.length() == 1)) {
-//            String datechosen = (year + "-" + fixedmonth + "-" + fixeddayOfMonth);
-//            if (startBclick == 1) {
-//                String value = getArguments().getString("OurDate");
-//                Log.d("qqqq", value);
-//                starttext = (TextView) lView.findViewById(R.id.startView);
-//                starttext.setText(value);
-//                firstDate = value;
-//
-//            }
-//            if (endBclick == 1) {
-//                String value = getArguments().getString("OurDate");
-//                endtext = (TextView) lView.findViewById(R.id.endView);
-//                endtext.setText(value);
-//                lastDate = value;
-//            }
-//        } else if ((smonth.length() == 1) && (sdayOfMonth.length() != 1)) {
-//
-//            String datechosen = (year + "-" + fixedmonth + "-" + dayOfMonth);
-//            if (startBclick == 1) {
-//                String value = getArguments().getString("OurDate");
-//
-//                starttext = (TextView) lView.findViewById(R.id.startView);
-//                starttext.setText(value);
-//                firstDate = value;
-//            }
-//            if (endBclick == 1) {
-//                String value = getArguments().getString("OurDate");
-//                endtext = (TextView) lView.findViewById(R.id.endView);
-//                endtext.setText(value);
-//                lastDate = value;
-//            }
-//        } else if ((smonth.length() != 1) && (sdayOfMonth.length() == 1)) {
-//            String datechosen = (year + "-" + month + "-" + fixeddayOfMonth);
-//            if (startBclick == 1) {
-//                String value = getArguments().getString("OurDate");
-//                starttext = (TextView) lView.findViewById(R.id.startView);
-//                starttext.setText(value);
-//                firstDate = value;
-//            }
-//            if (endBclick == 1) {
-//                String value = getArguments().getString("OurDate");
-//                endtext = (TextView) lView.findViewById(R.id.endView);
-//                endtext.setText(value);
-//                lastDate = value;
-//            }
-//        } else {
-//
-//            String datechosen = (year + "-" + month + "-" + dayOfMonth);
-//            if (startBclick == 1) {
-//                String value = getArguments().getString("OurDate");
-//                starttext = (TextView) lView.findViewById(R.id.startView);
-//                starttext.setText(value);
-//                firstDate = value;
-//            }
-//            if (endBclick == 1) {
-//                String value = getArguments().getString("OurDate");
-//                endtext = (TextView) lView.findViewById(R.id.endView);
-//                endtext.setText(value);
-//                lastDate = value;
-//            }
-//
-//        }
-//
-//
-//    }
 
 
     public Boolean dateVerifier() {
@@ -809,22 +687,3 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
     }
 }
 
-
-// class Date extends DialogFragment {
-//    @Override
-//    public Dialog onCreateDialog(Bundle savedInstanceState) {
-//        Calendar calendar = Calendar.getInstance();
-//        int year = calendar.get(Calendar.YEAR);
-//        int month = calendar.get(Calendar.MONTH);
-//        int day = calendar.get(Calendar.DAY_OF_MONTH);
-//        DatePickerDialog date =  new DatePickerDialog(getActivity(), AlertDialog.THEME_HOLO_LIGHT,
-//                (DatePickerDialog.OnDateSetListener)
-//                        getActivity(), year, month, day);
-//        date.getDatePicker().setMaxDate(System.currentTimeMillis());
-//        return date;
-//    }
-//
-//
-//
-//
-//}
