@@ -9,6 +9,7 @@ public class Snotel {
     String stationId;
     String lon;
     String lat;
+    String elv;
     String date;
     String swe;
     String units;
@@ -46,6 +47,14 @@ public class Snotel {
 
     public void setLat(String lat) {
         this.lat = lat;
+    }
+
+    public String getElv() {
+        return elv;
+    }
+
+    public void setElv(String elv) {
+        this.elv = elv;
     }
 
     public String getDate() {

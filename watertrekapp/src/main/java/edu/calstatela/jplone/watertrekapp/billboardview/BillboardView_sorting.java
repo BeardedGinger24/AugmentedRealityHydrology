@@ -192,7 +192,7 @@ public class BillboardView_sorting extends SensorARView{
         LitModel.init();
 
         mCamera = new Camera3D();
-        mCamera.setDepthTestEnabled(true);
+        mCamera.setDepthTestEnabled(false);
         color = new float[]{0, 0, 0, 0};
 
         mEntityList = new ArrayList<>();
@@ -262,20 +262,20 @@ public class BillboardView_sorting extends SensorARView{
         }
         // If billboard need to be removed... remove
         synchronized(mRemoveList) {
-//            if (!mRemoveList.isEmpty()) {
-//                for (Integer id : mRemoveList) {
-//                    for (int i = 0; i < mCurrentInfos.size(); i++) {
-//                        if (mCurrentInfos.get(i).id == id) {
-//                            mCurrentInfos.remove(i);
-//                            mEntityList.remove(i);
-//                        }
-//                    }
-//                }
-//                mRemoveList.clear();
-//            }
-            mRemoveList.clear();
-            mCurrentInfos.clear();
-            mEntityList.clear();
+            if (!mRemoveList.isEmpty()) {
+                for (Integer id : mRemoveList) {
+                    for (int i = 0; i < mCurrentInfos.size(); i++) {
+                        if (mCurrentInfos.get(i).id == id) {
+                            mCurrentInfos.remove(i);
+                            mEntityList.remove(i);
+                        }
+                    }
+                }
+                mRemoveList.clear();
+            }
+//            mRemoveList.clear();
+//            mCurrentInfos.clear();
+//            mEntityList.clear();
 //            entityListNear.clear();
 //            entityListMid.clear();
 //            entiyiListFar.clear();
@@ -400,13 +400,13 @@ public class BillboardView_sorting extends SensorARView{
         Entity e = new Entity();
         e.setDrawable(sbb);
         //e.setLatLonAlt(new float[]{info.lat,info.lon});
-        float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon},meshLoc);
-        e.setPosition(bbLoc[0],-bbLoc[1]+0.1f,bbLoc[2]);
+        float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon,info.alt},meshLoc);
+        e.setPosition(bbLoc[0],-(bbLoc[1]+0.1f),bbLoc[2]);
         e.yaw(45);
         mEntityList.add(e);
-        entityListNear.add(e);
-        entityListMid.add(e);
-        entiyiListFar.add(e);
+//        entityListNear.add(e);
+//        entityListMid.add(e);
+//        entiyiListFar.add(e);
     }
     private void newMesh(OBJLoader info){
         ColorHolder color;
@@ -450,7 +450,6 @@ public class BillboardView_sorting extends SensorARView{
                 userElevation = Float.parseFloat(temp.get("elevation").toString());
             } catch (JSONException e) {
                 e.printStackTrace();
-                return (result.replace("multipoint z((","")).replace("))","");
             }
             return null;
         }
@@ -471,25 +470,13 @@ public class BillboardView_sorting extends SensorARView{
         double latScale = 18425/elevationScale;
 
         float x = (float) ((bbx-mx)*lonScale);
-        double y = (my- bby)*latScale;
+        float y = (float) ((my- bby)*latScale);
 
-        NetworkTaskJSON networkTaskJSON = new NetworkTaskJSON(null,0);
-        networkTaskJSON.execute(ElevationObstructionService.getPointElevation(bby,bbx));
-        try {
-            String temp = (networkTaskJSON.get().replace("multipoint z((","").replace("))",""));
-            String[] vals = temp.split(" ");
-
-            float[] result = new float[3];
-            result[0] = x;
-            result[1] = Float.parseFloat(vals[2])/elevationScale;
-            result[2] = (float) y;
-            return result;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
+        float[] result = new float[3];
+        result[0] = x;
+        result[1] = bbloc[2]/elevationScale;
+        result[2] = y;
+        return result;
     }
     public void changeBGC(boolean b){
         if(!b){

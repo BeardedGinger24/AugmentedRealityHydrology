@@ -3,6 +3,8 @@ package edu.calstatela.jplone.watertrekapp.DataService;
 
 import android.util.Log;
 
+import java.util.concurrent.ExecutionException;
+
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 
 public class ElevationObstructionService {
@@ -59,12 +61,19 @@ public class ElevationObstructionService {
 
 //    Given multiple points in WKT format, return points with elevation values
 
-    public static String getPointElevation(double startlatitude, double startlongitude ){
+    public static String getPointElevation(NetworkTaskJSON.NetworkCallback callback,String points){
 
-        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/getElevations?multiPoints=multipoint(("+startlongitude+","+startlatitude+"))");
-//        NetworkTaskJSON nt = new NetworkTaskJSON(callback,0);
-//        nt.execute(url);
-    return url;
+        String url = ("http://34.227.91.44:8080/LOSService/ws/los/earthLOS/getElevations?multiPoints=multipoint"+points);
+        NetworkTaskJSON nt = new NetworkTaskJSON(callback,0);
+        nt.execute(url);
+        try {
+            return nt.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

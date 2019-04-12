@@ -91,6 +91,7 @@ public class River {
     public void setLon(String lon) {
         this.lon = lon;
     }
+
     public String getComId() {
         return comId;
     }

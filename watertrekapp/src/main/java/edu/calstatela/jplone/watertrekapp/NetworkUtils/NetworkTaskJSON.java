@@ -19,6 +19,7 @@ import java.net.URL;
 public class NetworkTaskJSON extends AsyncTask<String,Void,String> {
     private NetworkCallback callbackJS;
     private int data_type;
+
     public NetworkTaskJSON(NetworkCallback callbackJS,int data_type )
     {
         this.callbackJS = callbackJS;
@@ -34,7 +35,6 @@ public class NetworkTaskJSON extends AsyncTask<String,Void,String> {
         };
         StringBuilder stringBuilder = new StringBuilder();
         HttpURLConnection urlConnection = null;
-        Log.d("NTJ",url+"");
         try{
             urlConnection=(HttpURLConnection) url.openConnection();
         }catch (IOException e){
@@ -68,7 +68,6 @@ public class NetworkTaskJSON extends AsyncTask<String,Void,String> {
             String doesitObstruct = object.toString();
             callbackJS.onResult(this.data_type, doesitObstruct);
         } catch (JSONException e) {
-            e.printStackTrace();
             super.onPostExecute(result);
         }
 

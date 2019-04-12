@@ -12,6 +12,7 @@ public class Reservoir {
             desc,
             lon,
             lat,
+            elv,
             maxDate,
             minDate,
             max,
@@ -35,7 +36,6 @@ public class Reservoir {
         this.minDate = values[5];
         this.max = values[6];
         this.min = values[7];
-
     }
 
     public String getSiteNo() {

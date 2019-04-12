@@ -37,6 +37,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.arframework.util.Permissions;
@@ -47,6 +48,7 @@ import edu.calstatela.jplone.watertrekapp.Data.Snotel;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
+import edu.calstatela.jplone.watertrekapp.DataService.ElevationTask;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
 import edu.calstatela.jplone.watertrekapp.DataService.SnotelService;
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //Arc menu items
     ArcMenu arcMenu;
     private static int[] ITEM_DRAWABLES = { R.drawable.mtn_res_ico_clr, R.drawable.reservoir_bb_icon, R.drawable.soil_bb_icon,
-            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr, R.drawable.snotel_res_ico, R.drawable.eye24 };
+            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr_sm, R.drawable.snotel_res_ico, R.drawable.eye24 };
     private String[] str = {"mountain","reservoir","soil","well", "river", "snotel", "eye"};
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -254,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         Double currlong =  Double.parseDouble(longy);
         ElevationObstructionService.getObstruction(obstructNetworkCallback,currlat,currlong,roll,pitch);
 
-
     }
 
     public String parseNatCall(String JSONString) {
@@ -288,8 +289,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             return result;
         }
     };
-
-
 
     public void toggleReservoir(View v) {
         int i = 1;
@@ -489,9 +488,32 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         @Override
         public void onResult(int type, String result) {
             List<Well> lWellList = WellService.parseWells(result);
-            Log.d(TAG,result);
+            int size1 = lWellList.size();
+            int size2 = lWellList.size();
+            if(size1%2 != 0){
+                size1 = size1+1;
+                size2 = size2-1;
+            }
+            Log.d(TAG,size1+" : "+size2);
+            String[] locs1 = new String[size1];
+            String[] locs2 = new String[size2];
+            int index1 = 0;
+            int index2 = 0;
+            for(Well e: lWellList){
+                if(index1<=size1-2){
+                    locs1[index1]=e.getLon();
+                    locs1[index1+1]=e.getLat();
+                    index1=index1+2;
+                }else{
+                    locs2[index2] = e.getLon();
+                    locs2[index2+1] = e.getLat();
+                    index2=index2+2;
+                }
+            }
+            //float[] elvs = grabLocs(locs1,locs2,null,null);
             // Check to see if GET call is empty if so display message to user else continue
             if (lWellList.size() >=1){
+                int index = 0;
                 for(Well well :lWellList){
                     try{
                         int id = Integer.parseInt(well.getMasterSiteId());
@@ -500,8 +522,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                                 R.drawable.well_bb_icon,
                                 "Well # "+ well.getMasterSiteId(),
                                 "(" + well.getLat() + "," + well.getLon() + ")",
-                                Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()),0
+                                Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()),0//elvs[index]
                         );
+                        index++;
                     }catch(NumberFormatException e){
                         Log.d(TAG,e.toString());
                     }
@@ -547,8 +570,32 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             // Return reservior nearest to range once passed in currently hard coded
             List<Reservoir> rreservoirList = ReservoirService.parseAllReservoirs(result , loc[0] , loc[1],radius); // change method
             // for every reservoir obj  that is near me add it to reservoirList and add to Billboard in order to display it
+            int size1 = rreservoirList.size();
+            int size2 = rreservoirList.size();
+            if(size1%2 != 0){
+                size1 = size1+1;
+                size2 = size2-1;
+            }
+            Log.d(TAG,size1+" : "+size2);
+            String[] locs1 = new String[size1];
+            String[] locs2 = new String[size2];
+            int index1 = 0;
+            int index2 = 0;
+            for(Reservoir e: rreservoirList){
+                if(index1<=size1-2){
+                    locs1[index1]=e.getLon();
+                    locs1[index1+1]=e.getLat();
+                    index1=index1+2;
+                }else{
+                    locs2[index2] = e.getLon();
+                    locs2[index2+1] = e.getLat();
+                    index2=index2+2;
+                }
+            }
+            //float[] elvs = grabLocs(locs1,locs2,null,null);
             // Check to see if GET call is empty if so display message to user else continue
             if (rreservoirList.size() >=1){
+                int index = 0;
                 for(Reservoir reservoirr : rreservoirList){
                     try {
                         reservoirList.add(reservoirr);
@@ -557,8 +604,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                                 R.drawable.reservoir_bb_icon,
                                 "Reservoir #" + reservoirr.getSiteNo(),
                                 "(" + reservoirr.getLat() + ", " + reservoirr.getLon() + ")",
-                                Float.parseFloat(reservoirr.getLat()), Float.parseFloat(reservoirr.getLon()), 0
+                                Float.parseFloat(reservoirr.getLat()), Float.parseFloat(reservoirr.getLon()),0// elvs[index]
                         );
+                        index++;
                     }catch(NumberFormatException e) {
 
                     }
@@ -607,8 +655,32 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             // Return soil Moisture  nearest to range once passed in currently hard coded
             List<SoilMoisture> soilMoistList = SoilMoistureService.parseAllSoilMoist(result , loc[0] , loc[1],radius); // change method
             // for every soil obj  that is near me add it to soillist  and add to Billboard in order to display it
+            int size1 = soilMoistList.size();
+            int size2 = soilMoistList.size();
+            if(size1%2 != 0){
+                size1 = size1+1;
+                size2 = size2-1;
+            }
+            Log.d(TAG,size1+" : "+size2);
+            String[] locs1 = new String[size1];
+            String[] locs2 = new String[size2];
+            int index1 = 0;
+            int index2 = 0;
+            for(SoilMoisture e: soilMoistList){
+                if(index1<=size1-2){
+                    locs1[index1]=e.getLon();
+                    locs1[index1+1]=e.getLat();
+                    index1=index1+2;
+                }else{
+                    locs2[index2] = e.getLon();
+                    locs2[index2+1] = e.getLat();
+                    index2=index2+2;
+                }
+            }
+            //float[] elvs = grabLocs(locs1,locs2,null,null);
             // Check to see if GET call is empty if so display message to user else continue
             if (soilMoistList.size() >=1){
+                int index = 0;
                 for(SoilMoisture moistySoil : soilMoistList){
                     try {
                         Log.d("soily", moistySoil.getWbanno());
@@ -620,8 +692,9 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                                 R.drawable.soil_bb_icon,
                                 "Soil #" + moistySoil.getWbanno(),
                                 "(" + moistySoil.getLat() + ", " + moistySoil.getLon() + ")",
-                                Float.parseFloat(moistySoil.getLat()), Float.parseFloat(moistySoil.getLon()), 0
+                                Float.parseFloat(moistySoil.getLat()), Float.parseFloat(moistySoil.getLon()), 0//elvs[index]
                         );
+                        index++;
                     }catch(NumberFormatException e){
 
                     }
@@ -676,18 +749,64 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         @Override
         public void onResult(int type, String result) {
             List<River> lRiverList = RiverService.parseRivers(result);
+            int size1 = lRiverList.size();
+            int size2 = lRiverList.size();
+            int size12 = 0;
+            int size22 = 0;
+            if(size1%2 != 0){
+                size1 = size1+1;
+                size2 = size2-1;
+            }
+            size1 = size1/2;
+            size2 = size2/2;
+            size12 = size1/2;
+            size22 = size2/2;
+            Log.d(TAG,size1+" : "+size2);
+            String[] locs1 = new String[size1];
+            String[] locs2 = new String[size2];
+            String[] locs12 = new String[size12];
+            String[] locs22 = new String[size22];
+            int index1 = 0;
+            int index2 = 0;
+            int index12 = 0;
+            int index22 = 0;
+            for(River e: lRiverList){
+                if(index1<=size1-2){
+                    locs1[index1]=e.getLon();
+                    locs1[index1+1]=e.getLat();
+                    index1=index1+2;
+                }
+                if(index12<=size12-2){
+                    locs12[index12] = e.getLon();
+                    locs12[index12+1] = e.getLat();
+                    index12=index12+2;
+                }
+                if(index2<=size2-2){
+                    locs2[index2]=e.getLon();
+                    locs2[index2+1]=e.getLat();
+                    index2=index2+2;
+                }
+                if(index22<=size22-2){
+                    locs22[index22] = e.getLon();
+                    locs22[index22+1] = e.getLat();
+                    index22=index22+2;
+                }
+            }
+            //float[] elvs = grabLocs(locs1,locs12,locs2,locs22);
             // Check to see if GET call is empty if so display message to user else continue
             if (lRiverList.size() >=1){
+                int index = 0;
                 for(River riv :lRiverList){
                     try{
                         int id = Integer.parseInt(riv.getSiteNo());
                         riverList.add(riv);
                         arview.addBillboard(id,
-                                R.drawable.river_res_ico_clr,
+                                R.drawable.river_res_ico_clr_sm,
                                 "River # "+ riv.getSiteNo(),
                                 "(" + riv.getLat() + "," + riv.getLon() + ")",
-                                Float.parseFloat(riv.getLat()), Float.parseFloat(riv.getLon()),0
+                                Float.parseFloat(riv.getLat()), Float.parseFloat(riv.getLon()),0//elvs[index]
                         );
+                        index++;
                     }catch(NumberFormatException e){
 
                     }
@@ -744,8 +863,32 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         public void onResult(int type, String result) {
             float[] loc = arview.getLocation();     // added by  leo
             List<Snotel> lSnotelList = SnotelService.parseAllSnowtels(result, loc[0] , loc[1],radius);
+            int size1 = lSnotelList.size();
+            int size2 = lSnotelList.size();
+            if(size1%2 != 0){
+                size1 = size1+1;
+                size2 = size2-1;
+            }
+            Log.d(TAG,size1+" : "+size2);
+            String[] locs1 = new String[size1];
+            String[] locs2 = new String[size2];
+            int index1 = 0;
+            int index2 = 0;
+            for(Snotel e: lSnotelList){
+                if(index1<=size1-2){
+                    locs1[index1]=e.getLon();
+                    locs1[index1+1]=e.getLat();
+                    index1=index1+2;
+                }else{
+                    locs2[index2] = e.getLon();
+                    locs2[index2+1] = e.getLat();
+                    index2=index2+2;
+                }
+            }
+            //float[] elvs = grabLocs(locs1,locs2,null,null);
             // Check to see if GET call is empty if so display message to user else continue
             if (lSnotelList.size() >=1){
+                int index = 0;
                 for(Snotel snt :lSnotelList){
                     try{
                         int id = Integer.parseInt(snt.getStationId());
@@ -754,17 +897,16 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                                 R.drawable.snotel_res_ico,
                                 "Snotel # "+ snt.getStationId(),
                                 "(" + snt.getLat() + "," + snt.getLon() + ")",
-                                Float.parseFloat(snt.getLat()), Float.parseFloat(snt.getLon()),0
+                                Float.parseFloat(snt.getLat()), Float.parseFloat(snt.getLon()),0//elvs[index]
                         );
+                        index++;
                     }catch(NumberFormatException e){
 
                     }
                 }
-//                pb.setVisibility(View.INVISIBLE);
             }
             else
             {
-//                pb.setVisibility(View.INVISIBLE);
                 Log.d("snow","There are currently no Snotel Pillows within your  range ");
                 Toast.makeText(getApplicationContext(), "There are currently no Snotel Pillows within range",
                         Toast.LENGTH_LONG).show();
@@ -773,6 +915,114 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     };
 
+    public float[] grabLocs(String[] array1,String[] array2,String[] array12,String[] array22){
+        ElevationTask.MultiPoint elevationTask = new ElevationTask.MultiPoint();
+        //The multipoint elevation call has a limit of 128 items per call
+        //for that reason we will split the call into 2
+
+        //first half of datapoint locations
+        StringBuilder sb1 = new StringBuilder();
+        sb1.append("(");
+        for(int i = 0; i<array1.length; i=i+2){
+            sb1.append("("+array1[i]+","+array1[i+1]+"),");
+        }
+        sb1.append(")");
+        elevationTask.execute(sb1.toString());
+        String res1 = "";
+        try {
+            res1 = elevationTask.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        String temp1 = res1.substring(13,res1.length()-1);
+        String[] locs1 = temp1.split(",");
+
+        ///////////////////////////////////////////
+        StringBuilder sb12 = new StringBuilder();
+        sb12.append("(");
+        for(int i = 0; i<array12.length; i=i+2){
+            sb12.append("("+array12[i]+","+array12[i+1]+"),");
+        }
+        sb12.append(")");
+        elevationTask.execute(sb12.toString());
+        String res12 = "";
+        try {
+            res12 = elevationTask.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        String temp12 = res12.substring(13,res12.length()-1);
+        String[] locs12 = temp12.split(",");
+
+        //second half of datapoint locations
+        StringBuilder sb2 = new StringBuilder();
+        sb2.append("(");
+        for(int i = 0; i<array2.length; i=i+2){
+            sb2.append("("+array2[i]+","+array2[i+1]+"),");
+        }
+        sb2.append(")");
+        elevationTask.execute(sb2.toString());
+        String res2 = "";
+        try {
+            res2 = elevationTask.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        String temp2 = res2.substring(13,res2.length()-1);
+        String[] locs2 = temp2.split(",");
+
+        ////////////////////////////////////////////////
+        StringBuilder sb22 = new StringBuilder();
+        sb22.append("(");
+        for(int i = 0; i<array22.length; i=i+2){
+            sb22.append("("+array22[i]+","+array22[i+1]+"),");
+        }
+        sb22.append(")");
+        elevationTask.execute(sb22.toString());
+        String res22 = "";
+        try {
+            res22 = elevationTask.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        String temp22 = res22.substring(13,res22.length()-1);
+        String[] locs22 = temp22.split(",");
+
+
+        float[] elevations = new float[locs1.length+locs2.length+locs12.length+locs22.length];
+        for(int i = 0; i<locs1.length; i++){
+            String[] loc = locs1[i].split(" ");
+            String elevation = loc[2].substring(0,loc.length-1);
+            elevations[i] = Float.parseFloat(elevation);
+        }
+        int offset = locs1.length;
+        for(int i = 0; i<locs12.length; i++){
+            String[] loc = locs12[i].split(" ");
+            String elevation = loc[2].substring(0,loc.length-1);
+            elevations[i+offset] = Float.parseFloat(elevation);
+        }
+        offset = offset+locs12.length;
+        for(int i = 0; i<locs2.length; i++){
+            String[] loc = locs2[i].split(" ");
+            String elevation = loc[2].substring(0,loc.length-1);
+            elevations[i] = Float.parseFloat(elevation);
+        }
+        offset = offset+locs2.length;
+        for(int i = 0; i<locs22.length; i++){
+            String[] loc = locs22[i].split(" ");
+            String elevation = loc[2].substring(0,loc.length-1);
+            elevations[i+offset] = Float.parseFloat(elevation);
+        }
+        return elevations;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     ///
