@@ -1,6 +1,7 @@
 package edu.calstatela.jplone.watertrekapp.Fragments;
 
 import android.app.AlertDialog;
+
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -28,7 +29,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import edu.calstatela.jplone.watertrekapp.Data.ReservoirStorageData;
-import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.Data.RiverStorageData;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
@@ -39,9 +39,9 @@ import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.activities.DatePickerFragment;
-import edu.calstatela.jplone.watertrekapp.activities.HistoryActivity;
 
-public class ListFragment extends Fragment implements DatePickerDialog.OnDateSetListener  {
+
+public class ListFragment extends Fragment   {
     Context context;
     TextView starttext;
     TextView endtext;
@@ -53,8 +53,8 @@ public class ListFragment extends Fragment implements DatePickerDialog.OnDateSet
     SimpleDateFormat simpleDateFormat;
 
 
-    private TextView mDisplaydate;
-    private DatePickerDialog.OnDateSetListener mDateSetListener;
+//    private TextView mDisplaydate;
+//    private DatePickerDialog.OnDateSetListener mDateSetListener;
     //    private ProgressBar pb;
     //DELETE TESTERLIST
     // Various arrayList for various POI
@@ -91,14 +91,14 @@ public class ListFragment extends Fragment implements DatePickerDialog.OnDateSet
     }
 
 
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        return  new DatePickerDialog(getActivity(),AlertDialog.THEME_HOLO_LIGHT,this,year,month,day);
-//        return new DatePickerDialog(getActivity(), AlertDialog.THEME_HOLO_LIGHT,(DatePickerDialog.OnDateSetListener) getActivity(),year,month,day);
-    }
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        Calendar calendar = Calendar.getInstance();
+//        int year = calendar.get(Calendar.YEAR);
+//        int month = calendar.get(Calendar.MONTH);
+//        int day = calendar.get(Calendar.DAY_OF_MONTH);
+//        return  new DatePickerDialog(getActivity(),AlertDialog.THEME_HOLO_LIGHT,this,year,month,day);
+////        return new DatePickerDialog(getActivity(), AlertDialog.THEME_HOLO_LIGHT,(DatePickerDialog.OnDateSetListener) getActivity(),year,month,day);
+//    }
 
 //    @Override
 //    public void onCreate(Bundle savedInstanceState) {
@@ -128,17 +128,22 @@ public class ListFragment extends Fragment implements DatePickerDialog.OnDateSet
         isSnotelNull = SnotelID == null;
 
         lView = inflater.inflate(R.layout.list_view_fragment, container, false);
+        pb = lView.findViewById(R.id.historyLoad);
+        pb.setVisibility(View.INVISIBLE);
 
         Button startButton = (Button) lView.findViewById(R.id.sdate);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 startBclick = 1;
                 endBclick = 2;
-//                Toast.makeText(getActivity(), "STARTBUTTON", Toast.LENGTH_SHORT).show();
-                DialogFragment dp = new DatePickerFragment();
-                dp.show(getFragmentManager(), "start_date_chosen");
+                showDatePicker();
+
+////                Toast.makeText(getActivity(), "STARTBUTTON", Toast.LENGTH_SHORT).show();
+//                DialogFragment dp = new DatePickerFragment();
+//                dp.show(getFragmentManager(), "start_date_chosen");
+//                String value = getArguments().getString("OurDate");
+//                Log.d("qqqq", value);
 
             }
         });
@@ -147,14 +152,16 @@ public class ListFragment extends Fragment implements DatePickerDialog.OnDateSet
         endButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 endBclick = 1;
                 startBclick = 2;
-//                Toast.makeText(getActivity(), "ENDBUTTON", Toast.LENGTH_SHORT).show();
-
-
-
-                DialogFragment dialogpicker = new DatePickerFragment();
-                dialogpicker.show(getFragmentManager(), "end_date_chosen");
+                showDatePicker();
+////                Toast.makeText(getActivity(), "ENDBUTTON", Toast.LENGTH_SHORT).show();
+//
+//
+//
+//                DialogFragment dialogpicker = new DatePickerFragment();
+//                dialogpicker.show(getFragmentManager(), "end_date_chosen");
 
 
             }
@@ -170,84 +177,211 @@ public class ListFragment extends Fragment implements DatePickerDialog.OnDateSet
         // Inflate the layout for this fragment
         return lView;
 
+
     }
 
+    private void showDatePicker() {
+        DatePickerFragment date = new DatePickerFragment();
+        /**
+         * Set Up Current Date Into dialog
+         */
+        Calendar calender = Calendar.getInstance();
+        Bundle args = new Bundle();
+        args.putInt("year", calender.get(Calendar.YEAR));
+        args.putInt("month", calender.get(Calendar.MONTH));
+        args.putInt("day", calender.get(Calendar.DAY_OF_MONTH));
+        date.setArguments(args);
+        /**
+         * Set Call back to capture selected date
+         */
+        date.setCallBack(ondate);
+        date.show(getFragmentManager(), "Date Picker");
+    }
 
-//DatePicker datePicker
-    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
-        Log.d("ListSet", "onDateSet is called.");
-        // Example of date format ?? /2017-05-06 yr/month/day
-        Calendar calendar = new GregorianCalendar(year, month, dayOfMonth);
+    DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener() {
+
+//        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+//            starttext = (TextView) lView.findViewById(R.id.startView);
+//            starttext.setText(String.valueOf(dayOfMonth) + "-" + String.valueOf(monthOfYear+1)
+//                    + "-" + String.valueOf(year));
+//            firstDate  = String.valueOf(dayOfMonth) + "-" + String.valueOf(monthOfYear+1)
+//                    + "-" + String.valueOf(year);
+////            edittext.setText(String.valueOf(dayOfMonth) + "-" + String.valueOf(monthOfYear+1)
+////                    + "-" + String.valueOf(year));
+//        }
+public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
+//                starttext = (TextView) lView.findViewById(R.id.startView);
+//            starttext.setText(String.valueOf(dayOfMonth) + "-" + String.valueOf(month)
+//                    + "-" + String.valueOf(year));
+//            firstDate  = String.valueOf(dayOfMonth) + "-" + String.valueOf(month)
+//                    + "-" + String.valueOf(year);
+    Log.d("ListSet", "onDateSet#1 is called.");
+    // Example of date format ?? /2017-05-06 yr/month/day
+//    Calendar calendar = new GregorianCalendar(year, month, dayOfMonth);
 //        Calendar calendar = GregorianCalendar.getInstance();
 //        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        month = month + 1;
-        String smonth = Integer.toString(month);
-        String sdayOfMonth = Integer.toString(dayOfMonth);
+//    calendar.set(Calendar.YEAR, year);
+//    calendar.set(Calendar.MONTH, month);
+//    calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+    month = month + 1;
+    String smonth = Integer.toString(month);
+    String sdayOfMonth = Integer.toString(dayOfMonth);
 
-        String fixeddayOfMonth = "0" + dayOfMonth;
-        String fixedmonth = "0" + month;
-        // both month and day need to append a zero
-        // if else statements just for now  Need to find a way to Verify End Date is not Before Start Date ????
-        // This can be done by concatenating dates and converting to int and then checking which int is bigger Remember to Implement?????
-        if ((smonth.length() == 1) && (sdayOfMonth.length() == 1)) {
-            String datechosen = (year + "-" + fixedmonth + "-" + fixeddayOfMonth);
-            if (startBclick == 1) {
-                starttext = (TextView) lView.findViewById(R.id.startView);
-                starttext.setText(datechosen);
-                firstDate = datechosen;
-
-            }
-            if (endBclick == 1) {
-                endtext = (TextView) lView.findViewById(R.id.endView);
-                endtext.setText(datechosen);
-                lastDate = datechosen;
-            }
-        } else if ((smonth.length() == 1) && (sdayOfMonth.length() != 1)) {
-
-            String datechosen = (year + "-" + fixedmonth + "-" + dayOfMonth);
-            if (startBclick == 1) {
-                starttext = (TextView) lView.findViewById(R.id.startView);
-                starttext.setText(datechosen);
-                firstDate = datechosen;
-            }
-            if (endBclick == 1) {
-                endtext = (TextView) lView.findViewById(R.id.endView);
-                endtext.setText(datechosen);
-                lastDate = datechosen;
-            }
-        } else if ((smonth.length() != 1) && (sdayOfMonth.length() == 1)) {
-            String datechosen = (year + "-" + month + "-" + fixeddayOfMonth);
-            if (startBclick == 1) {
-                starttext = (TextView) lView.findViewById(R.id.startView);
-                starttext.setText(datechosen);
-                firstDate = datechosen;
-            }
-            if (endBclick == 1) {
-                endtext = (TextView) lView.findViewById(R.id.endView);
-                endtext.setText(datechosen);
-                lastDate = datechosen;
-            }
-        } else {
-
-            String datechosen = (year + "-" + month + "-" + dayOfMonth);
-            if (startBclick == 1) {
-                starttext = (TextView) lView.findViewById(R.id.startView);
-                starttext.setText(datechosen);
-                firstDate = datechosen;
-            }
-            if (endBclick == 1) {
-                endtext = (TextView) lView.findViewById(R.id.endView);
-                endtext.setText(datechosen);
-                lastDate = datechosen;
-            }
+    String fixeddayOfMonth = "0" + dayOfMonth;
+    String fixedmonth = "0" + month;
+    // both month and day need to append a zero
+    // if else statements just for now  Need to find a way to Verify End Date is not Before Start Date ????
+    // This can be done by concatenating dates and converting to int and then checking which int is bigger Remember to Implement?????
+    if ((smonth.length() == 1) && (sdayOfMonth.length() == 1)) {
+        String datechosen = (year + "-" + fixedmonth + "-" + fixeddayOfMonth);
+        if (startBclick == 1) {
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(datechosen);
+            firstDate = datechosen;
 
         }
+        if (endBclick == 1) {
 
+            endtext = (TextView) lView.findViewById(R.id.endView);
+            endtext.setText(datechosen);
+            lastDate = datechosen;
+        }
+    } else if ((smonth.length() == 1) && (sdayOfMonth.length() != 1)) {
+
+        String datechosen = (year + "-" + fixedmonth + "-" + dayOfMonth);
+        if (startBclick == 1) {
+
+
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(datechosen);
+            firstDate = datechosen;
+        }
+        if (endBclick == 1) {
+            endtext = (TextView) lView.findViewById(R.id.endView);
+            endtext.setText(datechosen);
+            lastDate = datechosen;
+        }
+    } else if ((smonth.length() != 1) && (sdayOfMonth.length() == 1)) {
+        String datechosen = (year + "-" + month + "-" + fixeddayOfMonth);
+        if (startBclick == 1) {
+
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(datechosen);
+            firstDate = datechosen;
+        }
+        if (endBclick == 1) {
+
+            endtext = (TextView) lView.findViewById(R.id.endView);
+            endtext.setText(datechosen);
+            lastDate = datechosen;
+        }
+    } else {
+
+        String datechosen = (year + "-" + month + "-" + dayOfMonth);
+        if (startBclick == 1) {
+
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(datechosen);
+            firstDate = datechosen;
+        }
+        if (endBclick == 1) {
+            endtext = (TextView) lView.findViewById(R.id.endView);
+            endtext.setText(datechosen);
+            lastDate = datechosen;
+        }
 
     }
+
+
+}
+    };
+
+
+//    //DatePicker datePicker
+//    public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+//        Log.d("ListSet", "onDateSet#1 is called.");
+//        // Example of date format ?? /2017-05-06 yr/month/day
+//        Calendar calendar = new GregorianCalendar(year, month, dayOfMonth);
+////        Calendar calendar = GregorianCalendar.getInstance();
+////        Calendar calendar = Calendar.getInstance();
+//        calendar.set(Calendar.YEAR, year);
+//        calendar.set(Calendar.MONTH, month);
+//        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+//        month = month + 1;
+//        String smonth = Integer.toString(month);
+//        String sdayOfMonth = Integer.toString(dayOfMonth);
+//
+//        String fixeddayOfMonth = "0" + dayOfMonth;
+//        String fixedmonth = "0" + month;
+//        // both month and day need to append a zero
+//        // if else statements just for now  Need to find a way to Verify End Date is not Before Start Date ????
+//        // This can be done by concatenating dates and converting to int and then checking which int is bigger Remember to Implement?????
+//        if ((smonth.length() == 1) && (sdayOfMonth.length() == 1)) {
+//            String datechosen = (year + "-" + fixedmonth + "-" + fixeddayOfMonth);
+//            if (startBclick == 1) {
+//                String value = getArguments().getString("OurDate");
+//                Log.d("qqqq", value);
+//                starttext = (TextView) lView.findViewById(R.id.startView);
+//                starttext.setText(value);
+//                firstDate = value;
+//
+//            }
+//            if (endBclick == 1) {
+//                String value = getArguments().getString("OurDate");
+//                endtext = (TextView) lView.findViewById(R.id.endView);
+//                endtext.setText(value);
+//                lastDate = value;
+//            }
+//        } else if ((smonth.length() == 1) && (sdayOfMonth.length() != 1)) {
+//
+//            String datechosen = (year + "-" + fixedmonth + "-" + dayOfMonth);
+//            if (startBclick == 1) {
+//                String value = getArguments().getString("OurDate");
+//
+//                starttext = (TextView) lView.findViewById(R.id.startView);
+//                starttext.setText(value);
+//                firstDate = value;
+//            }
+//            if (endBclick == 1) {
+//                String value = getArguments().getString("OurDate");
+//                endtext = (TextView) lView.findViewById(R.id.endView);
+//                endtext.setText(value);
+//                lastDate = value;
+//            }
+//        } else if ((smonth.length() != 1) && (sdayOfMonth.length() == 1)) {
+//            String datechosen = (year + "-" + month + "-" + fixeddayOfMonth);
+//            if (startBclick == 1) {
+//                String value = getArguments().getString("OurDate");
+//                starttext = (TextView) lView.findViewById(R.id.startView);
+//                starttext.setText(value);
+//                firstDate = value;
+//            }
+//            if (endBclick == 1) {
+//                String value = getArguments().getString("OurDate");
+//                endtext = (TextView) lView.findViewById(R.id.endView);
+//                endtext.setText(value);
+//                lastDate = value;
+//            }
+//        } else {
+//
+//            String datechosen = (year + "-" + month + "-" + dayOfMonth);
+//            if (startBclick == 1) {
+//                String value = getArguments().getString("OurDate");
+//                starttext = (TextView) lView.findViewById(R.id.startView);
+//                starttext.setText(value);
+//                firstDate = value;
+//            }
+//            if (endBclick == 1) {
+//                String value = getArguments().getString("OurDate");
+//                endtext = (TextView) lView.findViewById(R.id.endView);
+//                endtext.setText(value);
+//                lastDate = value;
+//            }
+//
+//        }
+//
+//
+//    }
 
 
     public Boolean dateVerifier() {
@@ -675,25 +809,22 @@ public class ListFragment extends Fragment implements DatePickerDialog.OnDateSet
     }
 }
 
-//
-//public class SelectDateFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-//
+
+// class Date extends DialogFragment {
 //    @Override
 //    public Dialog onCreateDialog(Bundle savedInstanceState) {
 //        Calendar calendar = Calendar.getInstance();
 //        int year = calendar.get(Calendar.YEAR);
 //        int month = calendar.get(Calendar.MONTH);
 //        int day = calendar.get(Calendar.DAY_OF_MONTH);
-//        return  new DatePickerDialog(getActivity(),AlertDialog.THEME_HOLO_LIGHT,this,year,month,day);
+//        DatePickerDialog date =  new DatePickerDialog(getActivity(), AlertDialog.THEME_HOLO_LIGHT,
+//                (DatePickerDialog.OnDateSetListener)
+//                        getActivity(), year, month, day);
+//        date.getDatePicker().setMaxDate(System.currentTimeMillis());
+//        return date;
 //    }
 //
-//    public void onDateSet(DatePicker view, int yy, int mm, int dd) {
-//        populateSetDate(yy, mm, dd);
-//    }
-//    public void populateSetDate(int year, int month, int day) {
-//        starttext = (TextView) lView.findViewById(R.id.startView);
-//        starttext.setText(datechosen);
-//        dob.setText(month+"/"+day+"/"+year);
-//    }
+//
+//
 //
 //}
