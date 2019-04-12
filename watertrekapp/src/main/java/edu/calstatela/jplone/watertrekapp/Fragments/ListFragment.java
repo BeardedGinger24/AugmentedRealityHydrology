@@ -9,6 +9,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -383,12 +384,14 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
                 ListView lv = lView.findViewById(R.id.historyList);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, dbgsUList);
 
+
+                FragmentTransaction transection=getFragmentManager().beginTransaction();
                 GraphFragment graphFrag = new GraphFragment();
                 Bundle bundle = new Bundle();
                 bundle.putStringArrayList("dbgs", dbgsUList);
                 graphFrag.setArguments(bundle);
-                android.support.v4.app.FragmentManager manager = getFragmentManager();
-//                manager.beginTransaction().replace(R.id.historyList,graphFrag).commit();
+                transection.replace(R.id.listViewFraggy,graphFrag);
+                transection.commit();
 
                 lv.setAdapter(adapter);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
