@@ -86,7 +86,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Show History"
-            android:onClick="displayHistoryList"
             />
 
         <ListView
