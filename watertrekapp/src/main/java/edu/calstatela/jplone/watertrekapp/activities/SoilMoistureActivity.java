@@ -55,19 +55,19 @@ public class SoilMoistureActivity extends AppCompatActivity {
         map.getOverlays().add(marker);
 
         //*********Launch History Activity******************
-        Button goHist = (Button) findViewById(R.id.go2hist);
-
-
-        goHist.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SoilMoistureActivity.this,
-                        HistoryActivity.class);
-                intent.putExtra("SoilID", SoilMoistureuniqueID);
-                startActivity(intent); // startActivity allow you to move
-            }
-        });
+//        Button goHist = (Button) findViewById(R.id.go2hist);
+//
+//
+//        goHist.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(SoilMoistureActivity.this,
+//                        HistoryActivity.class);
+//                intent.putExtra("SoilID", SoilMoistureuniqueID);
+//                startActivity(intent); // startActivity allow you to move
+//            }
+//        });
 
     }
     public static void launchDetailsActivity(Activity currentActivity, SoilMoisture e) {

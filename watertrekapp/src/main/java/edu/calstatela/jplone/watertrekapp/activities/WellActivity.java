@@ -62,25 +62,25 @@ public class WellActivity extends AppCompatActivity{
         marker.setTitle("Well: LatLon("+lat+","+lon+")");
         map.getOverlays().add(marker);
 
-        Button goHist = (Button) findViewById(R.id.go2hist);
+//        Button goHist = (Button) findViewById(R.id.go2hist);
 
 
-        goHist.setOnClickListener(new View.OnClickListener() {
-
-            @Override
+//        goHist.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+////            public void onClick(View v) {
+////                Intent intent = new Intent(WellActivity.this,
+////                        HistoryActivity.class);
+////                intent.putExtra("wellID", welluniqueID);
+////                startActivity(intent); // startActivity allow you to move
+////            }
 //            public void onClick(View v) {
 //                Intent intent = new Intent(WellActivity.this,
 //                        HistoryActivity.class);
 //                intent.putExtra("wellID", welluniqueID);
 //                startActivity(intent); // startActivity allow you to move
 //            }
-            public void onClick(View v) {
-                Intent intent = new Intent(WellActivity.this,
-                        HistoryActivity.class);
-                intent.putExtra("wellID", welluniqueID);
-                startActivity(intent); // startActivity allow you to move
-            }
-        });
+//        });
         Log.d(TAG,"IN ON CREATE");
     }
     public static void launchDetailsActivity(Activity currentActivity, Well e) {

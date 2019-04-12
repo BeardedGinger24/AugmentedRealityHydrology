@@ -1,6 +1,7 @@
 package edu.calstatela.jplone.watertrekapp.activities;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -42,9 +43,7 @@ public class Navigation extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_map_id:
                     fm.beginTransaction().hide(active).show(fragment1).commit();
-//                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//                    fragmentTransaction.hide(active).show(fragment1).commit();
-//                    active = fragment1;
+                    active = fragment1;
                     return true;
                 case R.id.navigation_graph_id:
                     fm.beginTransaction().hide(active).show(fragment2).commit();

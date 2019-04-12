@@ -88,8 +88,8 @@ public class MapActivity extends Fragment{
         isSnotelNull = SnoteluniqueID == null;
 
         defaultLocation = new GeoPoint(lat,lon);
-        TextView txtData = mView.findViewById(R.id.txt_data);
-        txtData.setText(getActivity().getIntent().getStringExtra("data"));
+//        TextView txtData = mView.findViewById(R.id.txt_data);
+//        txtData.setText(getActivity().getIntent().getStringExtra("data"));
         map = mView.findViewById(R.id.map);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
@@ -128,41 +128,41 @@ public class MapActivity extends Fragment{
 
         map.getOverlays().add(marker);
 
-        Button goHist = (Button) mView.findViewById(R.id.go2hist);
+//        Button goHist = (Button) mView.findViewById(R.id.go2hist);
 
 
-        goHist.setOnClickListener(new View.OnClickListener() {
-
-            @Override
+//        goHist.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+////            public void onClick(View v) {
+////                Intent intent = new Intent(WellActivity.this,
+////                        HistoryActivity.class);
+////                intent.putExtra("wellID", welluniqueID);
+////                startActivity(intent); // startActivity allow you to move
+////            }
 //            public void onClick(View v) {
-//                Intent intent = new Intent(WellActivity.this,
+//                Intent intent = new Intent(getActivity(),
 //                        HistoryActivity.class);
-//                intent.putExtra("wellID", welluniqueID);
+//                //*********************
+//                if (isWellNull == false){
+//                    intent.putExtra("wellID", welluniqueID);
+//                }
+//                if(isSoilNull == false){
+//                    intent.putExtra("SoilID", SoilMoistureuniqueID);
+//                }
+//                if(isSnotelNull == false){
+//                    intent.putExtra("SnotelID", SnoteluniqueID);
+//                }
+//                if(isRiverNull == false){
+//                    intent.putExtra("RiverID", RiveruniqueID);
+//                }
+//                if(isReservoirNull == false){
+//                    intent.putExtra("ReservoirID", ReservoiruniqueID);
+//                }
+//                //*************************************
 //                startActivity(intent); // startActivity allow you to move
 //            }
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(),
-                        HistoryActivity.class);
-                //*********************
-                if (isWellNull == false){
-                    intent.putExtra("wellID", welluniqueID);
-                }
-                if(isSoilNull == false){
-                    intent.putExtra("SoilID", SoilMoistureuniqueID);
-                }
-                if(isSnotelNull == false){
-                    intent.putExtra("SnotelID", SnoteluniqueID);
-                }
-                if(isRiverNull == false){
-                    intent.putExtra("RiverID", RiveruniqueID);
-                }
-                if(isReservoirNull == false){
-                    intent.putExtra("ReservoirID", ReservoiruniqueID);
-                }
-                //*************************************
-                startActivity(intent); // startActivity allow you to move
-            }
-        });
+//        });
         Log.d(TAG,"IN ON CREATE");
 
         return mView;

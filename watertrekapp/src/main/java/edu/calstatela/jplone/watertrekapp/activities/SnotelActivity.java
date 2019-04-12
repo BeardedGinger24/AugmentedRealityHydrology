@@ -55,19 +55,19 @@ public class SnotelActivity extends AppCompatActivity {
         map.getOverlays().add(marker);
 
         //*********Launch History Activity******************
-        Button goHist = (Button) findViewById(R.id.go2hist);
-
-
-        goHist.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SnotelActivity.this,
-                        HistoryActivity.class);
-                intent.putExtra("SnotelID", SnoteluniqueID);
-                startActivity(intent); // startActivity allow you to move
-            }
-        });
+//        Button goHist = (Button) findViewById(R.id.go2hist);
+//
+//
+//        goHist.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(SnotelActivity.this,
+//                        HistoryActivity.class);
+//                intent.putExtra("SnotelID", SnoteluniqueID);
+//                startActivity(intent); // startActivity allow you to move
+//            }
+//        });
     }
     public static void launchDetailsActivity(Activity currentActivity, Snotel e) {
         Log.d("snow","Launching Snotel Detailes Activty going now...");
