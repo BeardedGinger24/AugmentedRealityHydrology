@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -381,6 +382,14 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = lView.findViewById(R.id.historyList);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, dbgsUList);
+
+                GraphFragment graphFrag = new GraphFragment();
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("dbgs", dbgsUList);
+                graphFrag.setArguments(bundle);
+                android.support.v4.app.FragmentManager manager = getFragmentManager();
+//                manager.beginTransaction().replace(R.id.historyList,graphFrag).commit();
+
                 lv.setAdapter(adapter);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
