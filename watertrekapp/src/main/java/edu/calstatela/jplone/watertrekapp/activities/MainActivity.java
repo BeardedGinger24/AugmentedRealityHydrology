@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -16,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -31,7 +31,6 @@ import android.widget.Toast;
 import com.bvapp.arcmenulibrary.ArcMenu;
 import com.bvapp.arcmenulibrary.widget.FloatingActionButton;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,28 +38,23 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.calstatela.jplone.arframework.graphics3d.helper.TextureHelper;
 import edu.calstatela.jplone.arframework.util.Orientation;
 import edu.calstatela.jplone.arframework.util.Permissions;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
-import edu.calstatela.jplone.watertrekapp.Data.MeshInfo;
 import edu.calstatela.jplone.watertrekapp.Data.Reservoir;
 import edu.calstatela.jplone.watertrekapp.Data.River;
 import edu.calstatela.jplone.watertrekapp.Data.Snotel;
 import edu.calstatela.jplone.watertrekapp.Data.SoilMoisture;
-import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.watertrekapp.Data.Well;
 import edu.calstatela.jplone.watertrekapp.DataService.ElevationObstructionService;
 import edu.calstatela.jplone.watertrekapp.DataService.ReservoirService;
 import edu.calstatela.jplone.watertrekapp.DataService.RiverService;
 import edu.calstatela.jplone.watertrekapp.DataService.SnotelService;
 import edu.calstatela.jplone.watertrekapp.DataService.SoilMoistureService;
-import edu.calstatela.jplone.watertrekapp.DataService.TextureService;
 import edu.calstatela.jplone.watertrekapp.DataService.WellService;
-import edu.calstatela.jplone.watertrekapp.Helpers.CSVReader;
+import edu.calstatela.jplone.watertrekapp.Helpers.OBJLoader;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.LoginService;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
-import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskAuth;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTaskJSON;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
@@ -95,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private boolean tSnotel = false;
 
     private ImageButton ibWell, ibRiver, ibReservoir, ibSoilMoisture, ibMtn, ibSnotel;
-    MeshInfo meshInfo;
+    OBJLoader objLoader;
     private int radius = 20;
 
     Button login_button;
@@ -119,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     //Arc menu items
     ArcMenu arcMenu;
     private static int[] ITEM_DRAWABLES = { R.drawable.mtn_res_ico_clr, R.drawable.reservoir_bb_icon, R.drawable.soil_bb_icon,
-            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr, R.drawable.snotel_res_ico, R.drawable.eye24 };
+            R.drawable.well_bb_icon, R.drawable.river_res_ico_clr_sm, R.drawable.snotel_res_ico, R.drawable.eye24 };
     private String[] str = {"mountain","reservoir","soil","well", "river", "snotel", "eye"};
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -178,7 +172,21 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainLayout.addView(arview);
 
         arview.setMeshStatus(false);
-        meshInfo = getMeshInfo("terrain");
+
+        objLoader = new OBJLoader();
+        File file1 = new File(getFilesDir(),"mesh.obj");
+        objLoader.readOBJ(file1);
+
+        File file2 = new File(getFilesDir(),"texture.bmp");
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeFile(file2.getAbsolutePath(), options);
+
+        File file3 = new File(getFilesDir(),"river.bmp");
+        Bitmap bitmap2 = BitmapFactory.decodeFile(file3.getAbsolutePath(),options);
+
+        arview.addBitMap(bitmap,bitmap2);
+        //bitmap.recycle();
 
         initSensorRecyclerViews();
 
@@ -274,9 +282,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     NetworkTaskJSON.NetworkCallback obstructNetworkCallback = new NetworkTaskJSON.NetworkCallback() {
         @Override
-        public void onResult(int type, String result) {
+        public String onResult(int type, String result) {
             Log.d("JSON",result);
             Toast.makeText(getApplicationContext(), parseNatCall(result),Toast.LENGTH_LONG).show();
+            return result;
         }
     };
 
@@ -379,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(tMountain) {
             updateArcMenuDrawables(i,tMountain);
             if (arview.meshNull()) {
-                arview.addMesh(getMeshInfo("terrain"));
+                arview.addMesh(objLoader);
             }
             arview.setMeshStatus(true);
         }else{
@@ -387,40 +396,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
             arview.setMeshStatus(false);
         }
     }
-    public MeshInfo getMeshInfo(String type){
-        File file1 = new File(getFilesDir(),"meshvecs");
-        Vector3[] vecs= CSVReader.readVecFile(file1);
-        File file2 = new File(getFilesDir(),"terrain");
-        float[] verts = CSVReader.readCSV(file2);
-        float[] loc = meshdataLoc(file2.getName());
-        meshInfo = new MeshInfo(vecs,type,loc,verts);
-        Bitmap bmp = null;
-        String[] cred = NetworkTask.getCredentials();
-        String baseurl = getResources().getString(R.string.textureUrl);
-        TextureService.getTexture textureTask = new TextureService.getTexture();
-        textureTask.execute(String.valueOf(loc[0]),String.valueOf(loc[1]),baseurl,cred[0],cred[1]);
-        Log.d(TAG,"Executed Texture Service");
-        try{
-            bmp = textureTask.get();
-        }catch (Exception e){
-            Log.e(TAG,e+"");
-        }
-        meshInfo.setTextCoordinates(TextureHelper.generateTextureCoordinates(bmp));
-        StringBuilder sb = new StringBuilder();
-        int count = 0;
-        for(float i:meshInfo.getTextCoordinates()){
-            if(count<400) {
-                sb.append(i + ",");
-                count++;
-            }else{
-                sb.append("\n");
-                count=0;
-            }
-        }
-        Log.d(TAG,sb.toString());
-        meshInfo.setBmp(bmp);
-        return meshInfo;
-    }
+
     public float[] meshdataLoc(String filename){
         helper = new DatabaseHelper(this);
         db=helper.getReadableDatabase();
@@ -495,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addWells(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(objLoader);
         }
         float[] loc = arview.getLocation();
         WellService.getWells(wellNetworkCallback, loc[0], loc[1], radius);
@@ -549,7 +525,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addReservoirs(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(objLoader);
         }
         ReservoirService.getAllStorageValues(reservoirNetworkCallback);
     }
@@ -608,7 +584,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addSoilPatches(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(objLoader);
         }
         //retrieves all soil patches
         SoilMoistureService.getSoilMoistures(soilmoistureNetworkCallback);
@@ -670,7 +646,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     private void addRiverz(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(objLoader);
         }
         // Retrieves curr location
         float[] loc = arview.getLocation();
@@ -707,7 +683,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                         int id = Integer.parseInt(riv.getSiteNo());
                         riverList.add(riv);
                         arview.addBillboard(id,
-                                R.drawable.river_res_ico_clr,
+                                R.drawable.river_res_ico_clr_sm,
                                 "River # "+ riv.getSiteNo(),
                                 "(" + riv.getLat() + "," + riv.getLon() + ")",
                                 Float.parseFloat(riv.getLat()), Float.parseFloat(riv.getLon()),0
@@ -734,7 +710,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     public void addSnotelPillows(){
         if(arview.meshNull()){
-            arview.addMesh(getMeshInfo("terrain"));
+            arview.addMesh(objLoader);
         }
         // Retrieves curr location
         float[] loc = arview.getLocation();

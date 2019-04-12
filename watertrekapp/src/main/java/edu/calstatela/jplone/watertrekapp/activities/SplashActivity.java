@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.ExecutionException;
@@ -28,9 +31,13 @@ import edu.calstatela.jplone.arframework.util.Vector3;
 import edu.calstatela.jplone.watertrekapp.Data.DatabaseHelper;
 import edu.calstatela.jplone.watertrekapp.Data.MeshData;
 import edu.calstatela.jplone.watertrekapp.DataService.MeshService;
+import edu.calstatela.jplone.watertrekapp.DataService.TextureService;
+import edu.calstatela.jplone.watertrekapp.Helpers.OBJMaker;
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
+
+import static android.os.Environment.DIRECTORY_DOCUMENTS;
 
 public class SplashActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private static final int CREDENTIALS_ACTIVITY_REQUEST_CODE = 5;
@@ -46,7 +53,10 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     MeshData meshData;
     float[] currentLocation;
     SensorARView sensorARView;
-    MeshService.getDEM asyncTask;
+
+    MeshService.getDEM meshAsyncTask;
+    TextureService.getTexture terrainTextureAsyncTask;
+    TextureService.getTexture riverTextureAsyncTask;
 
     SQLiteDatabase db;
     DatabaseHelper helper;
@@ -138,57 +148,34 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
                 // start the service  to get location update
 
                 Intent i = new Intent(context, MainActivity.class);
-                String baseurl = getString(R.string.demurl);
-
+                String demurl = getString(R.string.demurl);
+                String textureUrl = getString(R.string.textureUrl);
+                String riverUrl = getString(R.string.riverTextUrl);
                 String[] cred = NetworkTask.getCredentials();
-                Log.d(TAG,cred[0]+","+cred[1]);
-                asyncTask = new MeshService.getDEM();
-                asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl,cred[0],cred[1]);
+                meshAsyncTask = new MeshService.getDEM();
+                meshAsyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),demurl,cred[0],cred[1]);
+
+                terrainTextureAsyncTask = new TextureService.getTexture();
+                terrainTextureAsyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),textureUrl,cred[0],cred[1]);
+                riverTextureAsyncTask = new TextureService.getTexture();
+                riverTextureAsyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),riverUrl,cred[0],cred[1]);
                 try {
-                    meshData = asyncTask.get();
-                    meshData.setFilenameTerrain("terrain");
-                    meshData.setFilenameTerrainVecs("meshvecs");
-                    meshData.setDir(context.getFilesDir()+"");
+                    String objData = meshAsyncTask.get();
+                    Bitmap bmp1 = terrainTextureAsyncTask.get();
+                    Bitmap bmp2 = riverTextureAsyncTask.get();
+                    OBJMaker objMaker = new OBJMaker();
 
-                    helper = new DatabaseHelper(context);
-                    db = helper.getWritableDatabase();
-                    helper.addMeshData(db,meshData);
+                    File file1 = new File(getFilesDir(),"mesh.obj");
+                    objMaker.loadData(file1,objData);
 
+                    File file2 = new File(getFilesDir(),"texture.bmp");
+                    objMaker.loadData(file2,bmp1);
 
-                    //Write meshdata to file
-                    genVerts(meshData);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-                //start the main activity
-                startActivity(i);
-            }
-        });
-        t2 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent(context, MeshTest.class);
-                String baseurl = getString(R.string.demurl);
+                    File file3 = new File(getFilesDir(),"river.bmp");
+                    objMaker.loadData(file3,bmp2);
 
-                String[] cred = NetworkTask.getCredentials();
-                Log.d(TAG,cred[0]+","+cred[1]);
-                asyncTask= new MeshService.getDEM();
-                asyncTask.execute(String.valueOf(currentLocation[0]),String.valueOf(currentLocation[1]),String.valueOf(currentLocation[2]),baseurl,cred[0],cred[1]);
-                try {
-                    meshData = asyncTask.get();
-                    meshData.setFilenameTerrain("terrain");
-                    meshData.setFilenameTerrainVecs("meshvecs");
-                    meshData.setDir(context.getFilesDir()+"");
-
-                    helper = new DatabaseHelper(context);
-                    db = helper.getWritableDatabase();
-                    helper.addMeshData(db,meshData);
-
-
-                    //Write meshdata to file
-                    genVerts(meshData);
+                    bmp1.recycle();
+                    bmp2.recycle();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {

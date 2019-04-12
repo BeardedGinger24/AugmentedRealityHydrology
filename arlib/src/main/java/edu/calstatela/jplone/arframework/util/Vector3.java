@@ -1,6 +1,8 @@
 package edu.calstatela.jplone.arframework.util;
 
-public class Vector3 {
+import java.io.Serializable;
+
+public class Vector3 implements Serializable{
     double x, y, z;
     public Vector3(double x, double y, double z) {
         this.x = x;
@@ -32,6 +34,6 @@ public class Vector3 {
         this.z = z;
     }
     public String getVals(){
-        return x+","+y+","+z+";";
+        return x+" "+y+" "+z+"\n";
     }
 }

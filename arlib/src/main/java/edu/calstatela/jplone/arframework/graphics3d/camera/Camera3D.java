@@ -20,7 +20,8 @@ public class Camera3D extends ViewMatrix {
 
     public void setPositionLatLonAlt(float[] latLonAlt){
         float[] xyz = GeoMath.latLonAltToXYZ(latLonAlt);
-        setPosition(xyz[0], xyz[1], xyz[2]);
+        //setPosition(xyz[0], xyz[1], xyz[2]);
+        setPosition(0,0,0);
     }
 
     public void setPerspective(float viewAngle, float aspectRatio, float nearDistance, float farDistance){

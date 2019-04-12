@@ -17,7 +17,7 @@ public class LitModel implements Drawable, Colorable{
     private FloatBuffer mVertexBuffer = null;
     private FloatBuffer mNormalBuffer = null;
     private float[] mColor = {0.0f, 0.0f, 0.0f, 1f};
-    private float[] mLightVec = {0.0f, -1.0f, 0.0f, 1.0f};
+    private float[] mLightVec = {0.0f, 1.0f, 0.0f, 1.0f};
 
     static int mShaderProgram;
     private int mNumVertices = 0;
@@ -135,22 +135,5 @@ public class LitModel implements Drawable, Colorable{
         mNormalBuffer = BufferHelper.arrayToBuffer(normalList);
     }
 
-
-
-
-
-    public static LitModel modelFromVertices(float[] vertices){
-        LitModel model = new LitModel();
-        model.loadVertices(vertices);
-        model.loadNormals(MeshHelper.calculateNormals(vertices));
-        return model;
-    }
-
-    public static LitModel cube(){
-        return modelFromVertices(MeshHelper.cube());
-    }
-    public static LitModel pyramid(){
-        return modelFromVertices(MeshHelper.pyramid());
-    }
 
 }

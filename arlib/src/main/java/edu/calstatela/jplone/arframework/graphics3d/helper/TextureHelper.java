@@ -3,6 +3,7 @@ package edu.calstatela.jplone.arframework.graphics3d.helper;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
@@ -51,38 +52,5 @@ public class TextureHelper {
         int[] textureHandle = new int[]{id};
 
         GLES20.glDeleteTextures(1, textureHandle, 0);
-    }
-    public static float[] generateTextureCoordinates(Bitmap bitmap){
-        int hQuadCount = (bitmap.getWidth()/2)-1;
-        int vQuadCount = (bitmap.getHeight()/2)-1;
-
-        Log.d("TextHelp",hQuadCount+"");
-        float[] result = new float[(6 * hQuadCount* vQuadCount)*2];
-        int startIndex = 0;
-        for (int y = 0; y < vQuadCount; y++) {
-            for (int x = 0; x < hQuadCount; x++) {
-                result[startIndex] = (x+0.0f)/hQuadCount;
-                result[startIndex+1] = (y+0.0f)/hQuadCount;
-
-                result[startIndex + 2] = (x+0.0f)/hQuadCount;
-                result[startIndex+3] = (y+1.0f)/hQuadCount;
-
-                result[startIndex + 4] = (x+1.0f)/hQuadCount;
-                result[startIndex+5] = (y+1.0f)/hQuadCount;
-
-                result[startIndex + 6] = (x+1.0f)/hQuadCount;
-                result[startIndex+7] = (y+1.0f)/hQuadCount;
-
-                result[startIndex + 8] = (x+1.0f)/hQuadCount;
-                result[startIndex+9] = (y+0.0f)/hQuadCount;
-
-                result[startIndex + 10] = (x+0.0f)/hQuadCount;
-                result[startIndex+11] = (y+0.0f)/hQuadCount;
-
-                startIndex =startIndex+ 12;
-
-            }
-        }
-        return result;
     }
 }
