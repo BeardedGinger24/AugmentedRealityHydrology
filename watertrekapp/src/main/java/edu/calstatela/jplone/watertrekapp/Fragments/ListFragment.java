@@ -465,12 +465,20 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
                     String tempUnit = resResults.get(i).getUnits();
                     String tempLast = tempDT +" " + tempStorage + " " + tempUnit;
                     resStorageList.add(tempLast);
-
                 }
 
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = lView.findViewById(R.id.historyList);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, resStorageList);
+
+                FragmentTransaction transection=getFragmentManager().beginTransaction();
+                GraphFragment graphFrag = new GraphFragment();
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("rese", resStorageList);
+                graphFrag.setArguments(bundle);
+                transection.replace(R.id.listViewFraggy,graphFrag);
+                transection.commit();
+
                 lv.setAdapter(adapter);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -552,6 +560,15 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = lView.findViewById(R.id.historyList);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, dischargeList);
+
+                FragmentTransaction transection=getFragmentManager().beginTransaction();
+                GraphFragment graphFrag = new GraphFragment();
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("disc", dischargeList);
+                graphFrag.setArguments(bundle);
+                transection.replace(R.id.listViewFraggy,graphFrag);
+                transection.commit();
+
                 lv.setAdapter(adapter);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -594,6 +611,15 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = lView.findViewById(R.id.historyList);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, soilDepthList);
+
+                FragmentTransaction transection=getFragmentManager().beginTransaction();
+                GraphFragment graphFrag = new GraphFragment();
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("soil", soilDepthList);
+                graphFrag.setArguments(bundle);
+                transection.replace(R.id.listViewFraggy,graphFrag);
+                transection.commit();
+
                 lv.setAdapter(adapter);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
@@ -636,6 +662,15 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
                 pb.setVisibility(View.INVISIBLE);
                 ListView lv = lView.findViewById(R.id.historyList);
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, sweSnotelList);
+
+                FragmentTransaction transection=getFragmentManager().beginTransaction();
+                GraphFragment graphFrag = new GraphFragment();
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList("snow", sweSnotelList);
+                graphFrag.setArguments(bundle);
+                transection.replace(R.id.listViewFraggy,graphFrag);
+                transection.commit();
+
                 lv.setAdapter(adapter);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
