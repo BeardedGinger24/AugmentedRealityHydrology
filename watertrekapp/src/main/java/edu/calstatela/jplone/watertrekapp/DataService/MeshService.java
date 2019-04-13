@@ -24,7 +24,7 @@ public class MeshService {
 
     public static class getDEM extends AsyncTask<String, Void, String> {
         String TAG = "mesh-service";
-        int baseDownSample = 2;
+        int baseDownSample = 4;
         int width = 0;
         int height = 0;
         double bboxSpaceX = 0.20;
@@ -145,7 +145,6 @@ public class MeshService {
 
             StringBuilder v = new StringBuilder();
             StringBuilder vt = new StringBuilder();
-            StringBuilder f = new StringBuilder();
             float[] vertices = new float[hQuadCount*vQuadCount*6*3];
             int startIndex = 0;
             v.append("\n");
@@ -156,8 +155,6 @@ public class MeshService {
                     int lb = lt + hVertCount;
                     int rb = lb + 1;
 
-                    f.append("f "+lt+1+"/"+lt+1+"/"+lt+1+" "+lb+1+"/"+lb+1+"/"+lb+1+" "+rb+1+"/"+rb+1+"/"+rb+1+"\n");
-                    f.append("f "+rb+1+"/"+rb+1+"/"+rb+1+" "+rt+1+"/"+rt+1+"/"+rt+1+" "+lt+1+"/"+lt+1+"/"+lt+1+"\n");
                     v.append("v "+vectors[lt].getVals());
                     vertices[startIndex] = (float) vectors[lt].getX();vertices[startIndex+1] = (float) vectors[lt].getY();vertices[startIndex+2] = (float) vectors[lt].getZ();
                     v.append("v "+vectors[lb].getVals());
@@ -180,8 +177,12 @@ public class MeshService {
                     vt.append("vt "+(x+0.0f)/hQuadCount+" "+(y+0.0f)/hQuadCount+"\n");
                 }
             }
+            StringBuilder vec = new StringBuilder();
+            for(int i = 0; i<vectors.length; i++){
+                vec.append("vec"+vectors[i].getVals());
+            }
             StringBuilder n = MeshHelper.calculateNormals(vertices);
-            return v.toString()+vt.toString()+n.toString()+f.toString();
+            return v.toString()+vt.toString()+n.toString();
         }
         public double correctHeightVal(double maxY,double leftHeight,double rightHeight,double topHeight,double bottHeight){
             int count = 0;

@@ -8,14 +8,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import edu.calstatela.jplone.arframework.util.Vector3;
+
 public class OBJLoader {
     ArrayList<Float> vertices = new ArrayList<>();
     ArrayList<Float> textures = new ArrayList<>();
     ArrayList<Float> normals = new ArrayList<>();
+    ArrayList<Vector3> vectors = new ArrayList<>();
 
     float[] v;
     float[] vt;
     float[] n;
+    Vector3[] vec;
 
     float[] loc = new float[2];
 
@@ -36,6 +40,9 @@ public class OBJLoader {
                         vertices.add(Float.valueOf(parts[2]));
                         vertices.add(Float.valueOf(parts[3]));
                         break;
+                    case "vec":
+                        vectors.add(new Vector3(Float.valueOf(parts[1]),Float.valueOf(parts[2]),Float.valueOf(parts[3])));
+                        break;
                     case "vt":
                         textures.add(Float.valueOf(parts[1]));
                         textures.add(Float.valueOf(parts[2]));
@@ -54,6 +61,7 @@ public class OBJLoader {
             v = new float[vertices.size()];
             vt = new float[textures.size()];
             n = new float[normals.size()];
+            vec = new Vector3[vectors.size()];
             int i = 0;
             for(float val : vertices){
                 v[i] = val;
@@ -68,6 +76,11 @@ public class OBJLoader {
             i=0;
             for(float val: normals){
                 n[i]= val;
+                i++;
+            }
+            i = 0;
+            for(Vector3 v : vectors){
+                vec[i] = v;
                 i++;
             }
         } catch (FileNotFoundException e) {
@@ -100,5 +113,9 @@ public class OBJLoader {
 
     public float[] getN() {
         return n;
+    }
+
+    public Vector3[] getVec() {
+        return vec;
     }
 }

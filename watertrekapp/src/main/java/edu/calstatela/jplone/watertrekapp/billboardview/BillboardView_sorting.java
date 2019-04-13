@@ -99,9 +99,6 @@ public class BillboardView_sorting extends SensorARView{
         bitmapTerrain = terrain;
         bitmapRiver = river;
     }
-//    public void addRiverText(String path){
-//        riverPath = path;
-//    }
     public void addMesh(OBJLoader info){
         latlonalt = getLocation();
         meshLoc = info.getLoc();
@@ -469,13 +466,13 @@ public class BillboardView_sorting extends SensorARView{
         double lonScale = 22236/elevationScale;
         double latScale = 18425/elevationScale;
 
-        float x = (float) ((bbx-mx)*lonScale);
-        float y = (float) ((my- bby)*latScale);
+        float x = (float) ((mx-bbx)*latScale);
+        float z = (float) ((bby-my)*lonScale);
 
         float[] result = new float[3];
         result[0] = x;
-        result[1] = bbloc[2]/elevationScale;
-        result[2] = y;
+        result[1] = bbloc[2];
+        result[2] = z;
         return result;
     }
     public void changeBGC(boolean b){
