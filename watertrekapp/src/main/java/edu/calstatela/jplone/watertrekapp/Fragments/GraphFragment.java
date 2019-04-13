@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
@@ -58,51 +59,14 @@ public class GraphFragment extends Fragment {
         Bundle bundle = getArguments();
         if(bundle != null){
             dbgsUList = bundle.getStringArrayList("dbgs");
-            ArrayList<String> dbgs = bundle.getStringArrayList("dbgs");
-//            String one = dbgs.get(0);
-//            String two = dbgs.get(1);
-//            Toast.makeText(getContext(),"TESTING!",Toast.LENGTH_SHORT).show();
-//            Log.d("graphfrag", one);
-//            Log.d("graphfrag", two);
-            simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            // Generate Dates.
-            // Calender.getInstance() sets the calender to current date and time.
-            calendar = Calendar.getInstance();
-            // calender.getTime() returns a Date object representing the calenders.
-            Date d1 = calendar.getTime();
-            // calender.add() takes in two arugments which consist of a Calender value. Calender.DATE for the day of the month. The second argument being an integer have that will add a value to that specified date/time.
-            calendar.add(Calendar.DATE, 1);
-            Date d2 = calendar.getTime();
-            calendar.add(Calendar.DATE, 1);
-            Date d3 = calendar.getTime();
-            calendar.add(Calendar.DATE, 1);
-            Date d4 = calendar.getTime();
+           // ArrayList<String> dbgs = bundle.getStringArrayList("dbgs");
+            String one = dbgsUList.get(0);
+            String two = dbgsUList.get(1);
+            Log.d("graphfrag", one);
+            Log.d("graphfrag", two);
 
-            graph = (GraphView) gView.findViewById(R.id.graph);
-
-            // enable scaling and scrolling
-            graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
-            // Fixes issue where more than three digits would be cutoff on the y axis.
-            graph.getGridLabelRenderer().setPadding(40);
-            // Sets angle for label on x axis.
-            graph.getGridLabelRenderer().setHorizontalLabelsAngle(110);
-
-            DataPoint[] dp = new DataPoint[]{new DataPoint(d1, 5), new DataPoint(d2, 10), new DataPoint(d3, 15), new DataPoint(d4, 5)};
-            series = new LineGraphSeries<>(dp);
-            // Sets markers on the line graph.
-            series.setDrawDataPoints(true);
-            // add a new series to the graph
-
-            // set title
-            // Make Case Statement to set Graph Title  depending on Selected POI
-            graph.setTitle("Units vs. Time (MM-DD-YY)");
-            graph.addSeries(series);
-
-
-
+//            populateGraph(dbgsUList);
         }
-
-
         // Inflate the layout for this fragment
         return gView;
     }
@@ -211,8 +175,28 @@ public class GraphFragment extends Fragment {
 
 
     // The big graph function.
-    private void populateGraph(ArrayList<String> xValue, ArrayList<String> yValue) {
-
+    private void populateGraph(ArrayList<String> bundleList) {
+        yValue.clear();
+        xValue.clear();
+        for (int i = 0; i < bundleList.size(); i++) {
+            String dbu = bundleList.get(i);
+            if (i > 0) {
+                String[] date = dbu.split("T");
+                // values are seperated by tabs not spaces.
+                String[] value = dbu.split("\t");
+                xValue.add(date[0]);
+                yValue.add(value[1]);
+                Log.i("x-value", xValue.get(i - 1));
+                Log.i("y-value", yValue.get(i - 1));
+            }
+        }
+        // Check if all y values are null before populating graph
+        if (allValuesNull(yValue)) {
+            Log.i("allYNull", "All Y values are null");
+            Toast.makeText(getActivity(), "All values are null.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date earliestDate = new Date();
         Date latestDate = new Date();
         for (int i = 0; i < xValue.size(); i++) {
@@ -259,6 +243,25 @@ public class GraphFragment extends Fragment {
             }
         }
 //        Log.i("dp", "Min/Max X:" + dataPoints[0].getX() + "," + dataPoints[dataPoints.length - 1].getX());
+
+        graph = (GraphView) gView.findViewById(R.id.graph);
+
+        // enable scaling and scrolling
+        graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+        // Fixes issue where more than three digits would be cutoff on the y axis.
+        graph.getGridLabelRenderer().setPadding(40);
+        // Sets angle for label on x axis.
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(110);
+
+        series = new LineGraphSeries<>(dataPoints);
+        // Sets markers on the line graph.
+        series.setDrawDataPoints(true);
+        // add a new series to the graph
+
+        // set title
+        // Make Case Statement to set Graph Title  depending on Selected POI
+        graph.setTitle("Units vs. Time (MM-DD-YY)");
+
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
         graph.getGridLabelRenderer().setNumHorizontalLabels(10);
         graph.getGridLabelRenderer().setNumVerticalLabels(10);
@@ -282,7 +285,14 @@ public class GraphFragment extends Fragment {
         graph.getGridLabelRenderer().setHumanRounding(false);
         graph.getGridLabelRenderer().setLabelsSpace(10);
         graph.getGridLabelRenderer().setPadding(100);
-        series.resetData(dataPoints);
+//        series.resetData(dataPoints);
+        graph.addSeries(series);
+        try {
+            LinearLayout layout = (LinearLayout) gView.findViewById(R.id.graph);
+            layout.addView(graph);
+        } catch (NullPointerException e) {
+            Log.d(":(", "!!!!");
+        }
     }
 
 
