@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
     private ArrayList<Snotel> snotelList = new ArrayList<>();
 
     private boolean isLoggedIn = true;
-    private boolean paused = false;
 
     private ArrayList<String> verticalTicks = new ArrayList<>();
     private ArrayList<String> horizontalTicks = new ArrayList<>();
@@ -146,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         login_button = (Button)findViewById(R.id.login_button);
         logout_button = (Button)findViewById(R.id.logout_button);
 
-        paused = false;
         if(SplashActivity.isLoggedIn){
             login_button.setVisibility(View.GONE);
             logout_button.setVisibility(View.VISIBLE);
@@ -163,9 +161,8 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         if(Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
             cameraToggle.setChecked(true);
         }else{
-            cameraToggle.setChecked(true);
+            cameraToggle.setChecked(false);
         }
-        arview.changeBGC(cameraToggle.isChecked());
 
         meshToggle = (Switch) findViewById(R.id.meshToggle);
         textureToggle = (Switch) findViewById(R.id.textureToggle);
@@ -234,8 +231,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         mainDrawerLayout.openDrawer(drawerContentsLayout);
     }
     public void toggleCamera(View view){
-        if(Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)) {
-            arview.changeBGC(cameraToggle.isChecked());
+        if(cameraToggle.isChecked()) {
+            arview.addCameraView();
+        }else{
+            arview.removeCameraView();
         }
     }
 

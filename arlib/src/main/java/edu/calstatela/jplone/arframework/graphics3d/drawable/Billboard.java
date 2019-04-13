@@ -23,7 +23,7 @@ public class Billboard implements Drawable {
 
     private static FloatBuffer sVertexBuffer = null;
     private static FloatBuffer sTexCoordBuffer = null;
-    private static FloatBuffer sColorBuffer = null;
+    //private static FloatBuffer sColorBuffer = null;
     static int sGLProgramId = 0;
 
     private int mGLTextureId = 0;
@@ -130,7 +130,7 @@ public class Billboard implements Drawable {
     private static void fillBufferCircle(){
         shape="circle";
         sVertexBuffer = BufferHelper.arrayToBuffer(circleVertexFloats);
-        sColorBuffer = BufferHelper.arrayToBuffer(circleColorFloats);
+        //sColorBuffer = BufferHelper.arrayToBuffer(circleColorFloats);
         sTexCoordBuffer = BufferHelper.arrayToBuffer(circleTexCoordFloats);
     }
 

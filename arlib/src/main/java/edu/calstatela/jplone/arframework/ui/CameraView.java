@@ -3,7 +3,6 @@ package edu.calstatela.jplone.arframework.ui;
 
 import android.content.Context;
 import android.hardware.Camera;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,7 +14,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "waka_CameraView";
 
     private Camera mCamera;
-
+    SurfaceHolder holder;
+    boolean off = false;
     public CameraView(Context context) {
         super(context);
         getHolder().addCallback(this);
@@ -41,7 +41,11 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
         try {
             mCamera.setPreviewDisplay(holder);
+            setVisibility(VISIBLE);
             mCamera.startPreview();
+            if(off){
+                setVisibility(INVISIBLE);
+            }
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -55,6 +59,29 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         mCamera = null;
     }
 
+    public void removeCameraView(){
+        off = true;
+        try {
+            mCamera.setPreviewDisplay(holder);
+            setVisibility(VISIBLE);
+            mCamera.startPreview();
+            setVisibility(INVISIBLE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void addCameraView(){
+        off = false;
+        try {
+            mCamera = Camera.open();
+            mCamera.setPreviewDisplay(holder);
+            setVisibility(VISIBLE);
+            mCamera.startPreview();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //
     //      Helper Functions

@@ -27,6 +27,7 @@ import edu.calstatela.jplone.arframework.graphics3d.entity.Entity;
 import edu.calstatela.jplone.arframework.graphics3d.entity.ScaleObject;
 import edu.calstatela.jplone.arframework.graphics3d.helper.MeshHelper;
 import edu.calstatela.jplone.arframework.graphics3d.scene.Scene;
+import edu.calstatela.jplone.arframework.ui.CameraView;
 import edu.calstatela.jplone.arframework.ui.SensorARView;
 import edu.calstatela.jplone.arframework.util.GeoMath;
 import edu.calstatela.jplone.arframework.util.Vector3;
@@ -474,12 +475,5 @@ public class BillboardView_sorting extends SensorARView{
         result[1] = bbloc[2];
         result[2] = z;
         return result;
-    }
-    public void changeBGC(boolean b){
-        if(!b){
-            color = new float[]{0,0,0,255};
-        }else {
-            color = new float[]{0, 0, 0, 0};
-        }
     }
 }
