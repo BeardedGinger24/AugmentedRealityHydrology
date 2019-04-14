@@ -62,6 +62,8 @@ import edu.calstatela.jplone.watertrekapp.R;
 import edu.calstatela.jplone.watertrekapp.WatertrekCredentials;
 import edu.calstatela.jplone.watertrekapp.adapters.Azimuth_RecyclerViewAdapter;
 import edu.calstatela.jplone.watertrekapp.adapters.Pitch_RecyclerViewAdapter;
+import edu.calstatela.jplone.watertrekapp.adapters.SmoothScrollHorizontal;
+import edu.calstatela.jplone.watertrekapp.adapters.SmoothScrollVertical;
 import edu.calstatela.jplone.watertrekapp.billboardview.BillboardView_sorting;
 
 public class MainActivity extends AppCompatActivity implements BillboardView_sorting.TouchCallback, SensorEventListener{
@@ -1009,11 +1011,11 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         //Pitch
         ((TextView)findViewById(R.id.bearingL)).setText(Pitch);
-//        Log.d("JSON" , )
-        //ROll
-        // FIX LATER EFFECTS NATALIES CALL
-//        ((TextView)findViewById(R.id.bearingR)).setText(direction + " " + Roll);
-        ((TextView)findViewById(R.id.bearingR)).setText(Roll);
+        ((TextView) findViewById(R.id.bearingR)).setText(Roll);
+
+        setDirection(Integer.parseInt(Roll));
+
+        scrollRecyclerView((int) -pitch_angle, (int) azimuth_angle );
 
     }
 
@@ -1031,24 +1033,76 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         RecyclerView PitchView = findViewById(R.id.Pitch_RecyclerView);
 
 
+        //Custom scroll layout manager
+        SmoothScrollVertical smoothScollLayoutM = new SmoothScrollVertical(this);
+        SmoothScrollHorizontal smoothScrollH = new SmoothScrollHorizontal(this, LinearLayoutManager.HORIZONTAL, false);
 
+
+        //Azimuth RecyclerView Setup
 
         Azimuth_RecyclerViewAdapter AzimuthSensorAdapter = new Azimuth_RecyclerViewAdapter(verticalTicks, this);
-
-        //Initialize for Azimuth
         AzimuthView.setAdapter(AzimuthSensorAdapter);
-        AzimuthView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+//        AzimuthView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        AzimuthView.setLayoutManager(smoothScrollH);
 
 
+        //Pitch RecyclerView Setup
 
         Pitch_RecyclerViewAdapter pitchSensorAdapter = new Pitch_RecyclerViewAdapter(horizontalTicks, this);
-
-        //Initialize for Pitch
         PitchView.setAdapter(pitchSensorAdapter);
-        PitchView.setLayoutManager(new LinearLayoutManager(this));
+        PitchView.setLayoutManager(smoothScollLayoutM);
+    }
+
+    private void scrollRecyclerView(int pitchPos, int rollPos){
+
+        RecyclerView azimuthView = findViewById(R.id.Azimuth_RecyclerView);
+        RecyclerView pitchView = findViewById(R.id.Pitch_RecyclerView);
+
+        SmoothScrollHorizontal azimuthLayoutManager = new SmoothScrollHorizontal(this, LinearLayoutManager.HORIZONTAL, false);
+        SmoothScrollVertical pitchLayoutManager = new SmoothScrollVertical(this);
+
+        azimuthLayoutManager.scrollToPositionWithOffset(rollPos -2, 0);
+
+        azimuthView.setLayoutManager(azimuthLayoutManager);
+//        azimuthView.smoothScrollToPosition(rollPos);
+
+        pitchLayoutManager.scrollToPositionWithOffset(fixPitch(pitchPos) -2, 0);
+        pitchView.setLayoutManager(pitchLayoutManager);
+
+        //        pitchView.smoothScrollToPosition(fixPitch(pitchPos));
+    }
+
+    public void setDirection(int roll){
+
+        TextView left = (TextView) findViewById(R.id.direction_LeftSide);
+        TextView right = (TextView) findViewById(R.id.direction_RightSide);
+
+        if(roll < 45){
+            ((TextView) findViewById(R.id.direction_LeftSide)).setText("N");
+            ((TextView) findViewById(R.id.direction_RightSide)).setText("E");
+        }
+
+        if(roll > 90){
+            ((TextView) findViewById(R.id.direction_LeftSide)).setText("S");
+            ((TextView) findViewById(R.id.direction_RightSide)).setText("E");
+        }
+
+        if(roll > 180){
+            ((TextView) findViewById(R.id.direction_LeftSide)).setText("S");
+            ((TextView) findViewById(R.id.direction_RightSide)).setText("W");
+        }
+
+        if(roll > 270){
+            ((TextView) findViewById(R.id.direction_LeftSide)).setText("N");
+            ((TextView) findViewById(R.id.direction_RightSide)).setText("W");
+        }
 
     }
 
+    private int fixPitch(int pitch){
+        pitch += 269;
+        return pitch;
+    }
 
     /* Arc Menu Functions */
     private void initArcMenu(final ArcMenu menu, final String[] str, final int[] itemDrawables, int count) {
