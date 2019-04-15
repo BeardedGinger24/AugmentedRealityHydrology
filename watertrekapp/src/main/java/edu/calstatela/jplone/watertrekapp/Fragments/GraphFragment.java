@@ -65,30 +65,35 @@ public class GraphFragment extends Fragment {
             sweSnotelList = bundle.getStringArrayList("snow");
 
             if (dbgsUList != null) {
-            String one = dbgsUList.get(0);
-            String two = dbgsUList.get(1);
-            Log.d("graphfrag", one);
-            Log.d("graphfrag", two);
+                //commented out effect defaultSearch
+//            String one = dbgsUList.get(0);
+//            String two = dbgsUList.get(1);
+//            Log.d("graphfrag", one);
+//            Log.d("graphfrag", two);
             } else if (resStorageList != null) {
-                String one = resStorageList.get(0);
-                String two = resStorageList.get(1);
-                Log.d("graphfrag", one);
-                Log.d("graphfrag", two);
+                //commented out effect defaultSearch
+//                String one = resStorageList.get(0);
+//                String two = resStorageList.get(1);
+//                Log.d("graphfrag", one);
+//                Log.d("graphfrag", two);
             } else if (dischargeList != null) {
-                String one = dischargeList.get(0);
-                String two = dischargeList.get(1);
-                Log.d("graphfrag", one);
-                Log.d("graphfrag", two);
+                //commented out effect defaultSearch
+//                String one = dischargeList.get(0);
+//                String two = dischargeList.get(1);
+//                Log.d("graphfrag", one);
+//                Log.d("graphfrag", two);
             } else if (soilDepthList != null) {
-                String one = soilDepthList.get(0);
-                String two = soilDepthList.get(1);
-                Log.d("graphfrag", one);
-                Log.d("graphfrag", two);
+                //commented out effect defaultSearch
+//                String one = soilDepthList.get(0);
+//                String two = soilDepthList.get(1);
+//                Log.d("graphfrag", one);
+//                Log.d("graphfrag", two);
             } else {
-                String one = sweSnotelList.get(0);
-                String two = sweSnotelList.get(1);
-                Log.d("graphfrag", one);
-                Log.d("graphfrag", two);
+                //commented out effect defaultSearch
+//                String one = sweSnotelList.get(0);
+//                String two = sweSnotelList.get(1);
+//                Log.d("graphfrag", one);
+//                Log.d("graphfrag", two);
             }
 
 //            populateGraph(dbgsUList);

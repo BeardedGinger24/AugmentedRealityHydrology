@@ -90,6 +90,7 @@ static String TAG = "data-service";
 //        yr/month/day
         // returns  history of depth below ground surface  DBGS
         String url = ("https://watertrek.jpl.nasa.gov/hydrology/rest/well/master_site_id/"+masterId+"/dbgs/from/"+startDate+"/through/"+endDate);
+        Log.d("wellService",url);
         NetworkTask nt = new NetworkTask(callback, Well.DBGS_UNTIS);
         nt.execute(url);
     }
@@ -170,7 +171,7 @@ static String TAG = "data-service";
 
 
     public static List parseDBGSunits(String line){
-        Log.d("dbgs" , line);
+//        Log.d("dbgs" , line);
         List<String> unitList = new ArrayList();
         String[] rowEntry = line.split("\n");
         if (rowEntry[0].equals("null")){

@@ -44,6 +44,7 @@ import edu.calstatela.jplone.watertrekapp.activities.DatePickerFragment;
 
 
 public class ListFragment extends Fragment   {
+
     Context context;
     TextView starttext;
     TextView endtext;
@@ -133,6 +134,8 @@ public class ListFragment extends Fragment   {
         pb = lView.findViewById(R.id.historyLoad);
         pb.setVisibility(View.INVISIBLE);
 
+
+
         Button startButton = (Button) lView.findViewById(R.id.sdate);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,10 +167,14 @@ public class ListFragment extends Fragment   {
         });
 
         // Inflate the layout for this fragment
+        defaultSearch();
         return lView;
 
 
+
     }
+
+
 
     private void showDatePicker() {
         DatePickerFragment date = new DatePickerFragment();
@@ -728,6 +735,114 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             addSnotel(SnotelID);
+
+        }
+
+    }
+
+    private void defaultSearch(){
+        if (isWellNull == false) {
+            Log.d("DSearch", " Default WELLS ");
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String currentDate = df.format(c.getTime());
+
+            //split date and search last  10 years;
+            String[] sparts = currentDate.split("-");
+            String yStartDate = sparts[0];
+            int numYear = Integer.parseInt(yStartDate);
+            int prevyear = numYear - 20 ;
+            String previousYear = Integer.toString(prevyear);
+            String mStartDate = sparts[1];
+            String dStartDate = sparts[2];
+            String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
+
+            WellService.getDBGSunits(wellNetworkCallback, parsedStartDate, currentDate, WELLID);
+
+        }
+        if (isReservoirNull == false) {
+            Log.d("DSearch", "Default RESERVOIRS ");
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String currentDate = df.format(c.getTime());
+
+            //split date and search last  10 years;
+            String[] sparts = currentDate.split("-");
+            String yStartDate = sparts[0];
+            int numYear = Integer.parseInt(yStartDate);
+            int prevyear = numYear - 10 ;
+            String previousYear = Integer.toString(prevyear);
+            String mStartDate = sparts[1];
+            String dStartDate = sparts[2];
+            String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
+
+            ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, parsedStartDate, currentDate, ReservoirID);
+
+        }
+        if (isRiverNull == false) {
+            Log.d("DSearch", "Default RIVERS ");
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String currentDate = df.format(c.getTime());
+
+            //split date and search last  10 years;
+            String[] sparts = currentDate.split("-");
+            String yStartDate = sparts[0];
+            int numYear = Integer.parseInt(yStartDate);
+            int prevyear = numYear - 10 ;
+            String previousYear = Integer.toString(prevyear);
+            String mStartDate = sparts[1];
+            String dStartDate = sparts[2];
+            String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
+
+            RiverService.getDischargeJSON(riverNetworkCallbackJSON, parsedStartDate, currentDate, RiverID);
+
+        }
+        if (isSoilNull == false) {
+            Log.d("DSearch", " Default MOISTURE ");
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String currentDate = df.format(c.getTime());
+
+            //split date and search last  10 years;
+            String[] sparts = currentDate.split("-");
+            String yStartDate = sparts[0];
+            int numYear = Integer.parseInt(yStartDate);
+            int prevyear = numYear - 20 ;
+            String previousYear = Integer.toString(prevyear);
+            String mStartDate = sparts[1];
+            String dStartDate = sparts[2];
+            String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
+
+            SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback, parsedStartDate, currentDate, SoilMoistureID);
+
+
+        }
+        if (isSnotelNull == false) {
+            Log.d("DSearch", "Default SNOTEL ");
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            String currentDate = df.format(c.getTime());
+
+            //split date and search last  10 years;
+            String[] sparts = currentDate.split("-");
+            String yStartDate = sparts[0];
+            int numYear = Integer.parseInt(yStartDate);
+            int prevyear = numYear - 20 ;
+            String previousYear = Integer.toString(prevyear);
+            String mStartDate = sparts[1];
+            String dStartDate = sparts[2];
+            String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
+
+            SnotelService.getSnotelTimeSeriesStartThruFinish(snowtelNetworkCallback, parsedStartDate, currentDate, SnotelID);
+
+
+
 
         }
 
