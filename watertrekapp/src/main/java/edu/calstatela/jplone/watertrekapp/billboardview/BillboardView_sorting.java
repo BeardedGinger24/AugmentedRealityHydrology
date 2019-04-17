@@ -86,7 +86,6 @@ public class BillboardView_sorting extends SensorARView{
 
     public void addBillboard(int id, int iconResource, String title, String text, float lat, float lon, float alt){
         BillboardInfo info = new BillboardInfo(id, iconResource, title, text, lat, lon, alt);
-
         synchronized(mAddList) {
             mAddList.add(info);
         }
@@ -430,7 +429,7 @@ public class BillboardView_sorting extends SensorARView{
         }
 
         if(userElevation==-1){
-            userElevation = getLocation()[2]+30;
+            userElevation = getLocation()[2]+35;
         }
         entity.setPosition(0f,-(userElevation+15)/100,0f);
         entity.yaw(200);
@@ -454,11 +453,11 @@ public class BillboardView_sorting extends SensorARView{
     };
 
     public float[] getbbLoc(float[] bbloc,float[] meshloc){
-        float bbx = bbloc[1];
-        float bby = bbloc[0];
+        float bbLat = bbloc[0];
+        float bbLon = bbloc[1];
 
-        float mx = meshloc[1];
-        float my = meshloc[0];
+        float meshLat = meshloc[0];
+        float meshLon = meshloc[1];
 
         float elevationScale = 100;
         //1 lat is about 111180 meters at equator, and 111200 at poles
@@ -467,13 +466,13 @@ public class BillboardView_sorting extends SensorARView{
         double lonScale = 22236/elevationScale;
         double latScale = 18425/elevationScale;
 
-        float x = (float) ((mx-bbx)*latScale);
-        float z = (float) ((bby-my)*lonScale);
+        float lat = (float) ((Math.abs(meshLat)-Math.abs(bbLat))*latScale);
+        float lon = (float)((Math.abs(meshLon)-Math.abs(bbLon))*lonScale);
 
         float[] result = new float[3];
-        result[0] = x;
+        result[0] = lon;
         result[1] = bbloc[2];
-        result[2] = z;
+        result[2] = lat;
         return result;
     }
 }
