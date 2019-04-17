@@ -15,7 +15,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.util.concurrent.ExecutionException;
 
 import edu.calstatela.jplone.watertrekapp.NetworkUtils.NetworkTask;
 import edu.calstatela.jplone.watertrekapp.R;
@@ -30,9 +33,14 @@ public class CredentialsActivity extends Activity{
     Button mSubmitButton;
     TextInputLayout mUsernameLayout;
     TextInputLayout mPasswordLayout;
+    TextInputLayout mValidation;
+
+    ProgressBar mProgressBar;
 
     String currUser;
     String currPass;
+
+    NetworkTask networkTask;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +52,15 @@ public class CredentialsActivity extends Activity{
 
         mUsernameLayout = (TextInputLayout) findViewById(R.id.username_layout);
         mPasswordLayout = (TextInputLayout) findViewById(R.id.password_layout);
+        mValidation = (TextInputLayout) findViewById(R.id.validation);
 
         mSubmitButton = (Button) findViewById(R.id.b_submit_credentials);
         mSubmitButton.setOnClickListener(buttonListener);
 
         mUsernameEditText.addTextChangedListener(new MyTextWatcher(mUsernameEditText));
         mPasswordEditText.addTextChangedListener(new MyTextWatcher(mPasswordEditText));
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
 
         // If default username and password have been provided in the intent, fill in fields
         String currentUsername = getIntent().getStringExtra("username");
@@ -68,23 +79,29 @@ public class CredentialsActivity extends Activity{
     Button.OnClickListener buttonListener = new Button.OnClickListener(){
         @Override
         public void onClick(View view) {
-            String usernameString = mUsernameEditText.getText().toString();
-            String passwordString = mPasswordEditText.getText().toString();
-
             if(submitForm()) {
-                Intent intent = new Intent();
-                intent.putExtra("username", usernameString);
-                intent.putExtra("password", passwordString);
-                setResult(RESULT_OK, intent);
+                String usernameString = mUsernameEditText.getText().toString();
+                String passwordString = mPasswordEditText.getText().toString();
 
                 NetworkTask.updateWatertrekCredentials(usernameString,passwordString);
-                WatertrekCredentials credentials = new WatertrekCredentials(getApplicationContext());
-                credentials.setUsername(usernameString);
-                credentials.setPassword(passwordString);
-                finish();
+                networkTask = new NetworkTask(callback, 0);
+                networkTask.execute("https://watertrek.jpl.nasa.gov/hydrology/rest/well/within/wkt/POLYGON%28%280%29%29");
             }
+        }
+    };
 
-
+    NetworkTask.NetworkCallback callback = new NetworkTask.NetworkCallback() {
+        @Override
+        public void onResult(int type, String result) {
+            Log.d(TAG, "onResult: " + result);
+            if(result.equals("Valid")){
+                networkTask.cancel(true);
+                submitCreds();
+            } else if(result.equals("Invalid")){
+                networkTask.cancel(true);
+                mValidation.setError("Please Input Valid Credentials");
+                requestFocus(mValidation);
+            }
         }
     };
 
@@ -92,8 +109,18 @@ public class CredentialsActivity extends Activity{
         if (!validateUsername()) { return false; }
         if (!validatePassword()) { return false; }
 
-
         return true;
+    }
+
+    private void submitCreds(){
+        String usernameString = mUsernameEditText.getText().toString();
+        String passwordString = mPasswordEditText.getText().toString();
+
+        Intent intent = new Intent();
+        intent.putExtra("username", usernameString);
+        intent.putExtra("password", passwordString);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private boolean validateUsername() {

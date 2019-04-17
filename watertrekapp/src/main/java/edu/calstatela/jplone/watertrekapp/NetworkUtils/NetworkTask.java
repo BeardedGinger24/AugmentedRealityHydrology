@@ -65,28 +65,29 @@ public class NetworkTask extends AsyncTask<String, Void, String> {
                 }
                 br.close();
                 Log.d(TAG,"RESPONSE WAS: "+response);
+                //return "OK";
                 return result;
             }else{
                 Log.d(TAG,"RESPONSE WAS: "+response);
                 Log.d(TAG,"VALID CREDENTIALS");
                 //handle valid credentials here??
+                return "Valid";
             }
-
-            return null;
         }
         catch(Exception e) {
             Log.d(TAG, "Exception!");
             Log.d(TAG,  e.toString() + ": " + e.getMessage());
             Log.d(TAG,"INVALID CREDENTIALS");
             //handle invalid credentials here??
+            return "Invalid";
         }
-        return null;
     }
 
     @Override
     protected void onPostExecute(String result) {
-        Log.d(TAG,"In postExe");
+        Log.d(TAG,"In postExe" + result);
         callback.onResult(this.data_type, result);
+//        return result;
     }
 
     public interface NetworkCallback {

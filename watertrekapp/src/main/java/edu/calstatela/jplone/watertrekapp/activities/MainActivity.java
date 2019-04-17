@@ -831,14 +831,14 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
         int index = 0;
         for(Vector3 v : list){
-            double z = (Math.abs(meshloc[1]-0.20)-Math.abs(v.getZ()))/0.002;
-            double x = Math.abs((Math.abs(meshloc[0]+0.20)-Math.abs(v.getX()))/0.002);
+            double z = (Math.abs(meshloc[1]-0.20)-Math.abs(v.getZ()))/0.004;
+            double x = (Math.abs(meshloc[0]+0.20)-Math.abs(v.getX())/0.004);
             int vecindex = (int) (z+(x*100));
 
             if(vecindex<meshVec.length && vecindex>=0) {
                 elevations[index] = (float) meshVec[vecindex].getY();
             }else{
-
+                elevations[index] = -1f;
             }
             index++;
         }
