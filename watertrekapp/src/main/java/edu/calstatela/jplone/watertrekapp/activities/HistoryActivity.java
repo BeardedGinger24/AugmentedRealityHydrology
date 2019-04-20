@@ -790,7 +790,7 @@ public class HistoryActivity extends AppCompatActivity implements DatePickerDial
                 xValue.clear();
                 for (int i = 0; i < resResults.size(); i++) {
                     String tempDT = resResults.get(i).getDateTime();
-                    String tempStorage = resResults.get(i).getStorage();
+                    String tempStorage = resResults.get(i).getDischarge();
                     String tempUnit = resResults.get(i).getUnits();
                     String tempLast = tempDT +" " + tempStorage + " " + tempUnit;
 //                    String dsl = disList.get(i);

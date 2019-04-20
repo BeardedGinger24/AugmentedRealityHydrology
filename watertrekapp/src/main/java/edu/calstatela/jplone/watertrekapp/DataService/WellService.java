@@ -174,12 +174,13 @@ static String TAG = "data-service";
 //        Log.d("dbgs" , line);
         List<String> unitList = new ArrayList();
         String[] rowEntry = line.split("\n");
-        if (rowEntry[0].equals("null")){
+        if (rowEntry[0].equals("null") || rowEntry[0] == null  || rowEntry[0] == "Valid" ){
             return unitList ;
         }
-        if (rowEntry[0] == null){
-            return unitList ;
-        }
+//        if (rowEntry[0] == null){
+//            return unitList ;
+//        }
+//
 
         for(int i=0; i<rowEntry.length;i++){
             unitList.add(rowEntry[i]);

@@ -308,11 +308,108 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
 
         }
     }
+    public void multiCalls(int caseNumber){
+        String[] firstSplit = firstDate.split("-");
+        String startYear = firstSplit[0];
+        String startMonth = firstSplit[1];
+        String startDay = firstSplit[2];
+        int startYearInt = Integer.parseInt(startYear);
 
+        String[] EndSplit = lastDate.split("-");
+        String EndYear = EndSplit[0];
+        String EndMonth = EndSplit[1];
+        String EndDay = EndSplit[2];
+        int EndYearInt = Integer.parseInt(EndYear);
+        int diffInYears =  EndYearInt - startYearInt;
+        // e.g 2019 -1950 = 69 mod 10 is 6
+        // so 1950 thru 1960 || 1960 thru 1970 || 1970 thru 1980 ||  1980 thru 1990 || 1990 thru 2000 ||  2000 thru 2010
+        // last call will be 2010 ogmonth ogday  thru endate
+        int remainder = diffInYears %10;
+
+        int lastStartDate = EndYearInt - remainder;
+        String theLastEntry = Integer.toString(lastStartDate);
+        String lastEntry = theLastEntry +"-" + startMonth+"-"+startDay;
+        int yearMods = (diffInYears-remainder) /10;
+        switch (caseNumber){
+            case 1: dbgsUList.clear();
+                splitCalls(firstDate,yearMods,1);
+                // should return last date entry then
+                // then well have for example 2010-04-19 then we make one last call using call Wells
+                // then just search call wells thru lastDate
+                WellService.getDBGSunits(wellNetworkCallback,lastEntry,lastDate,WELLID);
+            case 2:
+//                resStorageList.clear();
+                splitCalls(firstDate,yearMods,2);
+                ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, lastEntry, lastDate, ReservoirID);
+            case 3:
+//                dischargeList.clear();
+                    splitCalls(firstDate,yearMods,3);
+                RiverService.getDischargeJSON(riverNetworkCallbackJSON, lastEntry, lastDate, RiverID);
+            case 4:
+                splitCalls(firstDate,yearMods,4);
+                SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback, lastEntry, lastDate, SoilMoistureID);
+            case 5:
+                splitCalls(firstDate,yearMods,5);
+                SnotelService.getSnotelTimeSeriesStartThruFinish(snowtelNetworkCallback, lastEntry, lastDate, SnotelID);
+
+
+
+
+
+        }
+
+
+
+
+
+    }
+
+    public String splitCalls(String beginDate  ,int modNum, int caseNumber){
+        String[] firstSplit = beginDate.split("-");
+        String startYear = firstSplit[0];
+        String startMonth = firstSplit[1];
+        String startDay = firstSplit[2];
+
+        int startYearInt = Integer.parseInt(startYear);
+        String firstDateEntry = startYear +"-" + startMonth +"-" + startDay;
+//
+        int IncrementedStart = startYearInt + 10;
+        String startYearTen = Integer.toString(IncrementedStart);
+        String lastDateEntry = startYearTen +"-" + startMonth +"-" + startDay;
+        if (modNum == 0){
+        return "tempyy";
+        }
+        else{
+            switch (caseNumber){
+                case 1: WellService.getDBGSunits(wellNetworkCallback,beginDate,lastDateEntry,WELLID);
+                    splitCalls(lastDateEntry,modNum-1, 1);
+                    return lastDateEntry;
+                case 2 : ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, beginDate, lastDateEntry, ReservoirID);
+                        splitCalls(lastDateEntry,modNum-1, 2);
+                        return lastDateEntry;
+                case 3:RiverService.getDischargeJSON(riverNetworkCallbackJSON, beginDate, lastDateEntry, RiverID);
+                    splitCalls(lastDateEntry,modNum-1, 3);
+                    return lastDateEntry;
+                case 4: SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback, beginDate, lastDateEntry, SoilMoistureID);
+                    splitCalls(lastDateEntry,modNum-1,4);
+                    return lastDateEntry;
+                case 5:SnotelService.getSnotelTimeSeriesStartThruFinish(snowtelNetworkCallback, beginDate, lastDateEntry, SnotelID);
+                    splitCalls(lastDateEntry,modNum-1,5);
+                    return  lastDateEntry;
+
+            }
+            // have to retunr something idk ???
+            return lastDateEntry;
+        }
+
+
+    }
     private void addWells(String WELLID) {
         if (dateVerifier() != false) {
             pb.setVisibility(View.VISIBLE);
-            WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate, WELLID);
+            // put method  for multicalls  Right Here
+            multiCalls(1);
+//            WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate, WELLID);
             pb.setVisibility(View.VISIBLE);
 
         }
@@ -324,7 +421,8 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             pb.setVisibility(View.VISIBLE);
             Log.d("reserves", "Calling ALL RESERVOIRS");
 //            ReservoirService.getStorage(reservoirNetworkCallback, firstDate, lastDate, ReservoirID);
-            ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, firstDate, lastDate, ReservoirID);
+//            ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, firstDate, lastDate, ReservoirID);
+            multiCalls(2);
             pb.setVisibility(View.VISIBLE);
         }
     }
@@ -335,7 +433,8 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             pb.setVisibility(View.VISIBLE);
             Log.d("discharge", "Calling rivernetworkcallback");
 //            RiverService.getDischarge(riverNetworkCallback, firstDate, lastDate, RiverID);
-            RiverService.getDischargeJSON(riverNetworkCallbackJSON, firstDate, lastDate, RiverID);
+            multiCalls(3);
+//            RiverService.getDischargeJSON(riverNetworkCallbackJSON, firstDate, lastDate, RiverID);
             pb.setVisibility(View.VISIBLE);
         }
     }
@@ -367,7 +466,7 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
         @Override
         public void onResult(int type, String result) {
             List<String> dbgsunitList = WellService.parseDBGSunits(result);
-            if (dbgsunitList.size() < 1) {
+            if (dbgsunitList.size() <= 1) {
                 pb.setVisibility(View.INVISIBLE);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 Toast.makeText(getActivity(), " No informationhas been recorded thus far", Toast.LENGTH_SHORT).show();
@@ -375,7 +474,8 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             } else {
 // clears old list so it doesnt double stack / repeat Data twice
 
-                dbgsUList.clear();
+//                dbgsUList.clear();     $$$$$$$$$$$$$$$$$$$$$$$
+
                 for (int i = 0; i < dbgsunitList.size(); i++) {
                     String dbu = dbgsunitList.get(i);
                     dbgsUList.add(dbu);
@@ -556,7 +656,7 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
 
                 for (int i = 0; i < resResults.size(); i++) {
                     String tempDT = resResults.get(i).getDateTime();
-                    String tempStorage = resResults.get(i).getStorage();
+                    String tempStorage = resResults.get(i).getDischarge();
                     String tempUnit = resResults.get(i).getUnits();
                     String tempLast = tempDT +" " + tempStorage + " " + tempUnit;
 //                    String dsl = disList.get(i);

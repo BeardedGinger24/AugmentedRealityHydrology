@@ -7,8 +7,8 @@ public class RiverStorageData {
 
     @SerializedName("datetime")
     private String dateTime;
-    @SerializedName("storage")
-    private String  storage;
+    @SerializedName("discharge")
+    private String  discharge;
     @SerializedName("units")
     private String units;
 
@@ -16,17 +16,17 @@ public class RiverStorageData {
         return dateTime;
     }
 
-    public String getStorage() {
-        return storage;
+    public String getDischarge() {
+        return discharge;
     }
 
     public String getUnits() {
         return units;
     }
 
-    public RiverStorageData(String dateTime, String storage, String units){
+    public RiverStorageData(String dateTime, String discharge, String units){
         this.dateTime = dateTime;
-        this.storage = storage;
+        this.discharge = discharge;
         this.units = units;
     }
 }
