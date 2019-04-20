@@ -342,9 +342,12 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
                 splitCalls(firstDate,yearMods,2);
                 ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, lastEntry, lastDate, ReservoirID);
             case 3:
-//                dischargeList.clear();
+                dischargeList.clear();
                     splitCalls(firstDate,yearMods,3);
                 RiverService.getDischargeJSON(riverNetworkCallbackJSON, lastEntry, lastDate, RiverID);
+                if(dischargeList.size() <1) {
+                    Toast.makeText(getActivity(), " No information has been recorded thus far", Toast.LENGTH_SHORT).show();
+                }
             case 4:
                 splitCalls(firstDate,yearMods,4);
                 SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback, lastEntry, lastDate, SoilMoistureID);
@@ -408,8 +411,8 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
         if (dateVerifier() != false) {
             pb.setVisibility(View.VISIBLE);
             // put method  for multicalls  Right Here
-            multiCalls(1);
-//            WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate, WELLID);
+//            multiCalls(1);
+            WellService.getDBGSunits(wellNetworkCallback, firstDate, lastDate, WELLID);
             pb.setVisibility(View.VISIBLE);
 
         }
@@ -421,8 +424,8 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             pb.setVisibility(View.VISIBLE);
             Log.d("reserves", "Calling ALL RESERVOIRS");
 //            ReservoirService.getStorage(reservoirNetworkCallback, firstDate, lastDate, ReservoirID);
-//            ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, firstDate, lastDate, ReservoirID);
-            multiCalls(2);
+            ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, firstDate, lastDate, ReservoirID);
+//            multiCalls(2);
             pb.setVisibility(View.VISIBLE);
         }
     }
@@ -646,13 +649,14 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             if (resResults.size() < 1) {
                 Log.d("discharge", "No information has been recorded thus far");
                 pb.setVisibility(View.INVISIBLE);
-                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                Toast.makeText(getActivity(), " No information has been recorded thus far", Toast.LENGTH_LONG).show();
+                //disables screen
+//                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                Toast.makeText(getActivity(), " No information has been recorded thus far", Toast.LENGTH_SHORT).show();
 
                 return;
             } else {
 
-                dischargeList.clear();
+//                dischargeList.clear();
 
                 for (int i = 0; i < resResults.size(); i++) {
                     String tempDT = resResults.get(i).getDateTime();
@@ -677,7 +681,7 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
                 transection.commit();
 
                 lv.setAdapter(adapter);
-                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             }
         }
     };
@@ -818,8 +822,8 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
         }
         if (isRiverNull == false) {
             Log.d("discharge", "ADDED RIVERS ");
-            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+//                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             addRivers(RiverID);
 
         }
@@ -858,6 +862,13 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             String dStartDate = sparts[2];
             String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
 
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(parsedStartDate);
+            firstDate = parsedStartDate;
+            endtext = lView.findViewById(R.id.endView);
+            endtext.setText(currentDate);
+            lastDate = currentDate;
+
             WellService.getDBGSunits(wellNetworkCallback, parsedStartDate, currentDate, WELLID);
 
         }
@@ -877,6 +888,13 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             String mStartDate = sparts[1];
             String dStartDate = sparts[2];
             String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
+
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(parsedStartDate);
+            firstDate = parsedStartDate;
+            endtext = lView.findViewById(R.id.endView);
+            endtext.setText(currentDate);
+            lastDate = currentDate;
 
             ReservoirService.getStorageJSON(reservoirNetworkCallbackJSON, parsedStartDate, currentDate, ReservoirID);
 
@@ -898,6 +916,12 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             String dStartDate = sparts[2];
             String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
 
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(parsedStartDate);
+            firstDate = parsedStartDate;
+            endtext = lView.findViewById(R.id.endView);
+            endtext.setText(currentDate);
+            lastDate = currentDate;
             RiverService.getDischargeJSON(riverNetworkCallbackJSON, parsedStartDate, currentDate, RiverID);
 
         }
@@ -917,6 +941,13 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             String mStartDate = sparts[1];
             String dStartDate = sparts[2];
             String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
+
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(parsedStartDate);
+            firstDate = parsedStartDate;
+            endtext = lView.findViewById(R.id.endView);
+            endtext.setText(currentDate);
+            lastDate = currentDate;
 
             SoilMoistureService.getSoilDepthThruTime(soilNetworkCallback, parsedStartDate, currentDate, SoilMoistureID);
 
@@ -938,6 +969,13 @@ public void onDateSet(DatePicker v, int year, int month, int dayOfMonth) {
             String mStartDate = sparts[1];
             String dStartDate = sparts[2];
             String parsedStartDate = previousYear +"-"+ mStartDate +"-"+ dStartDate;
+
+            starttext = (TextView) lView.findViewById(R.id.startView);
+            starttext.setText(parsedStartDate);
+            firstDate = parsedStartDate;
+            endtext = lView.findViewById(R.id.endView);
+            endtext.setText(currentDate);
+            lastDate = currentDate;
 
             SnotelService.getSnotelTimeSeriesStartThruFinish(snowtelNetworkCallback, parsedStartDate, currentDate, SnotelID);
 
