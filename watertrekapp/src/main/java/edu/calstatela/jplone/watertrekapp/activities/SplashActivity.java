@@ -48,9 +48,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     private ImageView iv;
     private ProgressBar pb;
     private Button startBtn;
-    private Button meshTest;
     Context context;
-    MeshData meshData;
     float[] currentLocation;
     SensorARView sensorARView;
 
@@ -58,15 +56,9 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     TextureService.getTexture terrainTextureAsyncTask;
     TextureService.getTexture riverTextureAsyncTask;
 
-    SQLiteDatabase db;
-    DatabaseHelper helper;
-
     private static final int REQUEST_CAMERA = 0;
-    private static final int REQUEST_LOCATION = 1;
-    private static final int REQUEST_STORAGE = 2;
 
     Thread t1;
-    Thread t2;
     static boolean isLoggedIn;
 
     @Override
@@ -83,24 +75,8 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         iv = findViewById(R.id.ara_ico);
         pb = findViewById(R.id.indeterminateBar);
         startBtn = findViewById(R.id.startBtn);
-        //meshTest = findViewById(R.id.meshtest);
 
         boolean havePermissions = true;
-//        if(!Permissions.havePermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION)){
-//            Permissions.requestPermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION,REQUEST_LOCATION);
-//            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-//            havePermissions = false;
-//        }
-//        if(!Permissions.havePermission(this, Permissions.PERMISSION_CAMERA)){
-//            Permissions.requestPermission(this, Permissions.PERMISSION_CAMERA,REQUEST_CAMERA);
-//            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
-//            havePermissions = false;
-//        }
-//        if(!Permissions.havePermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE)){
-//            Permissions.requestPermission(this, Permissions.PERMISSION_WRITE_EXTERNAL_STORAGE,REQUEST_STORAGE);
-//            //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE);
-//            havePermissions = false;
-//        }
 
         if(!Permissions.havePermission(this, Permissions.PERMISSION_ACCESS_FINE_LOCATION) &&
                 !Permissions.havePermission(this, Permissions.PERMISSION_CAMERA) &&
@@ -145,8 +121,6 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         t1 = new Thread(new Runnable() {
             @Override
             public void run() {
-                // start the service  to get location update
-
                 Intent i = new Intent(context, MainActivity.class);
                 String demurl = getString(R.string.demurl);
                 String textureUrl = getString(R.string.textureUrl);
@@ -204,52 +178,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
     public static void toggleLogin(boolean b){
         isLoggedIn = b;
     }
-    public void genVerts(MeshData meshData){
-        float[] verts = new float[meshData.Triangles.length*3];
-        int index = 0;
-        for(int i = 0; i<meshData.Triangles.length-1; i++){
-            verts[index] = (float) meshData.Vectors[meshData.Triangles[i]].getX();
-            verts[index+1] = (float) meshData.Vectors[meshData.Triangles[i]].getY();
-            verts[index+2] = (float) meshData.Vectors[meshData.Triangles[i]].getZ();
-            index += 3;
-        }
 
-        writeToFile(meshData.Vectors,meshData.getFilenameTerrainVecs());
-        writeToFile(verts,meshData.getFilenameTerrain());
-    }
-    public void writeToFile(float[] input,String filename){
-        StringBuilder sb = new StringBuilder();
-
-        for(int i = 0; i<input.length; i++){
-            sb.append(input[i]);
-            if(i<input.length-1){
-                sb.append(",");
-            }
-        }
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(this.openFileOutput(filename, Context.MODE_PRIVATE));
-            outputStreamWriter.write(sb.toString());
-            outputStreamWriter.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
-    }
-    public void writeToFile(Vector3[] input, String filename){
-        StringBuilder sb = new StringBuilder();
-
-        for(int i = 0; i<input.length; i++){
-            sb.append(input[i].getVals());
-        }
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(this.openFileOutput(filename, Context.MODE_PRIVATE));
-            outputStreamWriter.write(sb.toString());
-            outputStreamWriter.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
-    }
     public void startClicked(View view){
         currentLocation = sensorARView.getLocation();
         startBtn.setVisibility(View.GONE);
@@ -258,35 +187,7 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
         loadingText.setText("Loading Data ...");
         t1.start();
     }
-    NetworkTask.NetworkCallback demCallback = new NetworkTask.NetworkCallback() {
-        @Override
-        public void onResult(int type, String result) {
 
-        }
-    };
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//
-//        if(requestCode == REQUEST_LOCATION){
-//            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-//                finish();
-//                startActivity(getIntent());
-//            }
-//        } else if(requestCode == REQUEST_CAMERA){
-//            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-//                finish();
-//                startActivity(getIntent());
-//            }
-//        } else if(requestCode == REQUEST_STORAGE){
-//            if ((grantResults.length == 1) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-//                finish();
-//                startActivity(getIntent());
-//            }
-//        } else {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        }
-//    }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         switch (requestCode){
@@ -300,19 +201,11 @@ public class SplashActivity extends AppCompatActivity implements ActivityCompat.
                                         == PackageManager.PERMISSION_GRANTED
                                 )
                         ){
-                    // Permissions are granted
-//                    Toast.makeText(mContext,"Permissions granted.",Toast.LENGTH_SHORT).show();
                 }else {
-                    // Permissions are denied
-//                    Toast.makeText(mContext,"Permissions denied.",Toast.LENGTH_SHORT).show();
+
                 }
                 return;
             }
         }
-    }
-
-    public void meshTest(View v){
-        currentLocation = sensorARView.getLocation();
-        t2.start();
     }
 }
