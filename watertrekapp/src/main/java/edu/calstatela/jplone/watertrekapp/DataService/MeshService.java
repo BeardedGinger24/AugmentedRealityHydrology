@@ -52,19 +52,13 @@ public class MeshService {
 
                 HttpsURLConnection urlConnection =
                         (HttpsURLConnection) url.openConnection();
-                Log.d(TAG,"after openconnection()");
                 Authenticator.setDefault(new Authenticator(){
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(user,pw.toCharArray());
                     }
                 });
-                Log.d(TAG,"after authenticator");
                 urlConnection.connect();
-                Log.d(TAG,"after connect()");
-                //String response = urlConnection.getResponseMessage();
-                //Log.d(TAG,response);
                 inputStream = urlConnection.getInputStream();
-                Log.d(TAG,"after getInputStream");
                 tiffImage = TiffReader.readTiff(inputStream);
                 directories = tiffImage.getFileDirectories();
                 directory = directories.get(0);
@@ -74,19 +68,36 @@ public class MeshService {
             }
             width = rasters.getWidth();
             height = rasters.getHeight();
-            double maxHeight = 0;
-            double heightVal;
 
             int index = 0;
+
             Vector3[] vector3s = new Vector3[(width/baseDownSample)*(height/baseDownSample)];
             for(int y = 0; y<(height/baseDownSample); y++) {
                 for (int x = 0; x < (width / baseDownSample); x++) {
-                    heightVal = rasters.getPixel(x * baseDownSample, y * baseDownSample)[0].doubleValue();
+                    double heightVal = rasters.getPixel(x * baseDownSample, y * baseDownSample)[0].doubleValue();
+                    double right = -1;
+                    if(x<(width/baseDownSample)-1) {
+                        right = rasters.getPixel((x + 1) * baseDownSample, y * baseDownSample)[0].doubleValue();
+                    }
+                    double left = -1;
+                    if(x>0) {
+                        left = rasters.getPixel((x - 1) * baseDownSample, y * baseDownSample)[0].doubleValue();
+                    }
+                    double top = -1;
+                    if(y>0) {
+                        top = rasters.getPixel(x * baseDownSample, (y-1) * baseDownSample)[0].doubleValue();
+                    }
+                    double bottom = -1;
+                    if(y<(height/baseDownSample)-1) {
+                        bottom = rasters.getPixel(x * baseDownSample, (y+1) * baseDownSample)[0].doubleValue();
+                    }
 
-                    vector3s[index] = new Vector3(x, heightVal, y);
+                    double correctedHeight = correctHeightVal(left,right,top,bottom,heightVal);
+                    vector3s[index] = new Vector3(x, correctedHeight, y);
                     index++;
                 }
             }
+
             double midpoint_x = ((width/baseDownSample)/2)-1;
             double midpoint_z = ((height/baseDownSample)/2)-1;
             double elevationScale = 100;
@@ -184,27 +195,59 @@ public class MeshService {
             StringBuilder n = MeshHelper.calculateNormals(vertices);
             return v.toString()+vt.toString()+n.toString();
         }
-        public double correctHeightVal(double maxY,double leftHeight,double rightHeight,double topHeight,double bottHeight){
+        public double correctHeightVal(double left,double right,double top,double bottom, double current){
+            //if the change in height passes this threshold then the height value is inaccurate and must be changed
+            double threshHold = 1500;
             int count = 0;
             double sum = 0;
 
-            if (leftHeight < maxY) {
-                count++;
-                sum += leftHeight;
+            if (left != -1) {
+                if(Math.abs(left-current)>threshHold) {
+                    if(left<threshHold){
+                        sum = sum + left;
+                        count++;
+                    }else if(current<threshHold){
+                        sum = sum + current;
+                        count++;
+                    }
+                }
             }
-            if (rightHeight < maxY) {
-                count++;
-                sum += rightHeight;
+            if (right != -1) {
+                if(Math.abs(right-current)>threshHold) {
+                    if(right<threshHold){
+                        sum = sum + right;
+                        count++;
+                    }else if(current<threshHold){
+                        sum = sum + current;
+                        count++;
+                    }
+                }
             }
-            if (topHeight < maxY) {
-                sum += topHeight;
-                count++;
+            if (top != -1) {
+                if(Math.abs(top-current)>threshHold) {
+                    if(top<threshHold){
+                        sum = sum + top;
+                        count++;
+                    }else if(current<threshHold){
+                        sum = sum + current;
+                        count++;
+                    }
+                }
             }
-            if (bottHeight < maxY) {
-                sum += bottHeight;
-                count++;
+            if (bottom != -1) {
+                if(Math.abs(bottom-current)>threshHold) {
+                    if(bottom<threshHold){
+                        sum = sum + bottom;
+                        count++;
+                    }else if(current<threshHold){
+                        sum = sum + current;
+                        count++;
+                    }
+                }
             }
-
+            if(sum==0){
+                return current;
+            }
             return sum/count;
         }
         @Override
