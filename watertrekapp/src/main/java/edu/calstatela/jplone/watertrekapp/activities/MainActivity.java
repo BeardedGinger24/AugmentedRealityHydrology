@@ -397,11 +397,6 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
         }
     }
 
-    public float[] meshdataLoc(String filename){
-        helper = new DatabaseHelper(this);
-        db=helper.getReadableDatabase();
-        return helper.getMeshData(db,filename);
-    }
     public void toggleMesh(View view){
         if(textureToggle.isChecked()){
             textureToggle.setChecked(false);
@@ -496,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                 lat = Float.parseFloat(e.getLat());
                 lon = Float.parseFloat(e.getLon());
                 alt = 0;
-                locs.add(new Vector3(lon,lat,alt));
+                locs.add(new Vector3(lat,alt,lon));
             }
             float[] elvs = grabLocs(locs);
             if (lWellList.size() >=1){
@@ -511,10 +506,10 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                                 "(" + well.getLat() + "," + well.getLon() + ")",
                                 Float.parseFloat(well.getLat()), Float.parseFloat(well.getLon()),elvs[index]
                         );
-                        index++;
                     }catch(NumberFormatException e){
                         Log.d(TAG,e.toString());
                     }
+                    index++;
                 }
             }
             else
@@ -563,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                 lat = Float.parseFloat(e.getLat());
                 lon = Float.parseFloat(e.getLon());
                 alt = 0;
-                locs.add(new Vector3(lon,lat,alt));
+                locs.add(new Vector3(lat,alt,lon));
             }
             float[] elvs = grabLocs(locs);
             // Check to see if GET call is empty if so display message to user else continue
@@ -633,7 +628,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                 lat = Float.parseFloat(e.getLat());
                 lon = Float.parseFloat(e.getLon());
                 alt = 0;
-                locs.add(new Vector3(lon,lat,alt));
+                locs.add(new Vector3(lat,alt,lon));
             }
             float[] elvs = grabLocs(locs);
             // Check to see if GET call is empty if so display message to user else continue
@@ -713,7 +708,7 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
                 lat = Float.parseFloat(e.getLat());
                 lon = Float.parseFloat(e.getLon());
                 alt = 0;
-                locs.add(new Vector3(lon,lat,alt));
+                locs.add(new Vector3(lat,alt,lon));
             }
             float[] elvs = grabLocs(locs);
             // Check to see if GET call is empty if so display message to user else continue
@@ -826,17 +821,26 @@ public class MainActivity extends AppCompatActivity implements BillboardView_sor
 
     public float[] grabLocs(List<Vector3> list){
         Vector3[] meshVec = objLoader.getVec();
+        //lat, lon order
         float[] meshloc = objLoader.getLoc();
         float[] elevations = new float[list.size()];
 
         int index = 0;
+        // x is lat[0], y is alt[1], z is lon[2]
         for(Vector3 v : list){
             double z = (Math.abs(meshloc[1]-0.20)-Math.abs(v.getZ()))/0.004;
             double x = (Math.abs(meshloc[0]+0.20)-Math.abs(v.getX())/0.004);
-            int vecindex = (int) (z+(x*100));
+            if(x==100){
+                x=x-1;
+            }
+            if(z==100){
+                z=z-1;
+            }
+            int vecindex = (int)(z+(x*99));
 
             if(vecindex<meshVec.length && vecindex>=0) {
                 elevations[index] = (float) meshVec[vecindex].getY();
+
             }else{
                 elevations[index] = -1f;
             }

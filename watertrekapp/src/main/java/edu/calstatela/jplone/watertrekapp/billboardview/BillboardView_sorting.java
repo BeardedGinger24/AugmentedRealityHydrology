@@ -398,7 +398,7 @@ public class BillboardView_sorting extends SensorARView{
         e.setDrawable(sbb);
         //e.setLatLonAlt(new float[]{info.lat,info.lon});
         float[] bbLoc = getbbLoc(new float[]{info.lat,info.lon,info.alt},meshLoc);
-        e.setPosition(bbLoc[0],-(bbLoc[1]+0.1f),bbLoc[2]);
+        e.setPosition(bbLoc[0],-(bbLoc[1])/100,bbLoc[2]);
         e.yaw(45);
         mEntityList.add(e);
 //        entityListNear.add(e);
@@ -429,7 +429,7 @@ public class BillboardView_sorting extends SensorARView{
         }
 
         if(userElevation==-1){
-            userElevation = getLocation()[2]+35;
+            userElevation = getLocation()[2]+40;
         }
         entity.setPosition(0f,-(userElevation+15)/100,0f);
         entity.yaw(200);
